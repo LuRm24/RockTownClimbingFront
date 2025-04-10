@@ -4,6 +4,9 @@
  */
 package ventanas;
 
+import conexion.ConexionCliente;
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author luciarodriguezmartin
@@ -40,7 +43,7 @@ public class Interfaz extends javax.swing.JFrame {
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jButton1.setText("Entrar");
-        jButton1.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        jButton1.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton1ActionPerformed(evt);
@@ -62,7 +65,11 @@ public class Interfaz extends javax.swing.JFrame {
         user.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         getContentPane().add(user, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 330, 200, 30));
 
-        password.setText("jPasswordField1");
+        password.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                passwordActionPerformed(evt);
+            }
+        });
         getContentPane().add(password, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 373, 200, 30));
 
         fondo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/fondo.jpg"))); // NOI18N
@@ -72,11 +79,25 @@ public class Interfaz extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
-        Principal p = new Principal();
-        p.setVisible(true);
-        this.dispose();
+       String usuario = user.getText();
+       String pass = new String(password.getPassword());
+    
+    ConexionCliente conexion = new ConexionCliente();
+    boolean loginOK = conexion.verificarCredenciales(usuario, pass);
+
+    if (loginOK) {
+        JOptionPane.showMessageDialog(this, "Acceso concedido");
+        new Principal().setVisible(true);
+        this.dispose(); // cierra esta ventana
+    } else {
+        JOptionPane.showMessageDialog(this, "Acceso denegado");
+    }
+    
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void passwordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_passwordActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_passwordActionPerformed
 
     /**
      * @param args the command line arguments
@@ -103,6 +124,7 @@ public class Interfaz extends javax.swing.JFrame {
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(Interfaz.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
         //</editor-fold>
 
         /* Create and display the form */
