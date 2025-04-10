@@ -9,6 +9,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.Socket;
+import java.io.PrintWriter;
 
 /**
  *
@@ -16,11 +18,15 @@ import java.net.URL;
  */
 public class ConexionCliente {
     
+    private Socket socket;
+    
     public void probarConexion() {
         try {
+            
+            /*
             URL url = new URL("http://localhost:49300/");
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("GET");
+            conn.setRequestMethod("GET");*
 
             int codigo = conn.getResponseCode();
 
@@ -30,7 +36,7 @@ public class ConexionCliente {
                 System.out.println("El backend respondió con código: " + codigo);
             }
 
-            conn.disconnect();
+            conn.disconnect();*/
         } catch (Exception e) {
             System.out.println("No se pudo conectar al backend");
             e.printStackTrace();
@@ -39,6 +45,7 @@ public class ConexionCliente {
     }
    public boolean verificarCredenciales(String usuario, String contrasena) {
     try {
+        /*
         URL url = new URL("http://localhost:49300/login");
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("POST");
@@ -66,7 +73,18 @@ public class ConexionCliente {
             }
         }
 
-        conn.disconnect();
+        conn.disconnect();*/
+        
+        socket = new Socket("localhost", 49300);
+        //Le envia al servidor el usuario y el password
+        PrintWriter salida = new PrintWriter(socket.getOutputStream(), true);
+        salida.println(usuario);
+        salida.println(contrasena);
+        
+        //El servidor le contesta si es correcto y se abre la ventana principal
+        BufferedReader entrada = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        return entrada.readLine().equals("ACCESO CONCEDIDO");
+            
     } catch (Exception e) {
         e.printStackTrace();
     }
