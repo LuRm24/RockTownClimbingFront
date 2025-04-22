@@ -29,43 +29,76 @@ public class Empleados extends javax.swing.JFrame {
         initComponents();
         cargarEmpleados();
     }
-
-    private void cargarEmpleados() {
+    
+    private void cargarDatosTabla(BufferedReader entrada) {
         try {
-            //Recuperar el socket por el que se conectó el cliente
-           Socket socket = ConexionCliente.getSocket();
-           //Le envia al servidor el tipo de peticion
-           PrintWriter salida = new PrintWriter(socket.getOutputStream(), true);
-           salida.println("CargarEmpleados");
-           
-            //El servidor le contesta con la lista de empleados
-            BufferedReader entrada = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            
-            // Parsear como JsonArray
-            JsonArray jsonArray = JsonParser.parseString(entrada.readLine()).getAsJsonArray();
-            
             //Definir las columnas de la tabla
             String[] columnas = {"Nombre", "Apellidos", "Direccion", "DNI", "Email", "Usuario", "Rol", "Id"};
             DefaultTableModel model = new DefaultTableModel(columnas, 0);
+            String datosLeidos = entrada.readLine();
             
-            //Recorrer el json e ir añadiendo las filas
-            for (int i = 0; i < jsonArray.size(); i++) {
-                JsonObject obj = jsonArray.get(i).getAsJsonObject();
-                
-                //Añadimos los datos de la fila en un array
-                String[] datos = {obj.get("nombre").getAsString(), obj.get("apellidos").getAsString(),
-                obj.get("direccion").getAsString(), obj.get("dni").getAsString(),
-                obj.get("email").getAsString(), obj.get("nombreUsuario").getAsString(),obj.get("rol").getAsString(),
-                obj.get("id").getAsString()};
-                //Al modelo le añadimos los datos como una fila
-                model.addRow(datos); 
+            //Si la entrada tiene datos
+            if (datosLeidos.equals("Datos vacios") == false){
+            
+                if (datosLeidos.startsWith("[")) {
+                    // Parsear como JsonArray
+                    JsonArray jsonArray = JsonParser.parseString(datosLeidos).getAsJsonArray();
+
+                    //Recorrer el json e ir añadiendo las filas
+                    for (int i = 0; i < jsonArray.size(); i++) {
+                        JsonObject obj = jsonArray.get(i).getAsJsonObject();
+
+                        //Añadimos los datos de la fila en un array
+                        String[] datos = {obj.get("nombre").getAsString(), obj.get("apellidos").getAsString(),
+                        obj.get("direccion").getAsString(), obj.get("dni").getAsString(),
+                        obj.get("email").getAsString(), obj.get("nombreUsuario").getAsString(),obj.get("rol").getAsString(),
+                        obj.get("id").getAsString()};
+                        //Al modelo le añadimos los datos como una fila
+                        model.addRow(datos); 
+                    }
+                }
+                else {
+                    JsonObject obj = JsonParser.parseString(datosLeidos).getAsJsonObject();
+
+                    //Añadimos los datos de la fila en un array
+                    String[] datos = {obj.get("nombre").getAsString(), obj.get("apellidos").getAsString(),
+                    obj.get("direccion").getAsString(), obj.get("dni").getAsString(),
+                    obj.get("email").getAsString(), obj.get("nombreUsuario").getAsString(),obj.get("rol").getAsString(),
+                    obj.get("id").getAsString()};
+                    //Al modelo le añadimos los datos como una fila
+                    model.addRow(datos); 
+                }
             }
+            
             //A la tabla se le asigna el modelo
             tablaEmpleados.setModel(model);
         }
         catch (IOException io){
             io.printStackTrace();
         }
+    }
+
+    private void cargarEmpleados() {
+        try {
+            //Recuperar el socket por el que se conectó el cliente
+            Socket socket = ConexionCliente.getSocket();
+            //Le envia al servidor el tipo de peticion
+            PrintWriter salida = new PrintWriter(socket.getOutputStream(), true);
+            salida.println("CargarEmpleados");
+           
+            //El servidor le contesta con la lista de empleados
+            BufferedReader entrada = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            cargarDatosTabla(entrada); 
+        }
+        catch (IOException io){
+            io.printStackTrace();
+        }
+    }
+    
+    private void limpiarBusqueda() {
+        TFDNI.setText("");
+        TFApellidos.setText("");
+        TFUsuario.setText("");
     }
     
     /**
@@ -85,11 +118,13 @@ public class Empleados extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
-        jTextField2 = new javax.swing.JTextField();
-        jTextField3 = new javax.swing.JTextField();
+        TFApellidos = new javax.swing.JTextField();
+        TFUsuario = new javax.swing.JTextField();
+        TFDNI = new javax.swing.JTextField();
         jButtonBaja1 = new javax.swing.JButton();
         jButtonBaja2 = new javax.swing.JButton();
+        jButtonRecargar = new javax.swing.JButton();
+        jButtonMenuPrinc = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -135,9 +170,30 @@ public class Empleados extends javax.swing.JFrame {
 
         jLabel4.setText("Apellido");
         jPanel1.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(520, 40, -1, -1));
-        jPanel1.add(jTextField1, new org.netbeans.lib.awtextra.AbsoluteConstraints(580, 40, 170, -1));
-        jPanel1.add(jTextField2, new org.netbeans.lib.awtextra.AbsoluteConstraints(580, 70, 170, -1));
-        jPanel1.add(jTextField3, new org.netbeans.lib.awtextra.AbsoluteConstraints(580, 10, 170, -1));
+
+        TFApellidos.setEnabled(false);
+        TFApellidos.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                TFApellidosMouseClicked(evt);
+            }
+        });
+        jPanel1.add(TFApellidos, new org.netbeans.lib.awtextra.AbsoluteConstraints(580, 40, 170, -1));
+
+        TFUsuario.setEnabled(false);
+        TFUsuario.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                TFUsuarioMouseClicked(evt);
+            }
+        });
+        jPanel1.add(TFUsuario, new org.netbeans.lib.awtextra.AbsoluteConstraints(580, 70, 170, -1));
+
+        TFDNI.setEnabled(false);
+        TFDNI.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                TFDNIMouseClicked(evt);
+            }
+        });
+        jPanel1.add(TFDNI, new org.netbeans.lib.awtextra.AbsoluteConstraints(580, 10, 170, -1));
 
         jButtonBaja1.setText("Eliminar empleado");
         jButtonBaja1.addActionListener(new java.awt.event.ActionListener() {
@@ -155,6 +211,22 @@ public class Empleados extends javax.swing.JFrame {
         });
         jPanel1.add(jButtonBaja2, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 20, -1, 30));
 
+        jButtonRecargar.setText("<--");
+        jButtonRecargar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonRecargarActionPerformed(evt);
+            }
+        });
+        jPanel1.add(jButtonRecargar, new org.netbeans.lib.awtextra.AbsoluteConstraints(680, 100, 70, -1));
+
+        jButtonMenuPrinc.setText("Menú Principal");
+        jButtonMenuPrinc.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonMenuPrincActionPerformed(evt);
+            }
+        });
+        jPanel1.add(jButtonMenuPrinc, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 80, -1, -1));
+
         getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 250, 770, 130));
 
         jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/FondoPrincipal.png"))); // NOI18N
@@ -166,6 +238,29 @@ public class Empleados extends javax.swing.JFrame {
 
     private void jButtonBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonBuscarActionPerformed
         // TODO add your handling code here:
+        if (TFDNI.getText().equals("") && TFApellidos.getText().equals("") && TFUsuario.getText().equals("")){
+            JOptionPane.showMessageDialog(this, "Introducir un parámetro de búsqueda");
+        }
+        else {
+            try {
+                //Recuperar el socket por el que se conectó el cliente
+                Socket socket = ConexionCliente.getSocket();
+                //Le envia al servidor el tipo de peticion
+                PrintWriter salida = new PrintWriter(socket.getOutputStream(), true);
+                salida.println("BuscarEmpleado");
+                //Le enviamos al servidor los datos;
+                salida.println(TFDNI.getText());
+                salida.println(TFApellidos.getText());
+                salida.println(TFUsuario.getText());
+                
+                //El servidor le contesta con la lista de empleados
+                BufferedReader entrada = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                cargarDatosTabla(entrada);
+            }
+            catch (IOException io) {
+                io.printStackTrace();
+            }
+        }
     }//GEN-LAST:event_jButtonBuscarActionPerformed
 
     private void jButtonBaja1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonBaja1ActionPerformed
@@ -179,19 +274,34 @@ public class Empleados extends javax.swing.JFrame {
         }
         else {
             try{
-                //Recuperar el socket por el que se conectó el cliente
-              Socket socket = ConexionCliente.getSocket();
-              //Le envia al servidor el tipo de peticion
-              PrintWriter salida = new PrintWriter(socket.getOutputStream(), true);
-              salida.println("EliminarEmpleado");
-              //Le enviamos al servidor los datos;
-              salida.println(tablaEmpleados.getValueAt(fila, 7));
+                //Pedir confirmación para el borrado
+                int opcion = JOptionPane.showConfirmDialog(this, "¿Deseas borrar el empleado?", "Confirmar borrado", JOptionPane.YES_NO_OPTION);
+                
+                if (opcion == 0){
+                
+                    //Recuperar el socket por el que se conectó el cliente
+                    Socket socket = ConexionCliente.getSocket();
+                    //Le envia al servidor el tipo de peticion
+                    PrintWriter salida = new PrintWriter(socket.getOutputStream(), true);
+                    salida.println("EliminarEmpleado");
+                    //Le enviamos al servidor los datos;
+                    salida.println(tablaEmpleados.getValueAt(fila, 7));
+
+                   //El servidor le contesta si ha podido eliminar el empleado y se abre la ventana principal
+                    BufferedReader entrada = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+
+                    if (entrada.readLine().equals("true")) {
+                        JOptionPane.showMessageDialog(this, "Empleado eliminado correctamente");
+                        cargarEmpleados();
+                        
+                    } else {
+                        JOptionPane.showMessageDialog(this, "Error al eliminar el empleado");
+                    }
+                }
             }
             catch (IOException io) {
                 io.printStackTrace();
             }
-          
-          
         }
     }//GEN-LAST:event_jButtonBaja1ActionPerformed
 
@@ -204,6 +314,42 @@ public class Empleados extends javax.swing.JFrame {
         altaEmp.setVisible(true);
         this.dispose();
     }//GEN-LAST:event_jButtonAltaActionPerformed
+
+    private void TFDNIMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_TFDNIMouseClicked
+        // TODO add your handling code here:
+        TFDNI.setEnabled(true);
+        TFApellidos.setEnabled(false);
+        TFUsuario.setEnabled(false);
+        limpiarBusqueda();
+    }//GEN-LAST:event_TFDNIMouseClicked
+
+    private void TFApellidosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_TFApellidosMouseClicked
+        // TODO add your handling code here:
+        TFDNI.setEnabled(false);
+        TFApellidos.setEnabled(true);
+        TFUsuario.setEnabled(false);
+        limpiarBusqueda();
+    }//GEN-LAST:event_TFApellidosMouseClicked
+
+    private void TFUsuarioMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_TFUsuarioMouseClicked
+        // TODO add your handling code here:
+        TFDNI.setEnabled(false);
+        TFApellidos.setEnabled(false);
+        TFUsuario.setEnabled(true);
+        limpiarBusqueda();
+    }//GEN-LAST:event_TFUsuarioMouseClicked
+
+    private void jButtonRecargarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonRecargarActionPerformed
+        // TODO add your handling code here:
+        cargarEmpleados();
+    }//GEN-LAST:event_jButtonRecargarActionPerformed
+
+    private void jButtonMenuPrincActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonMenuPrincActionPerformed
+        // TODO add your handling code here:
+        Principal p = new Principal();
+        p.setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_jButtonMenuPrincActionPerformed
 
     /**
      * @param args the command line arguments
@@ -244,19 +390,21 @@ public class Empleados extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JTextField TFApellidos;
+    private javax.swing.JTextField TFDNI;
+    private javax.swing.JTextField TFUsuario;
     private javax.swing.JButton jButtonAlta;
     private javax.swing.JButton jButtonBaja1;
     private javax.swing.JButton jButtonBaja2;
     private javax.swing.JButton jButtonBuscar;
+    private javax.swing.JButton jButtonMenuPrinc;
+    private javax.swing.JButton jButtonRecargar;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextField jTextField2;
-    private javax.swing.JTextField jTextField3;
     private javax.swing.JTable tablaEmpleados;
     // End of variables declaration//GEN-END:variables
 }

@@ -4,6 +4,13 @@
  */
 package ventanas;
 
+import conexion.ConexionCliente;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.Socket;
+
 /**
  *
  * @author luciarodriguezmartin
@@ -16,6 +23,37 @@ public class Principal extends javax.swing.JFrame {
     public Principal() {
         initComponents();
         this.setLocationRelativeTo(null);
+        cargarRecordatorios();
+    }
+    
+    private void cargarRecordatorios() {
+         try {
+            //Recuperar el socket por el que se conectó el cliente
+            Socket socket = ConexionCliente.getSocket();
+            //Le envia al servidor el tipo de peticion
+            PrintWriter salida = new PrintWriter(socket.getOutputStream(), true);
+            salida.println("CargarRecordatorios");
+            
+            //Enviar usuario que está conectado
+            salida.println(Interfaz.ID_EMP);
+           
+            //El servidor le contesta con la lista de empleados
+            BufferedReader entrada = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            cargarRecordatoriosLista(entrada);
+            
+        }
+        catch (IOException io){
+            io.printStackTrace();
+        }
+    }
+    
+    private void cargarRecordatoriosLista(BufferedReader entrada){
+        try {
+           System.out.println(entrada.readLine()); 
+        }
+        catch (IOException io){
+            io.printStackTrace();
+        }
     }
 
     /**

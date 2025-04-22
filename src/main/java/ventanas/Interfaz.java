@@ -13,6 +13,8 @@ import javax.swing.JOptionPane;
  */
 public class Interfaz extends javax.swing.JFrame {
 
+    public static Long ID_EMP = -1L;
+ 
     /**
      * Creates new form Interfaz
      */
@@ -83,9 +85,9 @@ public class Interfaz extends javax.swing.JFrame {
        String pass = new String(password.getPassword());
     
     ConexionCliente conexion = new ConexionCliente();
-    boolean loginOK = conexion.verificarCredenciales(usuario, pass);
+    ID_EMP = conexion.verificarCredenciales(usuario, pass);
 
-    if (loginOK) {
+    if (ID_EMP != -1L) {
         JOptionPane.showMessageDialog(this, "Acceso concedido");
         new Principal().setVisible(true);
         this.dispose(); // cierra esta ventana

@@ -21,7 +21,7 @@ public class ConexionCliente {
     
     private static Socket socket;
     
-    public boolean verificarCredenciales(String usuario, String contrasena) {
+    public Long verificarCredenciales(String usuario, String contrasena) {
         try {
             socket = new Socket("localhost", 49300);
             //Le envia al servidor el usuario y el password
@@ -33,12 +33,12 @@ public class ConexionCliente {
 
             //El servidor le contesta si es correcto y se abre la ventana principal
             BufferedReader entrada = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            return entrada.readLine().equals("true");
+            return Long.parseLong(entrada.readLine());
             
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return false;
+        return -1L;
     }
     
     public static Socket getSocket() {
