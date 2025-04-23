@@ -4,12 +4,14 @@
  */
 package ventanas;
 
-import conexion.ConexionCliente;
+import DTO.Recordatorio;
+import com.google.gson.Gson;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.net.Socket;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.List;
 
 /**
  *
@@ -27,24 +29,35 @@ public class Principal extends javax.swing.JFrame {
     }
     
     private void cargarRecordatorios() {
-         try {
-            //Recuperar el socket por el que se conectó el cliente
-            Socket socket = ConexionCliente.getSocket();
-            //Le envia al servidor el tipo de peticion
-            PrintWriter salida = new PrintWriter(socket.getOutputStream(), true);
-            salida.println("CargarRecordatorios");
-            
-            //Enviar usuario que está conectado
-            salida.println(Interfaz.ID_EMP);
+            try {
+           // Suponiendo que tienes acceso al ID del empleado conectado
+           Long idEmpleado = Interfaz.ID_EMP; // o usa tu variable local
+
+           URL url = new URL("http://localhost:8080/recordatorio/find-by-emp?empleadoId=" + idEmpleado);
+           HttpURLConnection con = (HttpURLConnection) url.openConnection();
+           con.setRequestMethod("GET");
+
+           BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream(), "utf-8"));
+           StringBuilder jsonBuilder = new StringBuilder();
+           String line;
+           while ((line = br.readLine()) != null) {
+               jsonBuilder.append(line);
+           }
+           String json = jsonBuilder.toString();
+
            
-            //El servidor le contesta con la lista de empleados
-            BufferedReader entrada = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            cargarRecordatoriosLista(entrada);
-            
-        }
-        catch (IOException io){
-            io.printStackTrace();
-        }
+        java.lang.reflect.Type listType = new com.google.gson.reflect.TypeToken<List<Recordatorio>>(){}.getType();
+        List<Recordatorio> recordatorios = new Gson().fromJson(json, listType);
+           // Mostrar los recordatorios en el jTextArea
+           jTextArea1.setText(""); // Limpia primero
+           for (Recordatorio r : recordatorios) {
+               jTextArea1.append("• " + r.getMensaje() + "\n");
+           }
+
+       } catch (Exception e) {
+           e.printStackTrace();
+           jTextArea1.setText("Error al cargar los recordatorios.");
+       }
     }
     
     private void cargarRecordatoriosLista(BufferedReader entrada){

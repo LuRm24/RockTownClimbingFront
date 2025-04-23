@@ -4,7 +4,9 @@
  */
 package ventanas;
 
-import conexion.ConexionCliente;
+import DTO.Empleado;
+import com.google.gson.Gson;
+import conexion.LoginService;
 import javax.swing.JOptionPane;
 
 /**
@@ -84,16 +86,19 @@ public class Interfaz extends javax.swing.JFrame {
        String usuario = user.getText();
        String pass = new String(password.getPassword());
     
-    ConexionCliente conexion = new ConexionCliente();
-    ID_EMP = conexion.verificarCredenciales(usuario, pass);
+                LoginService loginService = new LoginService();
+         String respuesta = loginService.login(usuario, pass);
 
-    if (ID_EMP != -1L) {
-        JOptionPane.showMessageDialog(this, "Acceso concedido");
-        new Principal().setVisible(true);
-        this.dispose(); // cierra esta ventana
-    } else {
-        JOptionPane.showMessageDialog(this, "Acceso denegado");
-    }
+         // Si la respuesta es solo texto (no JSON), no usar Gson:
+         if (respuesta.equals("ACCESO CONCEDIDO")) {
+             ID_EMP = 1L; // o el ID real si decides incluirlo después
+             JOptionPane.showMessageDialog(this, "Acceso concedido");
+             new Principal().setVisible(true);
+             this.dispose();
+         } else {
+             JOptionPane.showMessageDialog(this, "Acceso denegado");
+         }
+
     
     }//GEN-LAST:event_jButton1ActionPerformed
 

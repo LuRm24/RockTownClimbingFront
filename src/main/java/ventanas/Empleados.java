@@ -4,15 +4,22 @@
  */
 package ventanas;
 
-import conexion.ConexionCliente;
+
+import DTO.Empleado;
+import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
 import java.io.BufferedReader;
-import java.io.PrintWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.Socket;
+import java.io.OutputStream;
+import java.io.StringReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
@@ -35,8 +42,13 @@ public class Empleados extends javax.swing.JFrame {
             //Definir las columnas de la tabla
             String[] columnas = {"Nombre", "Apellidos", "Direccion", "DNI", "Email", "Usuario", "Rol", "Id"};
             DefaultTableModel model = new DefaultTableModel(columnas, 0);
-            String datosLeidos = entrada.readLine();
-            
+            String datosLeidos = "";
+       
+
+            String linea;
+            while ((linea = entrada.readLine()) != null) {
+            datosLeidos += linea;
+            }
             //Si la entrada tiene datos
             if (datosLeidos.equals("Datos vacios") == false){
             
@@ -47,6 +59,8 @@ public class Empleados extends javax.swing.JFrame {
                     //Recorrer el json e ir añadiendo las filas
                     for (int i = 0; i < jsonArray.size(); i++) {
                         JsonObject obj = jsonArray.get(i).getAsJsonObject();
+                   
+
 
                         //Añadimos los datos de la fila en un array
                         String[] datos = {obj.get("nombre").getAsString(), obj.get("apellidos").getAsString(),
@@ -72,6 +86,8 @@ public class Empleados extends javax.swing.JFrame {
             
             //A la tabla se le asigna el modelo
             tablaEmpleados.setModel(model);
+      
+
         }
         catch (IOException io){
             io.printStackTrace();
@@ -80,21 +96,33 @@ public class Empleados extends javax.swing.JFrame {
 
     private void cargarEmpleados() {
         try {
-            //Recuperar el socket por el que se conectó el cliente
-            Socket socket = ConexionCliente.getSocket();
-            //Le envia al servidor el tipo de peticion
-            PrintWriter salida = new PrintWriter(socket.getOutputStream(), true);
-            salida.println("CargarEmpleados");
-           
-            //El servidor le contesta con la lista de empleados
-            BufferedReader entrada = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            cargarDatosTabla(entrada); 
-        }
-        catch (IOException io){
-            io.printStackTrace();
-        }
+        URL url = new URL("http://localhost:8080/empleado/select-all");
+        HttpURLConnection con = (HttpURLConnection) url.openConnection();
+        con.setRequestMethod("GET");
+
+        BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream(), "utf-8"));
+
+        // Aquí usamos el método que ya tienes hecho para cargar datos en la tabla
+        cargarDatosTabla(br);
+
+    } catch (IOException io) {
+        io.printStackTrace();
+    }
     }
     
+    private String[] extraerDatosEmpleado(JsonObject obj) {
+    return new String[]{
+        obj.get("nombre").getAsString(),
+        obj.get("apellidos").getAsString(),
+        obj.get("direccion").getAsString(),
+        obj.get("dni").getAsString(),
+        obj.get("email").getAsString(),
+        obj.get("nombreUsuario").getAsString(),
+        obj.get("rol").getAsString(),
+        obj.get("id").getAsString()
+    };
+}
+ 
     private void limpiarBusqueda() {
         TFDNI.setText("");
         TFApellidos.setText("");
@@ -141,7 +169,7 @@ public class Empleados extends javax.swing.JFrame {
         tablaEmpleados.setOpaque(false);
         jScrollPane1.setViewportView(tablaEmpleados);
 
-        getContentPane().add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 20, 770, 220));
+        getContentPane().add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 20, 770, 230));
 
         jPanel1.setOpaque(false);
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -238,71 +266,92 @@ public class Empleados extends javax.swing.JFrame {
 
     private void jButtonBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonBuscarActionPerformed
         // TODO add your handling code here:
-        if (TFDNI.getText().equals("") && TFApellidos.getText().equals("") && TFUsuario.getText().equals("")){
-            JOptionPane.showMessageDialog(this, "Introducir un parámetro de búsqueda");
-        }
-        else {
-            try {
-                //Recuperar el socket por el que se conectó el cliente
-                Socket socket = ConexionCliente.getSocket();
-                //Le envia al servidor el tipo de peticion
-                PrintWriter salida = new PrintWriter(socket.getOutputStream(), true);
-                salida.println("BuscarEmpleado");
-                //Le enviamos al servidor los datos;
-                salida.println(TFDNI.getText());
-                salida.println(TFApellidos.getText());
-                salida.println(TFUsuario.getText());
-                
-                //El servidor le contesta con la lista de empleados
-                BufferedReader entrada = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                cargarDatosTabla(entrada);
+                try {
+                String dni = TFDNI.getText().trim();
+                String apellidos = TFApellidos.getText().trim();
+                String usuario = TFUsuario.getText().trim();
+
+                StringBuilder queryBuilder = new StringBuilder("http://localhost:8080/empleado/find-employee?");
+                boolean hasParams = false;
+
+                if (!dni.isEmpty()) {
+                    queryBuilder.append("dni=").append(URLEncoder.encode(dni, "UTF-8"));
+                    hasParams = true;
+                }
+
+                if (!apellidos.isEmpty()) {
+                    if (hasParams) queryBuilder.append("&");
+                    queryBuilder.append("apellidos=").append(URLEncoder.encode(apellidos, "UTF-8"));
+                    hasParams = true;
+                }
+
+                if (!usuario.isEmpty()) {
+                    if (hasParams) queryBuilder.append("&");
+                    queryBuilder.append("nombreUsuario=").append(URLEncoder.encode(usuario, "UTF-8"));
+                }
+
+                URL url = new URL(queryBuilder.toString());
+                HttpURLConnection con = (HttpURLConnection) url.openConnection();
+                con.setRequestMethod("GET");
+
+                int responseCode = con.getResponseCode();
+                if (responseCode == HttpURLConnection.HTTP_OK) {
+                    try (BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()))) {
+                        String linea;
+                        StringBuilder datosLeidos = new StringBuilder();
+                        while ((linea = in.readLine()) != null) {
+                            datosLeidos.append(linea);
+                        }
+
+                        String json = datosLeidos.toString();
+                        if (json.equals("[]")) {
+                            JOptionPane.showMessageDialog(this, "No se encontraron empleados.");
+                            tablaEmpleados.setModel(new DefaultTableModel(new String[]{"Nombre", "Apellidos", "Direccion", "DNI", "Email", "Usuario", "Rol", "Id"}, 0));
+                        } else {
+                            cargarDatosTabla(new BufferedReader(new StringReader(json)));
+                        }
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(this, "Error al obtener los datos");
+                }
+
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Error en la búsqueda: " + ex.getMessage());
             }
-            catch (IOException io) {
-                io.printStackTrace();
-            }
-        }
     }//GEN-LAST:event_jButtonBuscarActionPerformed
 
     private void jButtonBaja1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonBaja1ActionPerformed
         // TODO add your handling code here:
-        //Guardamos la fila seleccionada
-        int fila = tablaEmpleados.getSelectedRow();
-        
-        //Si no se selecciona ninguna fila
-        if (fila == -1) {
-            JOptionPane.showMessageDialog(this, "Seleccionar empleado a eliminar");
-        }
-        else {
-            try{
-                //Pedir confirmación para el borrado
-                int opcion = JOptionPane.showConfirmDialog(this, "¿Deseas borrar el empleado?", "Confirmar borrado", JOptionPane.YES_NO_OPTION);
-                
-                if (opcion == 0){
-                
-                    //Recuperar el socket por el que se conectó el cliente
-                    Socket socket = ConexionCliente.getSocket();
-                    //Le envia al servidor el tipo de peticion
-                    PrintWriter salida = new PrintWriter(socket.getOutputStream(), true);
-                    salida.println("EliminarEmpleado");
-                    //Le enviamos al servidor los datos;
-                    salida.println(tablaEmpleados.getValueAt(fila, 7));
+            int fila = tablaEmpleados.getSelectedRow();
 
-                   //El servidor le contesta si ha podido eliminar el empleado y se abre la ventana principal
-                    BufferedReader entrada = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+         if (fila == -1) {
+             JOptionPane.showMessageDialog(this, "Seleccionar empleado a eliminar");
+             return;
+         }
 
-                    if (entrada.readLine().equals("true")) {
-                        JOptionPane.showMessageDialog(this, "Empleado eliminado correctamente");
-                        cargarEmpleados();
-                        
-                    } else {
-                        JOptionPane.showMessageDialog(this, "Error al eliminar el empleado");
-                    }
+         int confirmacion = JOptionPane.showConfirmDialog(this, "¿Deseas borrar el empleado?", "Confirmar borrado", JOptionPane.YES_NO_OPTION);
+         if (confirmacion != JOptionPane.YES_OPTION) return;
+
+         try {
+               Long id = Long.parseLong((String) tablaEmpleados.getValueAt(fila, 7));
+                URL url = new URL("http://localhost:8080/empleado/" + id);
+                HttpURLConnection con = (HttpURLConnection) url.openConnection();
+                con.setRequestMethod("DELETE");
+                con.connect();
+
+                int responseCode = con.getResponseCode();
+                if (responseCode == HttpURLConnection.HTTP_OK) {
+                    JOptionPane.showMessageDialog(this, "Empleado eliminado correctamente");
+                    cargarEmpleados();
+                } else {
+                    JOptionPane.showMessageDialog(this, "Error al eliminar el empleado. Código: " + responseCode);
                 }
-            }
-            catch (IOException io) {
-                io.printStackTrace();
-            }
-        }
+
+         } catch (Exception ex) {
+             ex.printStackTrace();
+             JOptionPane.showMessageDialog(this, "Error en la operación: " + ex.getMessage());
+         }
     }//GEN-LAST:event_jButtonBaja1ActionPerformed
 
     private void jButtonBaja2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonBaja2ActionPerformed

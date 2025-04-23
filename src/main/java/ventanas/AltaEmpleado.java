@@ -4,11 +4,11 @@
  */
 package ventanas;
 
-import conexion.ConexionCliente;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.net.Socket;
+import DTO.Empleado;
+import com.google.gson.Gson;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import javax.swing.JOptionPane;
 
 /**
@@ -133,39 +133,52 @@ public class AltaEmpleado extends javax.swing.JFrame {
             
             if (TFDNI.getText().isEmpty() || TFNombre.getText().isEmpty()){
                 JOptionPane.showMessageDialog(this, "No se han cumplimentado todos los campos", "Error campos obligatorios", JOptionPane.WARNING_MESSAGE);
-            }
-            else {
-                //Recuperar el socket por el que se conectó el cliente
-                Socket socket = ConexionCliente.getSocket();
-                //Le envia al servidor el tipo de peticion
-                PrintWriter salida = new PrintWriter(socket.getOutputStream(), true);
-                salida.println("AltaEmpleado");
-                //Le enviamos al servidor los datos;
-                salida.println(TFDNI.getText());
-                salida.println(TFNombre.getText());
-                salida.println(TFApellido.getText());
-                salida.println(TFDireccion.getText());
-                salida.println(TFRol.getText());
-                salida.println(TFUsuario.getText());
-                salida.println(TFEmail.getText());
-                salida.println(String.valueOf(PFContrasena.getPassword()));
-                
-                 //El servidor le contesta si ha podido insertar el empleado y se abre la ventana principal
-                BufferedReader entrada = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            return;
+    }
 
-                if (entrada.readLine().equals("true")) {
-                    JOptionPane.showMessageDialog(this, "Empleado insertado correctamente");
-                    Empleados emp = new Empleados();
-                    emp.setVisible(true);
-                    this.dispose();
-                } else {
-                    JOptionPane.showMessageDialog(this, "Error al insertar el empleado");
-                }
+            // Construir objeto Empleado
+            Empleado nuevoEmpleado = new Empleado();
+            nuevoEmpleado.setDni(TFDNI.getText());
+            nuevoEmpleado.setNombre(TFNombre.getText());
+            nuevoEmpleado.setApellidos(TFApellido.getText());
+            nuevoEmpleado.setDireccion(TFDireccion.getText());
+            nuevoEmpleado.setRol(TFRol.getText());
+            nuevoEmpleado.setNombreUsuario(TFUsuario.getText());
+            nuevoEmpleado.setEmail(TFEmail.getText());
+            nuevoEmpleado.setPassword(String.valueOf(PFContrasena.getPassword()));
+
+            // Serializar a JSON
+            String json = new Gson().toJson(nuevoEmpleado);
+
+            // Crear conexión HTTP
+            URL url = new URL("http://localhost:8080/empleado/insert");
+            HttpURLConnection con = (HttpURLConnection) url.openConnection();
+            con.setRequestMethod("POST");
+            con.setDoOutput(true);
+            con.setRequestProperty("Content-Type", "application/json");
+
+            // Enviar datos al servidor
+            try (OutputStream os = con.getOutputStream()) {
+                byte[] input = json.getBytes("utf-8");
+                os.write(input, 0, input.length);
             }
-            
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+
+            int responseCode = con.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                JOptionPane.showMessageDialog(this, "Empleado insertado correctamente");
+                Empleados emp = new Empleados();
+                emp.setVisible(true);
+                this.dispose();
+            } else {
+                JOptionPane.showMessageDialog(this, "Error al insertar el empleado");
+            }
+
+} catch (Exception e) {
+    e.printStackTrace();
+    JOptionPane.showMessageDialog(this, "Error de conexión: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+}
+
+
     }//GEN-LAST:event_jButton2ActionPerformed
 
     /**
