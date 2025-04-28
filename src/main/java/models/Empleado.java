@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package DTO;
+package models;
 
 public class Empleado {
     private String dni;
@@ -12,8 +12,9 @@ public class Empleado {
     private String rol;
     private String nombreUsuario;
     private String email;
-    private String password;
+    private String contrasenaHash;
     private Long id;
+    private String telefono;
 
     // Getters y setters como vimos antes
     public String getDni() { return dni; }
@@ -37,9 +38,12 @@ public class Empleado {
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
 
-    public String getPassword() { return password; }
-    public void setPassword(String password) { this.password = password; }
+    public String getContrasenaHash() { return contrasenaHash; }
+    public void setContrasenaHash(String contrasenaHash) { this.contrasenaHash = contrasenaHash; }
     
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
+
+    public String getTelefono() {return telefono; }
+    public void setTelefono(String telefono) {this.telefono = telefono;} 
 }

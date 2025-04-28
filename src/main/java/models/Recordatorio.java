@@ -2,14 +2,13 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package DTO;
+package models;
 
 
 public class Recordatorio {
     private Long id;
-    private String mensaje;
-    private String fecha;
-    private Long empleadoId;
+    private String texto;
+    private Empleado empleado;
 
     // Getters y setters
     public Long getId() {
@@ -20,28 +19,20 @@ public class Recordatorio {
         this.id = id;
     }
 
-    public String getMensaje() {
-        return mensaje;
+    public String getTexto() {
+        return texto;
     }
 
-    public void setMensaje(String mensaje) {
-        this.mensaje = mensaje;
+    public void setTexto(String texto) {
+        this.texto = texto;
     }
 
-    public String getFecha() {
-        return fecha;
+    public Empleado getEmpleado() {
+        return empleado;
     }
 
-    public void setFecha(String fecha) {
-        this.fecha = fecha;
-    }
-
-    public Long getEmpleadoId() {
-        return empleadoId;
-    }
-
-    public void setEmpleadoId(Long empleadoId) {
-        this.empleadoId = empleadoId;
+    public void setEmpleado(Empleado empleado) {
+        this.empleado = empleado;
     }
 }
 

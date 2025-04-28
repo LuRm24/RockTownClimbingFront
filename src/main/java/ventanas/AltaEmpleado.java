@@ -4,12 +4,13 @@
  */
 package ventanas;
 
-import DTO.Empleado;
+import models.Empleado;
 import com.google.gson.Gson;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import javax.swing.JOptionPane;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 /**
  *
@@ -38,7 +39,6 @@ public class AltaEmpleado extends javax.swing.JFrame {
         jLabel3 = new javax.swing.JLabel();
         TFDNI = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
-        TFRol = new javax.swing.JTextField();
         LbContrasena = new javax.swing.JLabel();
         TFDireccion = new javax.swing.JTextField();
         TFApellido = new javax.swing.JTextField();
@@ -48,11 +48,14 @@ public class AltaEmpleado extends javax.swing.JFrame {
         jLabel9 = new javax.swing.JLabel();
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
-        TFNombre = new javax.swing.JTextField();
+        TFTelefono = new javax.swing.JTextField();
         TFEmail = new javax.swing.JTextField();
         TFUsuario = new javax.swing.JTextField();
         jLabel10 = new javax.swing.JLabel();
         PFContrasena = new javax.swing.JPasswordField();
+        LbContrasena1 = new javax.swing.JLabel();
+        TFNombre = new javax.swing.JTextField();
+        CBRol = new javax.swing.JComboBox<>();
         jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -72,7 +75,6 @@ public class AltaEmpleado extends javax.swing.JFrame {
 
         jLabel4.setText("Nombre");
         jPanel1.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 60, -1, -1));
-        jPanel1.add(TFRol, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 180, 300, -1));
 
         LbContrasena.setText("Contraseña");
         jPanel1.add(LbContrasena, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 310, -1, -1));
@@ -97,7 +99,7 @@ public class AltaEmpleado extends javax.swing.JFrame {
                 jButton1ActionPerformed(evt);
             }
         });
-        jPanel1.add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 350, -1, -1));
+        jPanel1.add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 420, -1, -1));
 
         jButton2.setText("Añadir");
         jButton2.addActionListener(new java.awt.event.ActionListener() {
@@ -105,8 +107,8 @@ public class AltaEmpleado extends javax.swing.JFrame {
                 jButton2ActionPerformed(evt);
             }
         });
-        jPanel1.add(jButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 350, -1, -1));
-        jPanel1.add(TFNombre, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 60, 170, -1));
+        jPanel1.add(jButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 420, -1, -1));
+        jPanel1.add(TFTelefono, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 360, 170, -1));
         jPanel1.add(TFEmail, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 260, 300, -1));
         jPanel1.add(TFUsuario, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 220, 300, -1));
 
@@ -114,11 +116,18 @@ public class AltaEmpleado extends javax.swing.JFrame {
         jPanel1.add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 270, -1, -1));
         jPanel1.add(PFContrasena, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 310, 190, -1));
 
-        getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 90, 470, 390));
+        LbContrasena1.setText("Teléfono");
+        jPanel1.add(LbContrasena1, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 360, -1, -1));
+        jPanel1.add(TFNombre, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 60, 170, -1));
+
+        CBRol.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "ADMINISTRADOR", "USUARIO" }));
+        jPanel1.add(CBRol, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 180, 230, -1));
+
+        getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 90, 470, 480));
 
         jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/FondoPrincipal.png"))); // NOI18N
         jLabel1.setPreferredSize(new java.awt.Dimension(500, 600));
-        getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 540, 490));
+        getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 540, 580));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -142,10 +151,16 @@ public class AltaEmpleado extends javax.swing.JFrame {
             nuevoEmpleado.setNombre(TFNombre.getText());
             nuevoEmpleado.setApellidos(TFApellido.getText());
             nuevoEmpleado.setDireccion(TFDireccion.getText());
-            nuevoEmpleado.setRol(TFRol.getText());
+            nuevoEmpleado.setRol(String.valueOf(CBRol.getSelectedItem()));
             nuevoEmpleado.setNombreUsuario(TFUsuario.getText());
             nuevoEmpleado.setEmail(TFEmail.getText());
-            nuevoEmpleado.setPassword(String.valueOf(PFContrasena.getPassword()));
+            BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+            String password = String.valueOf(PFContrasena.getPassword());
+            // Codificar la contraseña
+            String encodedPassword = passwordEncoder.encode(password);
+            // Guardarla en el empleado
+            nuevoEmpleado.setContrasenaHash(encodedPassword);
+            nuevoEmpleado.setTelefono(TFTelefono.getText());
 
             // Serializar a JSON
             String json = new Gson().toJson(nuevoEmpleado);
@@ -220,14 +235,16 @@ public class AltaEmpleado extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JComboBox<String> CBRol;
     private javax.swing.JLabel LbContrasena;
+    private javax.swing.JLabel LbContrasena1;
     private javax.swing.JPasswordField PFContrasena;
     private javax.swing.JTextField TFApellido;
     private javax.swing.JTextField TFDNI;
     private javax.swing.JTextField TFDireccion;
     private javax.swing.JTextField TFEmail;
     private javax.swing.JTextField TFNombre;
-    private javax.swing.JTextField TFRol;
+    private javax.swing.JTextField TFTelefono;
     private javax.swing.JTextField TFUsuario;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;

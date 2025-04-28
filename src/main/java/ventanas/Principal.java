@@ -4,14 +4,17 @@
  */
 package ventanas;
 
-import DTO.Recordatorio;
+import models.Recordatorio;
 import com.google.gson.Gson;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.List;
+import javax.swing.JOptionPane;
+import models.Empleado;
 
 /**
  *
@@ -19,17 +22,67 @@ import java.util.List;
  */
 public class Principal extends javax.swing.JFrame {
 
+    private List<Recordatorio> recordatorios;
+    private int lineasInicio;
+    private int lineasFinal;
+    private Empleado emp;
+    
     /**
      * Creates new form Principal
      */
     public Principal() {
+        this.emp=emp;
         initComponents();
         this.setLocationRelativeTo(null);
+        cargarUsuarioLogueado();
         cargarRecordatorios();
+        habilitarPermisos();
+    }
+    
+    private void habilitarPermisos() {
+      
+        if (emp != null) {
+            boolean esAdmin = "ADMINISTRADOR".equalsIgnoreCase(emp.getRol());
+            empleados.setEnabled(esAdmin); // Si es admin, lo habilitas, si no, lo desactivas
+        } else {
+            empleados.setEnabled(false); // Si no hay empleado, no dejamos usar el botón
+        }
+    } 
+    
+    
+    private void cargarUsuarioLogueado() {
+
+        try {
+            //Buscar el empleado Logueado para asignarle los recordatorios nuevos
+            URL url = new URL("http://localhost:8080/empleado/find?id=" + Interfaz.ID_EMP);
+            HttpURLConnection con = (HttpURLConnection) url.openConnection();
+            con.setRequestMethod("GET");
+
+            int responseCode = con.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                try (BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()))) {
+                    String linea;
+                    StringBuilder datosLeidos = new StringBuilder();
+                    while ((linea = in.readLine()) != null) {
+                        datosLeidos.append(linea);
+                    }
+
+                    String json = datosLeidos.toString();
+                    Gson gson = new Gson();
+                    emp = gson.fromJson(json, Empleado.class);
+                }
+                catch (IOException io) {
+                    io.printStackTrace();
+                }
+            }
+        }
+        catch (IOException io) {
+           io.printStackTrace();
+        }
     }
     
     private void cargarRecordatorios() {
-            try {
+        try {
            // Suponiendo que tienes acceso al ID del empleado conectado
            Long idEmpleado = Interfaz.ID_EMP; // o usa tu variable local
 
@@ -46,18 +99,22 @@ public class Principal extends javax.swing.JFrame {
            String json = jsonBuilder.toString();
 
            
-        java.lang.reflect.Type listType = new com.google.gson.reflect.TypeToken<List<Recordatorio>>(){}.getType();
-        List<Recordatorio> recordatorios = new Gson().fromJson(json, listType);
-           // Mostrar los recordatorios en el jTextArea
-           jTextArea1.setText(""); // Limpia primero
-           for (Recordatorio r : recordatorios) {
-               jTextArea1.append("• " + r.getMensaje() + "\n");
-           }
+            java.lang.reflect.Type listType = new com.google.gson.reflect.TypeToken<List<Recordatorio>>(){}.getType();
+            recordatorios = new Gson().fromJson(json, listType);
+            
+            // Mostrar los recordatorios en el jTextArea
+            jTextArea1.setText(""); 
+            
+            for (Recordatorio r : recordatorios) {
+                jTextArea1.append("• " + r.getTexto()+ "\n");
+            }
+            
+            lineasInicio = jTextArea1.getLineCount() - 1;
 
-       } catch (Exception e) {
-           e.printStackTrace();
-           jTextArea1.setText("Error al cargar los recordatorios.");
-       }
+        } catch (Exception e) {
+            e.printStackTrace();
+            jTextArea1.setText("Error al cargar los recordatorios.");
+        }
     }
     
     private void cargarRecordatoriosLista(BufferedReader entrada){
@@ -89,8 +146,8 @@ public class Principal extends javax.swing.JFrame {
         jLabel14 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTextArea1 = new javax.swing.JTextArea();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
+        jButtonGuardar = new javax.swing.JButton();
+        jButtonBorrar = new javax.swing.JButton();
         jLabel1Fondo = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -197,16 +254,21 @@ public class Principal extends javax.swing.JFrame {
 
         jPanel3.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 50, 310, 140));
 
-        jButton1.setText("Guardar");
-        jPanel3.add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 210, 120, 30));
-
-        jButton2.setText("Borrar");
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
+        jButtonGuardar.setText("Guardar");
+        jButtonGuardar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
+                jButtonGuardarActionPerformed(evt);
             }
         });
-        jPanel3.add(jButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 210, 120, 30));
+        jPanel3.add(jButtonGuardar, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 210, 120, 30));
+
+        jButtonBorrar.setText("Borrar Todos");
+        jButtonBorrar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonBorrarActionPerformed(evt);
+            }
+        });
+        jPanel3.add(jButtonBorrar, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 210, 170, 30));
 
         getContentPane().add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 130, 370, 260));
 
@@ -225,14 +287,42 @@ public class Principal extends javax.swing.JFrame {
 
     private void empleadosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_empleadosMouseClicked
         // TODO add your handling code here:
-        Empleados e = new Empleados();
-        e.setVisible(true);
+        if (empleados.isEnabled()) {
+        Empleados empleadosVentana = new Empleados();
+        empleadosVentana.setVisible(true);
         this.dispose();
+        }
     }//GEN-LAST:event_empleadosMouseClicked
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+    private void jButtonBorrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonBorrarActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jButton2ActionPerformed
+        try {
+                int opcion = JOptionPane.showConfirmDialog(this, "¿Está seguro de eliminar los recordatorios?", 
+                        "Confirmación", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+                
+                //0 => Si, 1 => No
+                if (opcion == 0) {
+                    // Crear conexión HTTP
+                    URL url = new URL("http://localhost:8080/recordatorio/delete");
+                    HttpURLConnection con = (HttpURLConnection) url.openConnection();
+                    con.setRequestMethod("DELETE");
+                    con.setDoOutput(true);
+                    con.setRequestProperty("Content-Type", "application/json");
+
+                    int responseCode = con.getResponseCode();
+                    //Si la respuesta no ha ido bien, indicamos que ha habido un error
+                    if (responseCode == HttpURLConnection.HTTP_NO_CONTENT) {
+                        JOptionPane.showMessageDialog(this, "Recordatorios eliminados correctamente");
+                        cargarRecordatorios();
+                    } else {
+                        JOptionPane.showMessageDialog(this, "Error al eliminar recordatorios");
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Error de conexión: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            }
+    }//GEN-LAST:event_jButtonBorrarActionPerformed
 
     private void salasMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_salasMouseClicked
         // TODO add your handling code here:
@@ -248,6 +338,56 @@ public class Principal extends javax.swing.JFrame {
         this.dispose();
         
     }//GEN-LAST:event_actividadesMouseClicked
+
+    private void jButtonGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonGuardarActionPerformed
+        // TODO add your handling code here:    
+        lineasFinal = jTextArea1.getLineCount();
+        String texto = jTextArea1.getText();
+        String[] lineas = texto.split("\n");
+        boolean error = false;
+        
+        for (int i = lineasInicio; i < lineasFinal && error == false; i++) {
+
+            Recordatorio nuevoRecordatorio = new Recordatorio();
+            nuevoRecordatorio.setTexto(lineas[i]);
+            nuevoRecordatorio.setEmpleado(emp);
+
+            //Serializar a JSON
+            String json = new Gson().toJson(nuevoRecordatorio);
+
+            try {
+                // Crear conexión HTTP
+                URL url = new URL("http://localhost:8080/recordatorio/insert");
+                HttpURLConnection con = (HttpURLConnection) url.openConnection();
+                con.setRequestMethod("POST");
+                con.setDoOutput(true);
+                con.setRequestProperty("Content-Type", "application/json");
+
+                // Enviar datos al servidor
+                try (OutputStream os = con.getOutputStream()) {
+                    byte[] input = json.getBytes("utf-8");
+                    os.write(input, 0, input.length);
+                }
+
+                int responseCode = con.getResponseCode();
+                //Si la respuesta no ha ido bien, indicamos que ha habido un error
+                if (responseCode != HttpURLConnection.HTTP_OK) {
+                    error = true;
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Error de conexión: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+        
+        //Si no ha habido error, mostramos mensaje OK
+        if (error == false) {
+            JOptionPane.showMessageDialog(this, "Recordatorios guardados correctamente");
+        } else {
+            //Si ha habido error, mostramos mensaje error
+            JOptionPane.showMessageDialog(this, "Error al insertar los recordatorios");
+        }
+    }//GEN-LAST:event_jButtonGuardarActionPerformed
 
     /**
      * @param args the command line arguments
@@ -289,8 +429,8 @@ public class Principal extends javax.swing.JFrame {
     private javax.swing.JLabel actividades;
     private javax.swing.JLabel clientes;
     private javax.swing.JLabel empleados;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
+    private javax.swing.JButton jButtonBorrar;
+    private javax.swing.JButton jButtonGuardar;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel1Fondo;

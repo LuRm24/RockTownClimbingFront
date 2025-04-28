@@ -4,7 +4,7 @@
  */
 package ventanas;
 
-import DTO.Empleado;
+import models.Empleado;
 import com.google.gson.Gson;
 import conexion.LoginService;
 import javax.swing.JOptionPane;
@@ -86,8 +86,8 @@ public class Interfaz extends javax.swing.JFrame {
        String usuario = user.getText();
        String pass = new String(password.getPassword());
     
-                LoginService loginService = new LoginService();
-         String respuesta = loginService.login(usuario, pass);
+       LoginService loginService = new LoginService();
+       String respuesta = loginService.login(usuario, pass);
 
          // Si la respuesta es solo texto (no JSON), no usar Gson:
          if (respuesta.equals("ACCESO CONCEDIDO")) {

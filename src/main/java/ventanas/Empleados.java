@@ -5,7 +5,7 @@
 package ventanas;
 
 
-import DTO.Empleado;
+import models.Empleado;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonParser;
@@ -40,7 +40,7 @@ public class Empleados extends javax.swing.JFrame {
     private void cargarDatosTabla(BufferedReader entrada) {
         try {
             //Definir las columnas de la tabla
-            String[] columnas = {"Nombre", "Apellidos", "Direccion", "DNI", "Email", "Usuario", "Rol", "Id"};
+            String[] columnas = {"Nombre", "Apellidos", "Direccion", "DNI", "Email", "Usuario", "Rol", "Teléfono", "Id"};
             DefaultTableModel model = new DefaultTableModel(columnas, 0);
             String datosLeidos = "";
        
@@ -66,7 +66,7 @@ public class Empleados extends javax.swing.JFrame {
                         String[] datos = {obj.get("nombre").getAsString(), obj.get("apellidos").getAsString(),
                         obj.get("direccion").getAsString(), obj.get("dni").getAsString(),
                         obj.get("email").getAsString(), obj.get("nombreUsuario").getAsString(),obj.get("rol").getAsString(),
-                        obj.get("id").getAsString()};
+                        obj.get("telefono").getAsString(), obj.get("id").getAsString()};
                         //Al modelo le añadimos los datos como una fila
                         model.addRow(datos); 
                     }
@@ -78,7 +78,7 @@ public class Empleados extends javax.swing.JFrame {
                     String[] datos = {obj.get("nombre").getAsString(), obj.get("apellidos").getAsString(),
                     obj.get("direccion").getAsString(), obj.get("dni").getAsString(),
                     obj.get("email").getAsString(), obj.get("nombreUsuario").getAsString(),obj.get("rol").getAsString(),
-                    obj.get("id").getAsString()};
+                    obj.get("telefono").getAsString(), obj.get("id").getAsString()};
                     //Al modelo le añadimos los datos como una fila
                     model.addRow(datos); 
                 }
@@ -109,19 +109,6 @@ public class Empleados extends javax.swing.JFrame {
         io.printStackTrace();
     }
     }
-    
-    private String[] extraerDatosEmpleado(JsonObject obj) {
-    return new String[]{
-        obj.get("nombre").getAsString(),
-        obj.get("apellidos").getAsString(),
-        obj.get("direccion").getAsString(),
-        obj.get("dni").getAsString(),
-        obj.get("email").getAsString(),
-        obj.get("nombreUsuario").getAsString(),
-        obj.get("rol").getAsString(),
-        obj.get("id").getAsString()
-    };
-}
  
     private void limpiarBusqueda() {
         TFDNI.setText("");
@@ -306,7 +293,7 @@ public class Empleados extends javax.swing.JFrame {
                         String json = datosLeidos.toString();
                         if (json.equals("[]")) {
                             JOptionPane.showMessageDialog(this, "No se encontraron empleados.");
-                            tablaEmpleados.setModel(new DefaultTableModel(new String[]{"Nombre", "Apellidos", "Direccion", "DNI", "Email", "Usuario", "Rol", "Id"}, 0));
+                            tablaEmpleados.setModel(new DefaultTableModel(new String[]{"Nombre", "Apellidos", "Direccion", "DNI", "Email", "Usuario", "Rol", "Teléfono", "Id"}, 0));
                         } else {
                             cargarDatosTabla(new BufferedReader(new StringReader(json)));
                         }
@@ -334,7 +321,7 @@ public class Empleados extends javax.swing.JFrame {
          if (confirmacion != JOptionPane.YES_OPTION) return;
 
          try {
-               Long id = Long.parseLong((String) tablaEmpleados.getValueAt(fila, 7));
+               Long id = Long.parseLong((String) tablaEmpleados.getValueAt(fila, 8));
                 URL url = new URL("http://localhost:8080/empleado/" + id);
                 HttpURLConnection con = (HttpURLConnection) url.openConnection();
                 con.setRequestMethod("DELETE");
