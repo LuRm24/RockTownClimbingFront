@@ -6,7 +6,11 @@ package ventanas;
 
 import models.Empleado;
 import com.google.gson.Gson;
-import conexion.LoginService;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import javax.swing.JOptionPane;
 
 /**
@@ -86,19 +90,59 @@ public class Interfaz extends javax.swing.JFrame {
        String usuario = user.getText();
        String pass = new String(password.getPassword());
     
-       LoginService loginService = new LoginService();
-       String respuesta = loginService.login(usuario, pass);
+       try {
+        // Crear objeto Empleado con datos del login
+        Empleado loginRequest = new Empleado();
+        loginRequest.setNombreUsuario(usuario);
+        loginRequest.setContrasenaHash(pass); 
 
-         // Si la respuesta es solo texto (no JSON), no usar Gson:
-         if (respuesta.equals("ACCESO CONCEDIDO")) {
-             ID_EMP = 1L; // o el ID real si decides incluirlo después
-             JOptionPane.showMessageDialog(this, "Acceso concedido");
-             new Principal().setVisible(true);
-             this.dispose();
-         } else {
-             JOptionPane.showMessageDialog(this, "Acceso denegado");
-         }
+        // Convertir a JSON
+        String json = new Gson().toJson(loginRequest);
 
+        // Conexión HTTP POST
+        URL url = new URL("http://localhost:8080/empleado/login");
+        HttpURLConnection con = (HttpURLConnection) url.openConnection();
+        con.setRequestMethod("POST");
+        con.setRequestProperty("Content-Type", "application/json");
+        con.setDoOutput(true);
+
+        try (OutputStream os = con.getOutputStream()) {
+            byte[] input = json.getBytes("utf-8");//convierte el json en un array de bytes. Usa UTF-8 por si hay caracteres especiales tipo acentos
+            os.write(input, 0, input.length);//lo envia al backend desde el indice 0 hasta el final
+        }
+
+        int responseCode = con.getResponseCode();
+        if (responseCode == HttpURLConnection.HTTP_OK) {
+            // Leer el empleado devuelto
+            try (BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream(), "utf-8"))) {
+                StringBuilder response = new StringBuilder();
+                String line;
+                while ((line = br.readLine()) != null) {
+                    response.append(line);
+                }
+
+                Empleado empleado = new Gson().fromJson(response.toString(), Empleado.class);
+
+                // Guardar el ID del empleado
+                Interfaz.ID_EMP = empleado.getId();
+                
+                // Mostrar mensaje de login correcto
+                JOptionPane.showMessageDialog(this, "Inicio de sesión correcto. ¡Bienvenide " + empleado.getNombre() + "!");
+
+
+                // Ir al panel principal
+                Principal p = new Principal();
+                p.setVisible(true);
+                this.dispose();
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, "Usuario o contraseña incorrectos");
+        }
+
+    } catch (Exception e) {
+        e.printStackTrace();
+        JOptionPane.showMessageDialog(this, "Error de conexión: " + e.getMessage());
+    }
     
     }//GEN-LAST:event_jButton1ActionPerformed
 

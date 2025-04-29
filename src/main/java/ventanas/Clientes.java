@@ -4,6 +4,16 @@
  */
 package ventanas;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import javax.swing.table.DefaultTableModel;
+
 /**
  *
  * @author luciarodriguezmartin
@@ -15,7 +25,92 @@ public class Clientes extends javax.swing.JFrame {
      */
     public Clientes() {
         initComponents();
+        cargarClientes();
     }
+    
+    
+     private void cargarDatosTabla(BufferedReader entrada) {
+        try {
+            //Definir las columnas de la tabla
+            String[] columnas = {"Nombre", "Apellidos", "Telefono", "DNI", "Fecha Bono", "Sesiones Gastadas", "Pies de Gato", "Menor de edad", "Id"};
+            DefaultTableModel model = new DefaultTableModel(columnas, 0);
+            
+            // Leer todo el contenido del BufferedReader
+            String datosLeidos = "";
+            String linea;
+            while ((linea = entrada.readLine()) != null) {
+            datosLeidos += linea;
+            }
+            //Si la entrada tiene datos
+            if (datosLeidos.equals("Datos vacios") == false){
+            
+                if (datosLeidos.startsWith("[")) {
+                    // Parsear como JsonArray
+                    JsonArray jsonArray = JsonParser.parseString(datosLeidos).getAsJsonArray();
+
+                    //Recorrer el json e ir añadiendo las filas
+                    for (int i = 0; i < jsonArray.size(); i++) {
+                        JsonObject obj = jsonArray.get(i).getAsJsonObject();
+                   
+
+
+                        //Añadimos los datos de la fila en un array
+                        String[] datos = {obj.get("nombre").getAsString(), obj.get("apellidos").getAsString(),
+                        obj.get("telefono").getAsString(), obj.get("dni").getAsString(),
+                        obj.get("fechaBono").getAsString(),obj.get("sesionesGastadas").getAsString(),
+                        obj.get("pieGato") != null ? (obj.get("pieGato").getAsBoolean() ? "Sí" : "No") : "",
+                        obj.get("menorEdad") != null ? (obj.get("menorEdad").getAsBoolean() ? "Sí" : "No") : "",
+                        obj.get("id").getAsString()};
+                        //Al modelo le añadimos los datos como una fila
+                        model.addRow(datos); 
+                    }
+                }
+                else {
+                    JsonObject obj = JsonParser.parseString(datosLeidos).getAsJsonObject();
+
+                        //Añadimos los datos de la fila en un array
+                        String[] datos = {obj.get("nombre").getAsString(), obj.get("apellidos").getAsString(),
+                        obj.get("telefono").getAsString(), obj.get("dni").getAsString(),
+                        obj.get("fechaBono").getAsString(),obj.get("sesionesGastadas").getAsString(),
+                        obj.get("pieGato") != null ? (obj.get("pieGato").getAsBoolean() ? "Sí" : "No") : "",
+                        obj.get("menorEdad") != null ? (obj.get("menorEdad").getAsBoolean() ? "Sí" : "No") : "",
+                        obj.get("id").getAsString()};
+                    model.addRow(datos); 
+                }
+            }
+            
+            //A la tabla se le asigna el modelo
+            tablaClientes.setModel(model);
+      
+
+        }
+        catch (IOException io){
+            io.printStackTrace();
+        }
+    }
+
+    private void cargarClientes() {
+        try {
+        URL url = new URL("http://localhost:8080/cliente/select-all");
+        HttpURLConnection con = (HttpURLConnection) url.openConnection();
+        con.setRequestMethod("GET");
+
+        BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream(), "utf-8"));
+
+        // Aquí usamos el método que ya tienes hecho para cargar datos en la tabla
+        cargarDatosTabla(br);
+
+    } catch (IOException io) {
+        io.printStackTrace();
+    }
+    }
+ 
+    private void limpiarBusqueda() {
+       dni.setText("");
+       apellido.setText("");
+       telefono.setText("");
+    }
+    
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -27,7 +122,7 @@ public class Clientes extends javax.swing.JFrame {
     private void initComponents() {
 
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        tablaClientes = new javax.swing.JTable();
         jPanel1 = new javax.swing.JPanel();
         jButtonBaja = new javax.swing.JButton();
         jButtonBuscar = new javax.swing.JButton();
@@ -35,9 +130,9 @@ public class Clientes extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
-        jTextField2 = new javax.swing.JTextField();
-        jTextField3 = new javax.swing.JTextField();
+        apellido = new javax.swing.JTextField();
+        telefono = new javax.swing.JTextField();
+        dni = new javax.swing.JTextField();
         jButtonBaja1 = new javax.swing.JButton();
         jButtonBaja2 = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
@@ -45,19 +140,24 @@ public class Clientes extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        tablaClientes.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null}
+
             },
             new String [] {
-                "Nombre", "Apellido", "Teléfono", "DNI", "Fecha", "Tipo bono", "Sesiones gastadas", "Pies de gato"
+                "Nombre", "Apellido", "Telefono", "DNI", "Fecha bono", "Sesiones gastadas", "Pies de gato", "Menor de edad"
             }
-        ));
-        jTable1.setOpaque(false);
-        jScrollPane1.setViewportView(jTable1);
+        ) {
+            Class[] types = new Class [] {
+                java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Boolean.class, java.lang.Boolean.class
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+        });
+        tablaClientes.setOpaque(false);
+        jScrollPane1.setViewportView(tablaClientes);
 
         getContentPane().add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 20, 890, 250));
 
@@ -91,9 +191,9 @@ public class Clientes extends javax.swing.JFrame {
 
         jLabel4.setText("Apellido");
         jPanel1.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(510, 40, -1, -1));
-        jPanel1.add(jTextField1, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 40, 170, -1));
-        jPanel1.add(jTextField2, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 70, 170, -1));
-        jPanel1.add(jTextField3, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 10, 170, -1));
+        jPanel1.add(apellido, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 40, 170, -1));
+        jPanel1.add(telefono, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 70, 170, -1));
+        jPanel1.add(dni, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 10, 170, -1));
 
         jButtonBaja1.setText("Baja Cliente");
         jButtonBaja1.addActionListener(new java.awt.event.ActionListener() {
@@ -173,6 +273,8 @@ public class Clientes extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JTextField apellido;
+    private javax.swing.JTextField dni;
     private javax.swing.JButton jButtonAlta;
     private javax.swing.JButton jButtonBaja;
     private javax.swing.JButton jButtonBaja1;
@@ -184,9 +286,7 @@ public class Clientes extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel4;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable jTable1;
-    private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextField jTextField2;
-    private javax.swing.JTextField jTextField3;
+    private javax.swing.JTable tablaClientes;
+    private javax.swing.JTextField telefono;
     // End of variables declaration//GEN-END:variables
 }

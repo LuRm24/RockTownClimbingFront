@@ -136,8 +136,8 @@ public class Empleados extends javax.swing.JFrame {
         TFApellidos = new javax.swing.JTextField();
         TFUsuario = new javax.swing.JTextField();
         TFDNI = new javax.swing.JTextField();
-        jButtonBaja1 = new javax.swing.JButton();
-        jButtonBaja2 = new javax.swing.JButton();
+        jButtonEliminar = new javax.swing.JButton();
+        jButtonModificar = new javax.swing.JButton();
         jButtonRecargar = new javax.swing.JButton();
         jButtonMenuPrinc = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
@@ -210,21 +210,21 @@ public class Empleados extends javax.swing.JFrame {
         });
         jPanel1.add(TFDNI, new org.netbeans.lib.awtextra.AbsoluteConstraints(580, 10, 170, -1));
 
-        jButtonBaja1.setText("Eliminar empleado");
-        jButtonBaja1.addActionListener(new java.awt.event.ActionListener() {
+        jButtonEliminar.setText("Eliminar empleado");
+        jButtonEliminar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonBaja1ActionPerformed(evt);
+                jButtonEliminarActionPerformed(evt);
             }
         });
-        jPanel1.add(jButtonBaja1, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 20, -1, 30));
+        jPanel1.add(jButtonEliminar, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 20, -1, 30));
 
-        jButtonBaja2.setText("Modificar Empleado");
-        jButtonBaja2.addActionListener(new java.awt.event.ActionListener() {
+        jButtonModificar.setText("Modificar Empleado");
+        jButtonModificar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonBaja2ActionPerformed(evt);
+                jButtonModificarActionPerformed(evt);
             }
         });
-        jPanel1.add(jButtonBaja2, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 20, -1, 30));
+        jPanel1.add(jButtonModificar, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 20, -1, 30));
 
         jButtonRecargar.setText("<--");
         jButtonRecargar.addActionListener(new java.awt.event.ActionListener() {
@@ -308,7 +308,7 @@ public class Empleados extends javax.swing.JFrame {
             }
     }//GEN-LAST:event_jButtonBuscarActionPerformed
 
-    private void jButtonBaja1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonBaja1ActionPerformed
+    private void jButtonEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonEliminarActionPerformed
         // TODO add your handling code here:
             int fila = tablaEmpleados.getSelectedRow();
 
@@ -339,11 +339,55 @@ public class Empleados extends javax.swing.JFrame {
              ex.printStackTrace();
              JOptionPane.showMessageDialog(this, "Error en la operación: " + ex.getMessage());
          }
-    }//GEN-LAST:event_jButtonBaja1ActionPerformed
+    }//GEN-LAST:event_jButtonEliminarActionPerformed
 
-    private void jButtonBaja2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonBaja2ActionPerformed
+    private void jButtonModificarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonModificarActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jButtonBaja2ActionPerformed
+       int fila = tablaEmpleados.getSelectedRow();
+
+        if (fila == -1) {
+            JOptionPane.showMessageDialog(this, "Selecciona un empleado para modificar");
+            return;
+        }
+
+        try {
+            // Suponiendo que la columna 8 es el ID
+            Long id = Long.parseLong(tablaEmpleados.getValueAt(fila, 8).toString());
+
+            // Petición GET al backend para obtener los datos del empleado
+            URL url = new URL("http://localhost:8080/empleado/find?id=" + id);
+            HttpURLConnection con = (HttpURLConnection) url.openConnection();
+            con.setRequestMethod("GET");
+            con.connect();
+
+            int responseCode = con.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                try (BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream(), "utf-8"))) {
+                    StringBuilder response = new StringBuilder();
+                    String line;
+                    while ((line = in.readLine()) != null) {
+                        response.append(line);
+                    }
+
+                    // Convertir JSON a objeto Empleado
+                    Empleado empleado = new Gson().fromJson(response.toString(), Empleado.class);
+
+                    // Abrir la ventana de modificación con los datos del empleado
+                    ModificarEmpleado me = new ModificarEmpleado(empleado);
+                    me.setVisible(true);
+                    this.dispose(); // Cierra la ventana actual (opcional)
+
+                }
+            } else {
+                JOptionPane.showMessageDialog(this, "Error al obtener datos del empleado. Código: " + responseCode);
+            }
+
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Error en la operación: " + ex.getMessage());
+            }
+
+    }//GEN-LAST:event_jButtonModificarActionPerformed
 
     private void jButtonAltaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonAltaActionPerformed
         AltaEmpleado altaEmp = new AltaEmpleado();
@@ -391,32 +435,7 @@ public class Empleados extends javax.swing.JFrame {
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(Empleados.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(Empleados.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(Empleados.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(Empleados.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-
+       
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
@@ -430,10 +449,10 @@ public class Empleados extends javax.swing.JFrame {
     private javax.swing.JTextField TFDNI;
     private javax.swing.JTextField TFUsuario;
     private javax.swing.JButton jButtonAlta;
-    private javax.swing.JButton jButtonBaja1;
-    private javax.swing.JButton jButtonBaja2;
     private javax.swing.JButton jButtonBuscar;
+    private javax.swing.JButton jButtonEliminar;
     private javax.swing.JButton jButtonMenuPrinc;
+    private javax.swing.JButton jButtonModificar;
     private javax.swing.JButton jButtonRecargar;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;

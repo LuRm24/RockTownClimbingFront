@@ -4,17 +4,42 @@
  */
 package ventanas;
 
+import com.google.gson.Gson;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import javax.swing.JOptionPane;
+import models.Empleado;
+
 /**
  *
  * @author pedro
  */
 public class ModificarEmpleado extends javax.swing.JFrame {
 
-    /**
-     * Creates new form AltaCliente
-     */
-    public ModificarEmpleado() {
+    
+    private Empleado empleado;
+    
+    
+    public ModificarEmpleado(Empleado empleado) {
+        this.empleado = empleado;
         initComponents();
+        this.setLocationRelativeTo(null);
+        rellenarDatosEmpleado();
+    }
+    
+    private void rellenarDatosEmpleado() {
+        nombre.setText(empleado.getNombre()); 
+        telefono.setText(empleado.getTelefono());
+        dni.setText(empleado.getDni());
+        apellido.setText(empleado.getApellidos());
+        rol.setSelectedItem(empleado.getRol());
+        direccion.setText(empleado.getDireccion());
+        usuario.setText(empleado.getNombreUsuario());
+        mail.setText(empleado.getEmail());
+        contrasena.setText("");
+        
+        
     }
 
     /**
@@ -29,21 +54,25 @@ public class ModificarEmpleado extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         jPanel1 = new javax.swing.JPanel();
         jLabel3 = new javax.swing.JLabel();
-        jTextField3 = new javax.swing.JTextField();
+        dni = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
-        jLabel5 = new javax.swing.JLabel();
-        jTextField2 = new javax.swing.JTextField();
-        jTextField4 = new javax.swing.JTextField();
+        nombre = new javax.swing.JTextField();
+        telefono = new javax.swing.JTextField();
+        apellido = new javax.swing.JTextField();
         jLabel6 = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
-        jDateChooser1 = new com.toedter.calendar.JDateChooser();
+        cancelar = new javax.swing.JButton();
+        modificar = new javax.swing.JButton();
+        direccion = new javax.swing.JTextField();
+        jLabel10 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
-        jComboBox1 = new javax.swing.JComboBox<>();
-        jCheckBox1 = new javax.swing.JCheckBox();
+        rol = new javax.swing.JComboBox<>();
         jLabel9 = new javax.swing.JLabel();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
+        usuario = new javax.swing.JTextField();
+        jLabel11 = new javax.swing.JLabel();
+        mail = new javax.swing.JTextField();
+        LbContrasena = new javax.swing.JLabel();
+        contrasena = new javax.swing.JPasswordField();
         jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -58,66 +87,124 @@ public class ModificarEmpleado extends javax.swing.JFrame {
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel3.setText("DNI");
-        jPanel1.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 30, -1, -1));
-        jPanel1.add(jTextField3, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 30, 170, -1));
+        jPanel1.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 20, -1, -1));
+        jPanel1.add(dni, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 20, 170, -1));
 
         jLabel4.setText("Nombre");
-        jPanel1.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 70, -1, -1));
-        jPanel1.add(jTextField1, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 70, 170, -1));
-
-        jLabel5.setText("Pies de gato");
-        jPanel1.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 270, -1, -1));
-        jPanel1.add(jTextField2, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 150, 170, -1));
-        jPanel1.add(jTextField4, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 110, 290, -1));
+        jPanel1.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 60, -1, -1));
+        jPanel1.add(nombre, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 60, 170, -1));
+        jPanel1.add(telefono, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 140, 170, -1));
+        jPanel1.add(apellido, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 100, 290, -1));
 
         jLabel6.setText("Apellido");
-        jPanel1.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 110, -1, -1));
+        jPanel1.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 100, -1, -1));
 
         jLabel7.setText("Teléfono");
-        jPanel1.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 150, -1, -1));
-        jPanel1.add(jDateChooser1, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 190, 170, 32));
+        jPanel1.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 140, -1, -1));
 
-        jLabel8.setText("Fecha");
-        jPanel1.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 190, -1, -1));
-
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Bono de 10 entradas (Adultos)", "Bono de 10 entradas (Niño)", "Abonos de entrada libre", "Abono mensual (Adulto)", "Abono mensual (Niños)", "Abono trimestral (Adultos)", "Abono semestral (Adultos)", "Abono anual (Adultos)", "Clases escalada 2 días a la semana (Adultos)", "Acceso libre a RockTown + 2 clases a la semana (Adultos)", "Clases escalada 1 día a la semana (Adultos)", "Una hora de clase a la semana (Niños)", "Dos horas a la semana (Niños)", "Dos horas a la semana + acceso libre al centro (Niños)" }));
-        jPanel1.add(jComboBox1, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 230, 290, -1));
-        jPanel1.add(jCheckBox1, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 270, -1, -1));
-
-        jLabel9.setText("Tipo de bono");
-        jPanel1.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 230, -1, -1));
-
-        jButton1.setText("Cancelar");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        cancelar.setText("Cancelar");
+        cancelar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                cancelarActionPerformed(evt);
             }
         });
-        jPanel1.add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 330, -1, -1));
+        jPanel1.add(cancelar, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 400, -1, -1));
 
-        jButton2.setText("Modificar");
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
+        modificar.setText("Guardar cambios");
+        modificar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
+                modificarActionPerformed(evt);
             }
         });
-        jPanel1.add(jButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 330, -1, -1));
+        jPanel1.add(modificar, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 400, -1, -1));
+        jPanel1.add(direccion, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 180, 300, -1));
 
-        getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 80, 470, 370));
+        jLabel10.setText("Dirección");
+        jPanel1.add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 180, -1, -1));
+
+        jLabel8.setText("Rol");
+        jPanel1.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 220, -1, -1));
+
+        rol.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "ADMINISTRADOR", "USUARIO" }));
+        jPanel1.add(rol, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 220, 230, -1));
+
+        jLabel9.setText("Nombre usuario");
+        jPanel1.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 260, -1, -1));
+        jPanel1.add(usuario, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 260, 300, -1));
+
+        jLabel11.setText("Email");
+        jPanel1.add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 300, -1, -1));
+        jPanel1.add(mail, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 300, 300, -1));
+
+        LbContrasena.setText("Contraseña");
+        jPanel1.add(LbContrasena, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 340, -1, -1));
+        jPanel1.add(contrasena, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 340, 190, -1));
+
+        getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 80, 480, 440));
 
         jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/FondoPrincipal.png"))); // NOI18N
-        getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 530, 460));
+        getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 530, 530));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void modificarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_modificarActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jButton1ActionPerformed
+        try {
+        // Actualizamos los datos del empleado
+        empleado.setNombre(nombre.getText());
+        empleado.setApellidos(apellido.getText());
+        empleado.setDni(dni.getText());
+        empleado.setEmail(mail.getText());
+        empleado.setNombreUsuario(usuario.getText());
+        empleado.setTelefono(telefono.getText());
+        empleado.setDireccion(direccion.getText());
+        empleado.setRol(rol.getSelectedItem().toString());
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton2ActionPerformed
+        String nuevaContrasena = contrasena.getText();
+        if (!nuevaContrasena.isEmpty()) {
+            empleado.setContrasenaHash(nuevaContrasena); // Luego el back hasheará esto
+        }
+
+        // Serializar a JSON
+        String json = new Gson().toJson(empleado);
+
+        // Enviar al backend
+        URL url = new URL("http://localhost:8080/empleado/update");
+        HttpURLConnection con = (HttpURLConnection) url.openConnection();
+        con.setRequestMethod("PUT");
+        con.setRequestProperty("Content-Type", "application/json");
+        con.setDoOutput(true);
+
+        try (OutputStream os = con.getOutputStream()) {
+            byte[] input = json.getBytes("utf-8");
+            os.write(input, 0, input.length);
+        }
+
+        int responseCode = con.getResponseCode();
+        if (responseCode == HttpURLConnection.HTTP_OK) {
+            JOptionPane.showMessageDialog(this, "Empleado modificado correctamente");
+            Empleados vistaEmpleados = new Empleados();
+            vistaEmpleados.setVisible(true);
+            this.dispose();
+        } else {
+            JOptionPane.showMessageDialog(this, "Error al modificar el empleado. Código: " + responseCode);
+        }
+
+    } catch (Exception e) {
+        e.printStackTrace();
+        JOptionPane.showMessageDialog(this, "Error en la operación: " + e.getMessage());
+    }
+    }//GEN-LAST:event_modificarActionPerformed
+
+    private void cancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelarActionPerformed
+
+        // Vuelve a la ventana de gestión de empleados
+            Empleados empleados = new Empleados();
+            empleados.setVisible(true);
+            this.dispose();
+
+    }//GEN-LAST:event_cancelarActionPerformed
 
     /**
      * @param args the command line arguments
@@ -155,24 +242,28 @@ public class ModificarEmpleado extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JCheckBox jCheckBox1;
-    private javax.swing.JComboBox<String> jComboBox1;
-    private com.toedter.calendar.JDateChooser jDateChooser1;
+    private javax.swing.JLabel LbContrasena;
+    private javax.swing.JTextField apellido;
+    private javax.swing.JButton cancelar;
+    private javax.swing.JPasswordField contrasena;
+    private javax.swing.JTextField direccion;
+    private javax.swing.JTextField dni;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextField jTextField2;
-    private javax.swing.JTextField jTextField3;
-    private javax.swing.JTextField jTextField4;
+    private javax.swing.JTextField mail;
+    private javax.swing.JButton modificar;
+    private javax.swing.JTextField nombre;
+    private javax.swing.JComboBox<String> rol;
+    private javax.swing.JTextField telefono;
+    private javax.swing.JTextField usuario;
     // End of variables declaration//GEN-END:variables
 }

@@ -31,17 +31,18 @@ public class Principal extends javax.swing.JFrame {
      * Creates new form Principal
      */
     public Principal() {
-        this.emp=emp;
+        
         initComponents();
         this.setLocationRelativeTo(null);
         cargarUsuarioLogueado();
         cargarRecordatorios();
-        habilitarPermisos();
+        
     }
     
     private void habilitarPermisos() {
       
         if (emp != null) {
+         System.out.println("Rol del empleado logueado: " + emp.getRol());
             boolean esAdmin = "ADMINISTRADOR".equalsIgnoreCase(emp.getRol());
             empleados.setEnabled(esAdmin); // Si es admin, lo habilitas, si no, lo desactivas
         } else {
@@ -59,6 +60,8 @@ public class Principal extends javax.swing.JFrame {
             con.setRequestMethod("GET");
 
             int responseCode = con.getResponseCode();
+           
+
             if (responseCode == HttpURLConnection.HTTP_OK) {
                 try (BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()))) {
                     String linea;
@@ -70,6 +73,9 @@ public class Principal extends javax.swing.JFrame {
                     String json = datosLeidos.toString();
                     Gson gson = new Gson();
                     emp = gson.fromJson(json, Empleado.class);
+                    
+                    habilitarPermisos();
+                 
                 }
                 catch (IOException io) {
                     io.printStackTrace();
