@@ -52,15 +52,18 @@ public class Clientes extends javax.swing.JFrame {
                     for (int i = 0; i < jsonArray.size(); i++) {
                         JsonObject obj = jsonArray.get(i).getAsJsonObject();
                    
-
-
                         //Añadimos los datos de la fila en un array
-                        String[] datos = {obj.get("nombre").getAsString(), obj.get("apellidos").getAsString(),
-                        obj.get("telefono").getAsString(), obj.get("dni").getAsString(),
-                        obj.get("fechaBono").getAsString(),obj.get("sesionesGastadas").getAsString(),
+                       String[] datos = {
+                        obj.get("nombre").getAsString(),
+                        obj.get("apellidos").getAsString(),
+                        obj.get("telefono").getAsString(),
+                        obj.get("dni").getAsString(),
+                        obj.get("fechaBono").getAsString(),
+                        obj.get("sesionesGastadas").getAsString(),
                         obj.get("pieGato") != null ? (obj.get("pieGato").getAsBoolean() ? "Sí" : "No") : "",
                         obj.get("menorEdad") != null ? (obj.get("menorEdad").getAsBoolean() ? "Sí" : "No") : "",
-                        obj.get("id").getAsString()};
+                        obj.get("id").getAsString()
+                        };
                         //Al modelo le añadimos los datos como una fila
                         model.addRow(datos); 
                     }
@@ -69,12 +72,17 @@ public class Clientes extends javax.swing.JFrame {
                     JsonObject obj = JsonParser.parseString(datosLeidos).getAsJsonObject();
 
                         //Añadimos los datos de la fila en un array
-                        String[] datos = {obj.get("nombre").getAsString(), obj.get("apellidos").getAsString(),
-                        obj.get("telefono").getAsString(), obj.get("dni").getAsString(),
-                        obj.get("fechaBono").getAsString(),obj.get("sesionesGastadas").getAsString(),
+                      String[] datos = {
+                        obj.get("nombre").getAsString(),
+                        obj.get("apellidos").getAsString(),
+                        obj.get("telefono").getAsString(),
+                        obj.get("dni").getAsString(),
+                        obj.get("fechaBono").getAsString(),
+                        obj.get("sesionesGastadas").getAsString(),
                         obj.get("pieGato") != null ? (obj.get("pieGato").getAsBoolean() ? "Sí" : "No") : "",
                         obj.get("menorEdad") != null ? (obj.get("menorEdad").getAsBoolean() ? "Sí" : "No") : "",
-                        obj.get("id").getAsString()};
+                        obj.get("id").getAsString()
+                        };
                     model.addRow(datos); 
                 }
             }
