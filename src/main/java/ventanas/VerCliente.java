@@ -20,6 +20,8 @@ public class VerCliente extends javax.swing.JFrame {
     /**
      * Creates new form AltaCliente
      */
+    
+    
     public VerCliente(Cliente cliente) {
         initComponents();
         //Le pasamos el cliente de la ventana de Clientes
@@ -166,6 +168,9 @@ public class VerCliente extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
+           Clientes c = new Clientes();
+           c.setVisible(true);
+           this.dispose();
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed

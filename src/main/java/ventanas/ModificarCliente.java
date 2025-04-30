@@ -4,19 +4,56 @@
  */
 package ventanas;
 
+import com.google.gson.Gson;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.Date;
+import javax.swing.JOptionPane;
+import models.Cliente;
+
 /**
  *
  * @author pedro
  */
 public class ModificarCliente extends javax.swing.JFrame {
 
-    /**
-     * Creates new form AltaCliente
-     */
-    public ModificarCliente() {
+    private Cliente cliente;
+    
+    public ModificarCliente(Cliente cliente) {
         initComponents();
+        this.cliente= cliente;
+        this.setLocationRelativeTo(null);
+        rellenarDatosCliente();
     }
+    
+    private void rellenarDatosCliente() {
+        nombre.setText(cliente.getNombre());
+        telefono.setText(cliente.getTelefono());
+        dni.setText(cliente.getDni());
+        apellido.setText(cliente.getApellidos());
 
+        
+        if (cliente.getFechaBono() != null) {
+           Date fechaDate = Date.from(cliente.getFechaBono().atStartOfDay(ZoneId.systemDefault()).toInstant());
+           fecha.setDate(fechaDate);
+        }
+
+        pieGato.setSelected(cliente.isPieGato());
+
+        if (cliente.isMenorEdad()) {
+           edad.setText("11"); // edad son 12 años
+        } else {
+           edad.setText("12");
+        }
+
+        //falta tipo de bono que no se como hacerlo aun
+    
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -28,22 +65,24 @@ public class ModificarCliente extends javax.swing.JFrame {
 
         jPanel1 = new javax.swing.JPanel();
         jLabel3 = new javax.swing.JLabel();
-        jTextField3 = new javax.swing.JTextField();
+        dni = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
+        nombre = new javax.swing.JTextField();
         jLabel5 = new javax.swing.JLabel();
-        jTextField2 = new javax.swing.JTextField();
-        jTextField4 = new javax.swing.JTextField();
+        telefono = new javax.swing.JTextField();
+        apellido = new javax.swing.JTextField();
         jLabel6 = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
-        jDateChooser1 = new com.toedter.calendar.JDateChooser();
+        fecha = new com.toedter.calendar.JDateChooser();
         jLabel8 = new javax.swing.JLabel();
-        jComboBox1 = new javax.swing.JComboBox<>();
-        jCheckBox1 = new javax.swing.JCheckBox();
+        tipoBono = new javax.swing.JComboBox<>();
+        pieGato = new javax.swing.JCheckBox();
         jLabel9 = new javax.swing.JLabel();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
+        cancelar = new javax.swing.JButton();
+        modificar = new javax.swing.JButton();
         jLabel2 = new javax.swing.JLabel();
+        jLabel10 = new javax.swing.JLabel();
+        edad = new javax.swing.JTextField();
         jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -54,54 +93,58 @@ public class ModificarCliente extends javax.swing.JFrame {
 
         jLabel3.setText("DNI");
         jPanel1.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 100, -1, -1));
-        jPanel1.add(jTextField3, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 100, 170, -1));
+        jPanel1.add(dni, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 100, 170, -1));
 
         jLabel4.setText("Nombre");
         jPanel1.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 130, -1, -1));
-        jPanel1.add(jTextField1, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 130, 170, -1));
+        jPanel1.add(nombre, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 130, 170, -1));
 
         jLabel5.setText("Pies de gato");
         jPanel1.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 310, -1, -1));
-        jPanel1.add(jTextField2, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 190, 170, -1));
-        jPanel1.add(jTextField4, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 160, 260, -1));
+        jPanel1.add(telefono, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 190, 170, -1));
+        jPanel1.add(apellido, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 160, 260, -1));
 
         jLabel6.setText("Apellido");
         jPanel1.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 160, -1, -1));
 
         jLabel7.setText("Teléfono");
         jPanel1.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 190, -1, -1));
-        jPanel1.add(jDateChooser1, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 220, 170, 32));
+        jPanel1.add(fecha, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 220, 170, 32));
 
         jLabel8.setText("Fecha");
         jPanel1.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 230, -1, -1));
 
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Bono de 10 entradas (Adultos)", "Bono de 10 entradas (Niño)", "Abonos de entrada libre", "Abono mensual (Adulto)", "Abono mensual (Niños)", "Abono trimestral (Adultos)", "Abono semestral (Adultos)", "Abono anual (Adultos)", "Clases escalada 2 días a la semana (Adultos)", "Acceso libre a RockTown + 2 clases a la semana (Adultos)", "Clases escalada 1 día a la semana (Adultos)", "Una hora de clase a la semana (Niños)", "Dos horas a la semana (Niños)", "Dos horas a la semana + acceso libre al centro (Niños)" }));
-        jPanel1.add(jComboBox1, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 270, 270, -1));
-        jPanel1.add(jCheckBox1, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 310, -1, -1));
+        tipoBono.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Bono de 10 entradas (Adultos)", "Bono de 10 entradas (Niño)", "Abonos de entrada libre", "Abono mensual (Adulto)", "Abono mensual (Niños)", "Abono trimestral (Adultos)", "Abono semestral (Adultos)", "Abono anual (Adultos)", "Clases escalada 2 días a la semana (Adultos)", "Acceso libre a RockTown + 2 clases a la semana (Adultos)", "Clases escalada 1 día a la semana (Adultos)", "Una hora de clase a la semana (Niños)", "Dos horas a la semana (Niños)", "Dos horas a la semana + acceso libre al centro (Niños)" }));
+        jPanel1.add(tipoBono, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 270, 270, -1));
+        jPanel1.add(pieGato, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 310, -1, -1));
 
         jLabel9.setText("Tipo de bono");
         jPanel1.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 270, -1, -1));
 
-        jButton1.setText("Cancelar");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        cancelar.setText("Cancelar");
+        cancelar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                cancelarActionPerformed(evt);
             }
         });
-        jPanel1.add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 360, -1, -1));
+        jPanel1.add(cancelar, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 360, -1, -1));
 
-        jButton2.setText("Modificar");
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
+        modificar.setText("Modificar");
+        modificar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
+                modificarActionPerformed(evt);
             }
         });
-        jPanel1.add(jButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 360, -1, -1));
+        jPanel1.add(modificar, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 360, -1, -1));
 
         jLabel2.setFont(new java.awt.Font("Tahoma", 1, 36)); // NOI18N
         jLabel2.setText("Modificar Cliente");
         jLabel2.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         jPanel1.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 20, -1, -1));
+
+        jLabel10.setText("Edad");
+        jPanel1.add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 310, -1, -1));
+        jPanel1.add(edad, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 310, 80, -1));
 
         getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 20, 490, 390));
 
@@ -111,13 +154,67 @@ public class ModificarCliente extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void cancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelarActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jButton1ActionPerformed
+        Clientes c = new Clientes();
+        c.setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_cancelarActionPerformed
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton2ActionPerformed
+    private void modificarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_modificarActionPerformed
+      
+         try {
+                // Actualizamos los datos del cliente
+                cliente.setNombre(nombre.getText());
+                cliente.setApellidos(apellido.getText());
+                cliente.setDni(dni.getText());
+                cliente.setTelefono(telefono.getText());
+
+                // Fecha bono (usando JDateChooser)
+                if (fecha.getDate() != null) {
+                    LocalDate fechaBono = fecha.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+                    cliente.setFechaBono(fechaBono);
+                }
+
+                // Edad -> menorEdad
+                int edadCliente = Integer.parseInt(edad.getText());
+                cliente.setMenorEdad(edadCliente < 12);
+
+                // Pie de gato
+                cliente.setPieGato(pieGato.isSelected());
+
+                // Serializar a JSON
+                String json = new Gson().toJson(cliente);
+
+                // Enviar al backend
+                URL url = new URL("http://localhost:8080/cliente/update");
+                HttpURLConnection con = (HttpURLConnection) url.openConnection();
+                con.setRequestMethod("PUT");
+                con.setRequestProperty("Content-Type", "application/json");
+                con.setDoOutput(true);
+
+                try (OutputStream os = con.getOutputStream()) {
+                    byte[] input = json.getBytes("utf-8");
+                    os.write(input, 0, input.length);
+                }
+
+                int responseCode = con.getResponseCode();
+                if (responseCode == HttpURLConnection.HTTP_OK) {
+                    JOptionPane.showMessageDialog(this, "Cliente modificado correctamente");
+                    Clientes vistaClientes = new Clientes();
+                    vistaClientes.setVisible(true);
+                    this.dispose();
+                } else {
+                    JOptionPane.showMessageDialog(this, "Error al modificar el cliente. Código: " + responseCode);
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Error en la operación: " + e.getMessage());
+            }
+                               
+
+    }//GEN-LAST:event_modificarActionPerformed
 
     /**
      * @param args the command line arguments
@@ -155,12 +252,13 @@ public class ModificarCliente extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JCheckBox jCheckBox1;
-    private javax.swing.JComboBox<String> jComboBox1;
-    private com.toedter.calendar.JDateChooser jDateChooser1;
+    private javax.swing.JTextField apellido;
+    private javax.swing.JButton cancelar;
+    private javax.swing.JTextField dni;
+    private javax.swing.JTextField edad;
+    private com.toedter.calendar.JDateChooser fecha;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -170,9 +268,10 @@ public class ModificarCliente extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextField jTextField2;
-    private javax.swing.JTextField jTextField3;
-    private javax.swing.JTextField jTextField4;
+    private javax.swing.JButton modificar;
+    private javax.swing.JTextField nombre;
+    private javax.swing.JCheckBox pieGato;
+    private javax.swing.JTextField telefono;
+    private javax.swing.JComboBox<String> tipoBono;
     // End of variables declaration//GEN-END:variables
 }

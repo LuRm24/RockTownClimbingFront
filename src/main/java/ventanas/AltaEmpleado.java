@@ -134,6 +134,9 @@ public class AltaEmpleado extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
+        Empleados e = new Empleados();
+        e.setVisible(true);
+        this.dispose();
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
@@ -154,13 +157,15 @@ public class AltaEmpleado extends javax.swing.JFrame {
             nuevoEmpleado.setRol(String.valueOf(CBRol.getSelectedItem()));
             nuevoEmpleado.setNombreUsuario(TFUsuario.getText());
             nuevoEmpleado.setEmail(TFEmail.getText());
+            nuevoEmpleado.setTelefono(TFTelefono.getText());
             BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
             String password = String.valueOf(PFContrasena.getPassword());
+            
             // Codificar la contraseña
             String encodedPassword = passwordEncoder.encode(password);
             // Guardarla en el empleado
             nuevoEmpleado.setContrasenaHash(encodedPassword);
-            nuevoEmpleado.setTelefono(TFTelefono.getText());
+            
 
             // Serializar a JSON
             String json = new Gson().toJson(nuevoEmpleado);

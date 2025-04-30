@@ -18,6 +18,9 @@ public class Cliente {
 
     //private List<Reserva> reservas = new ArrayList<>();
     //private List<Entrada> entradas = new ArrayList<>();
+    
+    public Cliente(){
+    }
 
     public Cliente(Long id, String nombre, String apellidos, String telefono, String dni, LocalDate fechaBono, int sesionesGastadas, boolean pieGato, boolean menorEdad) {
         this.id = id;

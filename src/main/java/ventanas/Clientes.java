@@ -4,14 +4,17 @@
  */
 package ventanas;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.StringReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.time.LocalDate;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
@@ -117,9 +120,9 @@ public class Clientes extends javax.swing.JFrame {
     }
  
     private void limpiarBusqueda() {
-       dni.setText("");
+       tdni.setText("");
        apellido.setText("");
-       telefono.setText("");
+       Ttelefono.setText("");
     }
     
 
@@ -136,16 +139,18 @@ public class Clientes extends javax.swing.JFrame {
         tablaClientes = new javax.swing.JTable();
         jPanel1 = new javax.swing.JPanel();
         jButtonVer = new javax.swing.JButton();
-        jButtonBuscar = new javax.swing.JButton();
+        buscar = new javax.swing.JButton();
         jButtonAlta = new javax.swing.JButton();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         apellido = new javax.swing.JTextField();
-        telefono = new javax.swing.JTextField();
-        dni = new javax.swing.JTextField();
-        jButtonBaja = new javax.swing.JButton();
-        jButtonModificar = new javax.swing.JButton();
+        Ttelefono = new javax.swing.JTextField();
+        tdni = new javax.swing.JTextField();
+        eliminar = new javax.swing.JButton();
+        modificar = new javax.swing.JButton();
+        jButton1 = new javax.swing.JButton();
+        jButtonRecargar = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -181,18 +186,23 @@ public class Clientes extends javax.swing.JFrame {
                 jButtonVerActionPerformed(evt);
             }
         });
-        jPanel1.add(jButtonVer, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 20, -1, -1));
+        jPanel1.add(jButtonVer, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 80, -1, -1));
 
-        jButtonBuscar.setText("Buscar");
-        jButtonBuscar.addActionListener(new java.awt.event.ActionListener() {
+        buscar.setText("Buscar");
+        buscar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonBuscarActionPerformed(evt);
+                buscarActionPerformed(evt);
             }
         });
-        jPanel1.add(jButtonBuscar, new org.netbeans.lib.awtextra.AbsoluteConstraints(620, 100, -1, -1));
+        jPanel1.add(buscar, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 100, -1, -1));
 
         jButtonAlta.setText("Alta Cliente");
-        jPanel1.add(jButtonAlta, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 60, -1, -1));
+        jButtonAlta.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonAltaActionPerformed(evt);
+            }
+        });
+        jPanel1.add(jButtonAlta, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 20, -1, -1));
 
         jLabel2.setText("Teléfono");
         jPanel1.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(510, 70, 60, 20));
@@ -202,25 +212,59 @@ public class Clientes extends javax.swing.JFrame {
 
         jLabel4.setText("Apellido");
         jPanel1.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(510, 40, -1, -1));
+
+        apellido.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                apellidoMouseClicked(evt);
+            }
+        });
         jPanel1.add(apellido, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 40, 170, -1));
-        jPanel1.add(telefono, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 70, 170, -1));
-        jPanel1.add(dni, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 10, 170, -1));
 
-        jButtonBaja.setText("Baja Cliente");
-        jButtonBaja.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonBajaActionPerformed(evt);
+        Ttelefono.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                TtelefonoMouseClicked(evt);
             }
         });
-        jPanel1.add(jButtonBaja, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 60, -1, -1));
+        jPanel1.add(Ttelefono, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 70, 170, -1));
 
-        jButtonModificar.setText("Modificar Cliente");
-        jButtonModificar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonModificarActionPerformed(evt);
+        tdni.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tdniMouseClicked(evt);
             }
         });
-        jPanel1.add(jButtonModificar, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 60, -1, -1));
+        jPanel1.add(tdni, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 10, 170, -1));
+
+        eliminar.setText("Baja Cliente");
+        eliminar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                eliminarActionPerformed(evt);
+            }
+        });
+        jPanel1.add(eliminar, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 20, -1, -1));
+
+        modificar.setText("Modificar Cliente");
+        modificar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                modificarActionPerformed(evt);
+            }
+        });
+        jPanel1.add(modificar, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 20, -1, -1));
+
+        jButton1.setText("Menú principal");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+        jPanel1.add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 80, -1, -1));
+
+        jButtonRecargar.setText("<--");
+        jButtonRecargar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonRecargarActionPerformed(evt);
+            }
+        });
+        jPanel1.add(jButtonRecargar, new org.netbeans.lib.awtextra.AbsoluteConstraints(660, 100, 70, -1));
 
         getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 290, 870, 140));
 
@@ -254,19 +298,192 @@ public class Clientes extends javax.swing.JFrame {
             verCli.setVisible(true);
             this.dispose();
         }
+
     }//GEN-LAST:event_jButtonVerActionPerformed
 
-    private void jButtonBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonBuscarActionPerformed
+    private void buscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buscarActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jButtonBuscarActionPerformed
+              try {
+                String dni = tdni.getText().trim();
+                String apellidos = apellido.getText().trim();
+                String usuario = Ttelefono.getText().trim();
 
-    private void jButtonBajaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonBajaActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButtonBajaActionPerformed
+                StringBuilder queryBuilder = new StringBuilder("http://localhost:8080/cliente/find-client?");
+                boolean hasParams = false;
 
-    private void jButtonModificarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonModificarActionPerformed
+                if (!dni.isEmpty()) {
+                    queryBuilder.append("dni=").append(URLEncoder.encode(dni, "UTF-8"));
+                    hasParams = true;
+                }
+
+                if (!apellidos.isEmpty()) {
+                    if (hasParams) queryBuilder.append("&");
+                    queryBuilder.append("apellidos=").append(URLEncoder.encode(apellidos, "UTF-8"));
+                    hasParams = true;
+                }
+
+                if (!usuario.isEmpty()) {
+                    if (hasParams) queryBuilder.append("&");
+                    queryBuilder.append("telefono=").append(URLEncoder.encode(usuario, "UTF-8"));
+                }
+
+                URL url = new URL(queryBuilder.toString());
+                HttpURLConnection con = (HttpURLConnection) url.openConnection();
+                con.setRequestMethod("GET");
+
+                int responseCode = con.getResponseCode();
+                if (responseCode == HttpURLConnection.HTTP_OK) {
+                    try (BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()))) {
+                        String linea;
+                        StringBuilder datosLeidos = new StringBuilder();
+                        while ((linea = in.readLine()) != null) {
+                            datosLeidos.append(linea);
+                        }
+
+                        String json = datosLeidos.toString();
+                        if (json.equals("[]")) {
+                            JOptionPane.showMessageDialog(this, "No se encontraron clientes.");
+                            tablaClientes.setModel(new DefaultTableModel(new String[]{"Nombre","Apellidos","Telefono","DNI","Fecha Bono","Sesiones Gastadas","Pies de Gato","Menor de edad","Id"}, 0));
+                        } else {
+                            cargarDatosTabla(new BufferedReader(new StringReader(json)));
+                        }
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(this, "Error al obtener los datos");
+                }
+
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Error en la búsqueda: " + ex.getMessage());
+            }
+        
+    }//GEN-LAST:event_buscarActionPerformed
+
+    private void eliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_eliminarActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jButtonModificarActionPerformed
+         int fila = tablaClientes.getSelectedRow();
+
+         if (fila == -1) {
+             JOptionPane.showMessageDialog(this, "Seleccionar cliente a eliminar");
+             return;
+         }
+
+         int confirmacion = JOptionPane.showConfirmDialog(this, "¿Deseas borrar el cliente?", "Confirmar borrado", JOptionPane.YES_NO_OPTION);
+         if (confirmacion != JOptionPane.YES_OPTION) return;
+
+         try {
+               Long id = Long.parseLong((String) tablaClientes.getValueAt(fila, 8));
+                URL url = new URL("http://localhost:8080/cliente/" + id);
+                HttpURLConnection con = (HttpURLConnection) url.openConnection();
+                con.setRequestMethod("DELETE");
+                con.connect();
+
+                int responseCode = con.getResponseCode();
+                if (responseCode == HttpURLConnection.HTTP_OK) {
+                    JOptionPane.showMessageDialog(this, "Empleado eliminado correctamente");
+                    cargarClientes();
+                } else {
+                    JOptionPane.showMessageDialog(this, "Error al eliminar el empleado. Código: " + responseCode);
+                }
+
+         } catch (Exception ex) {
+             ex.printStackTrace();
+             JOptionPane.showMessageDialog(this, "Error en la operación: " + ex.getMessage());
+         }
+                                 
+    }//GEN-LAST:event_eliminarActionPerformed
+
+    private void modificarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_modificarActionPerformed
+        // TODO add your handling code here:
+        int fila = tablaClientes.getSelectedRow();
+
+        if (fila == -1) {
+            JOptionPane.showMessageDialog(this, "Selecciona un cliente para modificar");
+            return;
+        }
+
+        try {
+            // Suponiendo que la columna 8 es el ID
+            Long id = Long.parseLong(tablaClientes.getValueAt(fila, 8).toString());
+
+            // Petición GET al backend para obtener los datos del empleado
+            URL url = new URL("http://localhost:8080/cliente/find?id=" + id);
+            HttpURLConnection con = (HttpURLConnection) url.openConnection();
+            con.setRequestMethod("GET");
+            con.connect();
+
+            int responseCode = con.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                try (BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream(), "utf-8"))) {
+                    StringBuilder response = new StringBuilder();
+                    String line;
+                    while ((line = in.readLine()) != null) {
+                        response.append(line);
+                    }
+
+                    // Convertir JSON a objeto Empleado
+                    Cliente cliente = new Gson().fromJson(response.toString(), Cliente.class);
+
+                    // Abrir la ventana de modificación con los datos del empleado
+                    ModificarCliente me = new ModificarCliente(cliente);
+                    me.setVisible(true);
+                    this.dispose(); // Cierra la ventana actual (opcional)
+
+                }
+            } else {
+                JOptionPane.showMessageDialog(this, "Error al obtener datos del empleado. Código: " + responseCode);
+            }
+
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Error en la operación: " + ex.getMessage());
+            }
+                                               
+
+    }//GEN-LAST:event_modificarActionPerformed
+
+    private void jButtonAltaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonAltaActionPerformed
+        // TODO add your handling code here:
+        AltaCliente ac = new AltaCliente();
+        ac.setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_jButtonAltaActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // TODO add your handling code here:
+        Principal p = new Principal();
+        p.setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jButtonRecargarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonRecargarActionPerformed
+        // TODO add your handling code here:
+        cargarClientes();
+    }//GEN-LAST:event_jButtonRecargarActionPerformed
+
+    private void tdniMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tdniMouseClicked
+        // TODO add your handling code here:
+        tdni.setEnabled(true);
+        apellido.setEnabled(false);
+        Ttelefono.setEnabled(false);
+        limpiarBusqueda();
+    }//GEN-LAST:event_tdniMouseClicked
+
+    private void apellidoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_apellidoMouseClicked
+        // TODO add your handling code here:
+        tdni.setEnabled(false);
+        apellido.setEnabled(true);
+        Ttelefono.setEnabled(false);
+        limpiarBusqueda();
+    }//GEN-LAST:event_apellidoMouseClicked
+
+    private void TtelefonoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_TtelefonoMouseClicked
+        // TODO add your handling code here:
+        tdni.setEnabled(false);
+        apellido.setEnabled(false);
+        Ttelefono.setEnabled(true);
+        limpiarBusqueda();
+    }//GEN-LAST:event_TtelefonoMouseClicked
 
     /**
      * @param args the command line arguments
@@ -305,12 +522,13 @@ public class Clientes extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JTextField Ttelefono;
     private javax.swing.JTextField apellido;
-    private javax.swing.JTextField dni;
+    private javax.swing.JButton buscar;
+    private javax.swing.JButton eliminar;
+    private javax.swing.JButton jButton1;
     private javax.swing.JButton jButtonAlta;
-    private javax.swing.JButton jButtonBaja;
-    private javax.swing.JButton jButtonBuscar;
-    private javax.swing.JButton jButtonModificar;
+    private javax.swing.JButton jButtonRecargar;
     private javax.swing.JButton jButtonVer;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
@@ -318,7 +536,8 @@ public class Clientes extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel4;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JButton modificar;
     private javax.swing.JTable tablaClientes;
-    private javax.swing.JTextField telefono;
+    private javax.swing.JTextField tdni;
     // End of variables declaration//GEN-END:variables
 }
