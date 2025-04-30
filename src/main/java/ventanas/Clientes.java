@@ -12,7 +12,10 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.time.LocalDate;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
+import models.Cliente;
 
 /**
  *
@@ -60,8 +63,8 @@ public class Clientes extends javax.swing.JFrame {
                         obj.get("dni").getAsString(),
                         obj.get("fechaBono").getAsString(),
                         obj.get("sesionesGastadas").getAsString(),
-                        obj.get("pieGato") != null ? (obj.get("pieGato").getAsBoolean() ? "Sí" : "No") : "",
-                        obj.get("menorEdad") != null ? (obj.get("menorEdad").getAsBoolean() ? "Sí" : "No") : "",
+                        obj.get("pieGato").getAsString(),
+                        obj.get("menorEdad").getAsString(),
                         obj.get("id").getAsString()
                         };
                         //Al modelo le añadimos los datos como una fila
@@ -79,8 +82,8 @@ public class Clientes extends javax.swing.JFrame {
                         obj.get("dni").getAsString(),
                         obj.get("fechaBono").getAsString(),
                         obj.get("sesionesGastadas").getAsString(),
-                        obj.get("pieGato") != null ? (obj.get("pieGato").getAsBoolean() ? "Sí" : "No") : "",
-                        obj.get("menorEdad") != null ? (obj.get("menorEdad").getAsBoolean() ? "Sí" : "No") : "",
+                        obj.get("pieGato").getAsString(),
+                        obj.get("menorEdad").getAsString(),
                         obj.get("id").getAsString()
                         };
                     model.addRow(datos); 
@@ -132,7 +135,7 @@ public class Clientes extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         tablaClientes = new javax.swing.JTable();
         jPanel1 = new javax.swing.JPanel();
-        jButtonBaja = new javax.swing.JButton();
+        jButtonVer = new javax.swing.JButton();
         jButtonBuscar = new javax.swing.JButton();
         jButtonAlta = new javax.swing.JButton();
         jLabel2 = new javax.swing.JLabel();
@@ -141,8 +144,8 @@ public class Clientes extends javax.swing.JFrame {
         apellido = new javax.swing.JTextField();
         telefono = new javax.swing.JTextField();
         dni = new javax.swing.JTextField();
-        jButtonBaja1 = new javax.swing.JButton();
-        jButtonBaja2 = new javax.swing.JButton();
+        jButtonBaja = new javax.swing.JButton();
+        jButtonModificar = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -172,13 +175,13 @@ public class Clientes extends javax.swing.JFrame {
         jPanel1.setOpaque(false);
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jButtonBaja.setText("Ver Cliente");
-        jButtonBaja.addActionListener(new java.awt.event.ActionListener() {
+        jButtonVer.setText("Ver Cliente");
+        jButtonVer.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonBajaActionPerformed(evt);
+                jButtonVerActionPerformed(evt);
             }
         });
-        jPanel1.add(jButtonBaja, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 20, -1, -1));
+        jPanel1.add(jButtonVer, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 20, -1, -1));
 
         jButtonBuscar.setText("Buscar");
         jButtonBuscar.addActionListener(new java.awt.event.ActionListener() {
@@ -203,21 +206,21 @@ public class Clientes extends javax.swing.JFrame {
         jPanel1.add(telefono, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 70, 170, -1));
         jPanel1.add(dni, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 10, 170, -1));
 
-        jButtonBaja1.setText("Baja Cliente");
-        jButtonBaja1.addActionListener(new java.awt.event.ActionListener() {
+        jButtonBaja.setText("Baja Cliente");
+        jButtonBaja.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonBaja1ActionPerformed(evt);
+                jButtonBajaActionPerformed(evt);
             }
         });
-        jPanel1.add(jButtonBaja1, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 60, -1, -1));
+        jPanel1.add(jButtonBaja, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 60, -1, -1));
 
-        jButtonBaja2.setText("Modificar Cliente");
-        jButtonBaja2.addActionListener(new java.awt.event.ActionListener() {
+        jButtonModificar.setText("Modificar Cliente");
+        jButtonModificar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonBaja2ActionPerformed(evt);
+                jButtonModificarActionPerformed(evt);
             }
         });
-        jPanel1.add(jButtonBaja2, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 60, -1, -1));
+        jPanel1.add(jButtonModificar, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 60, -1, -1));
 
         getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 290, 870, 140));
 
@@ -228,21 +231,42 @@ public class Clientes extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButtonBajaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonBajaActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButtonBajaActionPerformed
+    private void jButtonVerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonVerActionPerformed
+        //Comprobar si el usuario ha seleccionado algun cliente
+        int fila = tablaClientes.getSelectedRow();
+        
+        if (fila == -1){
+            JOptionPane.showMessageDialog(this, "Seleccione un cliente para visualizar", "Selección", JOptionPane.WARNING_MESSAGE);
+        }
+        else {
+            Cliente cliente = new Cliente(Long.parseLong(String.valueOf(tablaClientes.getModel().getValueAt(fila, 8))), 
+                                            String.valueOf(tablaClientes.getModel().getValueAt(fila, 0)), 
+                                            String.valueOf(tablaClientes.getModel().getValueAt(fila, 1)),
+                                            String.valueOf(tablaClientes.getModel().getValueAt(fila, 2)), 
+                                            String.valueOf(tablaClientes.getModel().getValueAt(fila, 3)),
+                                            LocalDate.parse(String.valueOf(tablaClientes.getModel().getValueAt(fila, 4))), 
+                                            Integer.parseInt(String.valueOf(tablaClientes.getModel().getValueAt(fila, 5))), 
+                                            Boolean.parseBoolean(String.valueOf(tablaClientes.getModel().getValueAt(fila, 6))),
+                                            Boolean.parseBoolean(String.valueOf(tablaClientes.getModel().getValueAt(fila, 7))));
+        
+            //Abrir al ventana de VerCliente pasandole los datos del cliente seleccionado
+            VerCliente verCli = new VerCliente(cliente);
+            verCli.setVisible(true);
+            this.dispose();
+        }
+    }//GEN-LAST:event_jButtonVerActionPerformed
 
     private void jButtonBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonBuscarActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jButtonBuscarActionPerformed
 
-    private void jButtonBaja1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonBaja1ActionPerformed
+    private void jButtonBajaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonBajaActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jButtonBaja1ActionPerformed
+    }//GEN-LAST:event_jButtonBajaActionPerformed
 
-    private void jButtonBaja2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonBaja2ActionPerformed
+    private void jButtonModificarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonModificarActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jButtonBaja2ActionPerformed
+    }//GEN-LAST:event_jButtonModificarActionPerformed
 
     /**
      * @param args the command line arguments
@@ -285,9 +309,9 @@ public class Clientes extends javax.swing.JFrame {
     private javax.swing.JTextField dni;
     private javax.swing.JButton jButtonAlta;
     private javax.swing.JButton jButtonBaja;
-    private javax.swing.JButton jButtonBaja1;
-    private javax.swing.JButton jButtonBaja2;
     private javax.swing.JButton jButtonBuscar;
+    private javax.swing.JButton jButtonModificar;
+    private javax.swing.JButton jButtonVer;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;

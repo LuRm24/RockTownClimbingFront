@@ -4,19 +4,40 @@
  */
 package ventanas;
 
+import java.text.SimpleDateFormat;
+import java.time.ZoneId;
+import java.util.Date;
+import models.Cliente;
+
 /**
  *
  * @author pedro
  */
 public class VerCliente extends javax.swing.JFrame {
 
+    private Cliente cliente = null;
+    
     /**
      * Creates new form AltaCliente
      */
-    public VerCliente() {
+    public VerCliente(Cliente cliente) {
         initComponents();
+        //Le pasamos el cliente de la ventana de Clientes
+        this.cliente = cliente;
+        cargarDatosCliente();
     }
 
+    private void cargarDatosCliente() {
+        SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy");
+        
+        nombre.setText(cliente.getNombre());
+        dni.setText(cliente.getDni());
+        apellidos.setText(cliente.getApellidos());
+        telefono.setText(cliente.getTelefono());
+        fecha.setDate(Date.from(cliente.getFechaBono().atStartOfDay(ZoneId.systemDefault()).toInstant()));
+        pieGato.setSelected(cliente.isPieGato());
+    }
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -29,18 +50,18 @@ public class VerCliente extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         jPanel1 = new javax.swing.JPanel();
         jLabel3 = new javax.swing.JLabel();
-        jTextField3 = new javax.swing.JTextField();
+        dni = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
+        nombre = new javax.swing.JTextField();
         jLabel5 = new javax.swing.JLabel();
-        jTextField2 = new javax.swing.JTextField();
-        jTextField4 = new javax.swing.JTextField();
+        telefono = new javax.swing.JTextField();
+        apellidos = new javax.swing.JTextField();
         jLabel6 = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
-        jDateChooser1 = new com.toedter.calendar.JDateChooser();
+        fecha = new com.toedter.calendar.JDateChooser();
         jLabel8 = new javax.swing.JLabel();
-        jComboBox1 = new javax.swing.JComboBox<>();
-        jCheckBox1 = new javax.swing.JCheckBox();
+        tipoBono = new javax.swing.JComboBox<>();
+        pieGato = new javax.swing.JCheckBox();
         jLabel9 = new javax.swing.JLabel();
         jButton1 = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -64,30 +85,30 @@ public class VerCliente extends javax.swing.JFrame {
 
         jLabel3.setText("DNI");
         jPanel1.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 40, 30, -1));
-        jPanel1.add(jTextField3, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 40, 170, -1));
+        jPanel1.add(dni, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 40, 170, -1));
 
         jLabel4.setText("Nombre");
         jPanel1.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 70, -1, -1));
-        jPanel1.add(jTextField1, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 70, 170, -1));
+        jPanel1.add(nombre, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 70, 170, -1));
 
         jLabel5.setText("Reservas");
         jPanel1.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 290, -1, -1));
-        jPanel1.add(jTextField2, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 130, 240, -1));
-        jPanel1.add(jTextField4, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 100, 240, -1));
+        jPanel1.add(telefono, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 130, 240, -1));
+        jPanel1.add(apellidos, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 100, 240, -1));
 
         jLabel6.setText("Apellido");
         jPanel1.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 100, -1, -1));
 
         jLabel7.setText("Teléfono");
         jPanel1.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 130, -1, -1));
-        jPanel1.add(jDateChooser1, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 160, 170, 32));
+        jPanel1.add(fecha, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 160, 170, 32));
 
         jLabel8.setText("Fecha");
         jPanel1.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 160, -1, -1));
 
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Bono de 10 entradas (Adultos)", "Bono de 10 entradas (Niño)", "Abonos de entrada libre", "Abono mensual (Adulto)", "Abono mensual (Niños)", "Abono trimestral (Adultos)", "Abono semestral (Adultos)", "Abono anual (Adultos)", "Clases escalada 2 días a la semana (Adultos)", "Acceso libre a RockTown + 2 clases a la semana (Adultos)", "Clases escalada 1 día a la semana (Adultos)", "Una hora de clase a la semana (Niños)", "Dos horas a la semana (Niños)", "Dos horas a la semana + acceso libre al centro (Niños)" }));
-        jPanel1.add(jComboBox1, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 200, 360, -1));
-        jPanel1.add(jCheckBox1, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 240, -1, -1));
+        tipoBono.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Bono de 10 entradas (Adultos)", "Bono de 10 entradas (Niño)", "Abono mensual (Adulto)", "Abono mensual (Niños)", "Abono trimestral (Adultos)", "Abono semestral (Adultos)", "Abono anual (Adultos)", "Clases escalada 2 días a la semana (Adultos)", "Acceso libre a RockTown + 2 clases a la semana (Adultos)", "Clases escalada 1 día a la semana (Adultos)", "Una hora de clase a la semana (Niños)", "Dos horas a la semana (Niños)", "Dos horas a la semana + acceso libre al centro (Niños)" }));
+        jPanel1.add(tipoBono, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 200, 360, -1));
+        jPanel1.add(pieGato, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 240, -1, -1));
 
         jLabel9.setText("Tipo de bono");
         jPanel1.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 200, -1, -1));
@@ -191,12 +212,12 @@ public class VerCliente extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JTextField apellidos;
+    private javax.swing.JTextField dni;
+    private com.toedter.calendar.JDateChooser fecha;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
-    private javax.swing.JCheckBox jCheckBox1;
-    private javax.swing.JComboBox<String> jComboBox1;
-    private com.toedter.calendar.JDateChooser jDateChooser1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel2;
@@ -210,9 +231,9 @@ public class VerCliente extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable1;
-    private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextField jTextField2;
-    private javax.swing.JTextField jTextField3;
-    private javax.swing.JTextField jTextField4;
+    private javax.swing.JTextField nombre;
+    private javax.swing.JCheckBox pieGato;
+    private javax.swing.JTextField telefono;
+    private javax.swing.JComboBox<String> tipoBono;
     // End of variables declaration//GEN-END:variables
 }
