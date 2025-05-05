@@ -23,7 +23,7 @@ import models.TipoEntrada;
 
 /**
  *
- * @author pedro
+ * @author luciarodriguezmartin
  */
 public class ModificarCliente extends javax.swing.JFrame {
 

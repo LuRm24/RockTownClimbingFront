@@ -13,15 +13,8 @@ import javax.swing.JOptionPane;
 import models.Cliente;
 
 
-/**
- *
- * @author pedro
- */
 public class AltaCliente extends javax.swing.JFrame {
 
-    /**
-     * Creates new form AltaCliente
-     */
     public AltaCliente() {
         initComponents();
     }

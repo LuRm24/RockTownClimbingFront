@@ -21,7 +21,7 @@ import models.TipoEntrada;
 
 /**
  *
- * @author pedro
+ * @author luciarodriguezmartin
  */
 public class VerCliente extends javax.swing.JFrame {
 

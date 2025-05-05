@@ -13,7 +13,7 @@ import models.Empleado;
 
 /**
  *
- * @author pedro
+ * @author luciarodriguezmartin
  */
 public class ModificarEmpleado extends javax.swing.JFrame {
 

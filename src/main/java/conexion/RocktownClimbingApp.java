@@ -10,8 +10,6 @@ import ventanas.Interfaz;
  *
  * @author luciarodriguezmartin
  */
-
-
 public class RocktownClimbingApp {
     public static void main(String[] args) {
         java.awt.EventQueue.invokeLater(() -> {

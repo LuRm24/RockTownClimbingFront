@@ -4,10 +4,7 @@
  */
 package ventanas;
 
-/**
- *
- * @author pedro
- */
+
 public class ActividadesSala extends javax.swing.JFrame {
 
     /**

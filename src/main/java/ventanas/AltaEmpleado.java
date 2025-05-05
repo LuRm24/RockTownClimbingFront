@@ -12,15 +12,8 @@ import java.net.URL;
 import javax.swing.JOptionPane;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-/**
- *
- * @author pedro
- */
 public class AltaEmpleado extends javax.swing.JFrame {
 
-    /**
-     * Creates new form AltaCliente
-     */
     public AltaEmpleado() {
         initComponents();
     }
