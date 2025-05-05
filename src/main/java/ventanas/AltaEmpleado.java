@@ -14,6 +14,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 public class AltaEmpleado extends javax.swing.JFrame {
 
+    /**
+     * Creates new form AltaCliente
+     */
     public AltaEmpleado() {
         initComponents();
     }

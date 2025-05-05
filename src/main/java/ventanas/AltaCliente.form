@@ -155,26 +155,11 @@
         <Component class="javax.swing.JComboBox" name="tipoBono">
           <Properties>
             <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-              <StringArray count="14">
-                <StringItem index="0" value="Bono de 10 entradas (Adultos)"/>
-                <StringItem index="1" value="Bono de 10 entradas (Ni&#xf1;o)"/>
-                <StringItem index="2" value="Abonos de entrada libre"/>
-                <StringItem index="3" value="Abono mensual (Adulto)"/>
-                <StringItem index="4" value="Abono mensual (Ni&#xf1;os)"/>
-                <StringItem index="5" value="Abono trimestral (Adultos)"/>
-                <StringItem index="6" value="Abono semestral (Adultos)"/>
-                <StringItem index="7" value="Abono anual (Adultos)"/>
-                <StringItem index="8" value="Clases escalada 2 d&#xed;as a la semana (Adultos)"/>
-                <StringItem index="9" value="Acceso libre a RockTown + 2 clases a la semana (Adultos)"/>
-                <StringItem index="10" value="Clases escalada 1 d&#xed;a a la semana (Adultos)"/>
-                <StringItem index="11" value="Una hora de clase a la semana (Ni&#xf1;os)"/>
-                <StringItem index="12" value="Dos horas a la semana (Ni&#xf1;os)"/>
-                <StringItem index="13" value="Dos horas a la semana + acceso libre al centro (Ni&#xf1;os)"/>
-              </StringArray>
+              <StringArray count="0"/>
             </Property>
           </Properties>
           <AuxValues>
-            <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
+            <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;TipoEntrada&gt;"/>
           </AuxValues>
           <Constraints>
             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">

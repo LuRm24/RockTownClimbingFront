@@ -11,10 +11,6 @@ import java.net.URL;
 import javax.swing.JOptionPane;
 import models.Empleado;
 
-/**
- *
- * @author luciarodriguezmartin
- */
 public class ModificarEmpleado extends javax.swing.JFrame {
 
     

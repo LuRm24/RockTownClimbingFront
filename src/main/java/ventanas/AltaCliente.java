@@ -5,21 +5,81 @@
 package ventanas;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.time.LocalDate;
 import java.time.ZoneId;
 import javax.swing.JOptionPane;
 import models.Cliente;
+import models.TipoEntrada;
+import utils.LocalDateAdapter;
 
 
 public class AltaCliente extends javax.swing.JFrame {
 
+    /**
+     * Creates new form AltaCliente
+     */
     public AltaCliente() {
         initComponents();
+        cargarTiposEntrada();
     }
     
 
+    private void cargarTiposEntrada() {
+        try {
+            URL url = new URL("http://localhost:8080/tipo_entrada/select-all");
+            HttpURLConnection con = (HttpURLConnection) url.openConnection();
+            con.setRequestMethod("GET");
+
+            BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream(), "utf-8"));
+
+            cargarDatosCombo(br);
+
+        } catch (IOException io) {
+            io.printStackTrace();
+        }
+    }
+    
+    private void cargarDatosCombo(BufferedReader entrada) {
+        try {
+            // Leer todo el contenido del BufferedReader
+            String datosLeidos = "";
+            String linea;
+            while ((linea = entrada.readLine()) != null) {
+                datosLeidos += linea;
+            }
+            
+            if (datosLeidos.startsWith("[")) {
+                // Parsear como JsonArray
+                JsonArray jsonArray = JsonParser.parseString(datosLeidos).getAsJsonArray();
+
+                //Recorrer el json e ir añadiendo las filas
+                for (int i = 0; i < jsonArray.size(); i++) {
+                    JsonObject obj = jsonArray.get(i).getAsJsonObject();
+
+                    //Añadimos los datos de la fila en un array
+                   TipoEntrada datos = new TipoEntrada(obj.get("id").getAsLong(), obj.get("tipo").getAsString(), 
+                           obj.get("descripcion").getAsString(), obj.get("publicoDestino").getAsString(), 
+                           obj.get("frecuencia").getAsString(), obj.get("precio").getAsDouble(), obj.get("notas").getAsString());
+
+                    //Al combo le añadimos el objeto completo
+                    tipoBono.addItem(datos);
+                }
+            }
+        }
+        catch (IOException io){
+            io.printStackTrace();
+        }
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -86,7 +146,6 @@ public class AltaCliente extends javax.swing.JFrame {
         jLabel8.setText("Fecha");
         jPanel1.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 190, -1, -1));
 
-        tipoBono.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Bono de 10 entradas (Adultos)", "Bono de 10 entradas (Niño)", "Abonos de entrada libre", "Abono mensual (Adulto)", "Abono mensual (Niños)", "Abono trimestral (Adultos)", "Abono semestral (Adultos)", "Abono anual (Adultos)", "Clases escalada 2 días a la semana (Adultos)", "Acceso libre a RockTown + 2 clases a la semana (Adultos)", "Clases escalada 1 día a la semana (Adultos)", "Una hora de clase a la semana (Niños)", "Dos horas a la semana (Niños)", "Dos horas a la semana + acceso libre al centro (Niños)" }));
         jPanel1.add(tipoBono, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 230, 320, -1));
         jPanel1.add(pieGato, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 270, -1, -1));
 
@@ -138,6 +197,7 @@ public class AltaCliente extends javax.swing.JFrame {
             nuevoCliente.setNombre(nombre.getText());
             nuevoCliente.setApellidos(apellido.getText());
             nuevoCliente.setTelefono(telefono.getText());
+            nuevoCliente.setTipo_entrada((TipoEntrada) tipoBono.getSelectedItem());
             // Fecha
             if (fecha.getDate() != null) {
                 nuevoCliente.setFechaBono(fecha.getDate().toInstant()
@@ -153,11 +213,12 @@ public class AltaCliente extends javax.swing.JFrame {
             nuevoCliente.setMenorEdad(edadNum < 18);
 
             // Crear Gson con soporte para LocalDate
-            
-
-            
+            Gson gson = new GsonBuilder()
+            .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
+            .create();
+   
             // Serializar a JSON
-            String json = new Gson().toJson(nuevoCliente);
+            String json = gson.toJson(nuevoCliente);
 
             // Crear conexión HTTP
             URL url = new URL("http://localhost:8080/cliente/insert");
@@ -175,8 +236,8 @@ public class AltaCliente extends javax.swing.JFrame {
             int responseCode = con.getResponseCode();
             if (responseCode == HttpURLConnection.HTTP_OK) {
                 JOptionPane.showMessageDialog(this, "Cliente insertado correctamente");
-                Empleados emp = new Empleados();
-                emp.setVisible(true);
+                Clientes client = new Clientes();
+                client.setVisible(true);
                 this.dispose();
             } else {
                 JOptionPane.showMessageDialog(this, "Error al insertar el cliente");
@@ -248,6 +309,6 @@ public class AltaCliente extends javax.swing.JFrame {
     private javax.swing.JTextField nombre;
     private javax.swing.JCheckBox pieGato;
     private javax.swing.JTextField telefono;
-    private javax.swing.JComboBox<String> tipoBono;
+    private javax.swing.JComboBox<TipoEntrada> tipoBono;
     // End of variables declaration//GEN-END:variables
 }

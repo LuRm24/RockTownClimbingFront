@@ -4,7 +4,6 @@
  */
 package ventanas;
 
-
 public class Actividades extends javax.swing.JFrame {
 
     /**

@@ -5,6 +5,7 @@
 package ventanas;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -20,11 +21,8 @@ import java.util.Date;
 import javax.swing.JOptionPane;
 import models.Cliente;
 import models.TipoEntrada;
+import utils.LocalDateAdapter;
 
-/**
- *
- * @author luciarodriguezmartin
- */
 public class ModificarCliente extends javax.swing.JFrame {
 
     private Cliente cliente;
@@ -259,9 +257,17 @@ public class ModificarCliente extends javax.swing.JFrame {
 
                 // Pie de gato
                 cliente.setPieGato(pieGato.isSelected());
+                
+                //Tipo de bono
+                cliente.setTipo_entrada((TipoEntrada) tipoBono.getSelectedItem());
 
+                // Crear Gson con soporte para LocalDate
+                Gson gson = new GsonBuilder()
+                .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
+                .create();
+                
                 // Serializar a JSON
-                String json = new Gson().toJson(cliente);
+                String json = gson.toJson(cliente);
 
                 // Enviar al backend
                 URL url = new URL("http://localhost:8080/cliente/update");

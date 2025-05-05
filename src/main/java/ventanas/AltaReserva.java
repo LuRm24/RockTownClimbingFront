@@ -4,10 +4,11 @@
  */
 package ventanas;
 
-
 public class AltaReserva extends javax.swing.JFrame {
 
-   
+    /**
+     * Creates new form AltaCliente
+     */
     public AltaReserva() {
         initComponents();
     }

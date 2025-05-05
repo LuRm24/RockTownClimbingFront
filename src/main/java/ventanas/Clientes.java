@@ -5,6 +5,7 @@
 package ventanas;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -20,6 +21,7 @@ import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import models.Cliente;
 import models.TipoEntrada;
+import utils.LocalDateAdapter;
 
 /**
  *
@@ -69,7 +71,7 @@ public class Clientes extends javax.swing.JFrame {
                         obj.get("sesionesGastadas").getAsString(),
                         obj.get("pieGato").getAsString(),
                         obj.get("menorEdad").getAsString(),
-                        obj.get("tipo_entrada").getAsString(),
+                        obj.getAsJsonObject("tipo_entrada").get("descripcion").getAsString(),
                         obj.get("id").getAsString()
                         };
                         //Al modelo le añadimos los datos como una fila
@@ -89,7 +91,7 @@ public class Clientes extends javax.swing.JFrame {
                         obj.get("sesionesGastadas").getAsString(),
                         obj.get("pieGato").getAsString(),
                         obj.get("menorEdad").getAsString(),
-                        obj.get("tipo_entrada").getAsString(),
+                        obj.getAsJsonObject("tipo_entrada").get("descripcion").getAsString(),
                         obj.get("id").getAsString()
                         };
                     model.addRow(datos); 
@@ -284,23 +286,49 @@ public class Clientes extends javax.swing.JFrame {
         
         if (fila == -1){
             JOptionPane.showMessageDialog(this, "Seleccione un cliente para visualizar", "Selección", JOptionPane.WARNING_MESSAGE);
+            return;
         }
-        else {
-            Cliente cliente = new Cliente(Long.parseLong(String.valueOf(tablaClientes.getModel().getValueAt(fila, 9))), 
-                                            String.valueOf(tablaClientes.getModel().getValueAt(fila, 0)), 
-                                            String.valueOf(tablaClientes.getModel().getValueAt(fila, 1)),
-                                            String.valueOf(tablaClientes.getModel().getValueAt(fila, 2)), 
-                                            String.valueOf(tablaClientes.getModel().getValueAt(fila, 3)),
-                                            LocalDate.parse(String.valueOf(tablaClientes.getModel().getValueAt(fila, 4))), 
-                                            Integer.parseInt(String.valueOf(tablaClientes.getModel().getValueAt(fila, 5))), 
-                                            Boolean.parseBoolean(String.valueOf(tablaClientes.getModel().getValueAt(fila, 6))),
-                                            Boolean.parseBoolean(String.valueOf(tablaClientes.getModel().getValueAt(fila, 7))),
-                                            (TipoEntrada)tablaClientes.getModel().getValueAt(fila, 8));
         
-            //Abrir al ventana de VerCliente pasandole los datos del cliente seleccionado
-            VerCliente verCli = new VerCliente(cliente);
-            verCli.setVisible(true);
-            this.dispose();
+        try {
+            // Suponiendo que la columna 8 es el ID
+            Long id = Long.parseLong(tablaClientes.getValueAt(fila, 9).toString());
+
+            // Petición GET al backend para obtener los datos del empleado
+            URL url = new URL("http://localhost:8080/cliente/find?id=" + id);
+            HttpURLConnection con = (HttpURLConnection) url.openConnection();
+            con.setRequestMethod("GET");
+            con.connect();
+
+            int responseCode = con.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                try (BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream(), "utf-8"))) {
+                    StringBuilder response = new StringBuilder();
+                    String line;
+                    while ((line = in.readLine()) != null) {
+                        response.append(line);
+                    }
+
+                    // Crear Gson con soporte para LocalDate
+                    Gson gson = new GsonBuilder()
+                    .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
+                    .create();
+            
+                    // Convertir JSON a objeto Empleado
+                    Cliente cliente = gson.fromJson(response.toString(), Cliente.class);
+
+                    // Abrir la ventana de modificación con los datos del empleado
+                    VerCliente ver = new VerCliente(cliente);
+                    ver.setVisible(true);
+                    this.dispose(); // Cierra la ventana actual (opcional)
+
+                }
+            } else {
+                JOptionPane.showMessageDialog(this, "Error al obtener datos del empleado. Código: " + responseCode);
+            }
+
+        } catch (Exception ex) {
+           ex.printStackTrace();
+           JOptionPane.showMessageDialog(this, "Error en la operación: " + ex.getMessage());
         }
 
     }//GEN-LAST:event_jButtonVerActionPerformed
@@ -376,7 +404,7 @@ public class Clientes extends javax.swing.JFrame {
          if (confirmacion != JOptionPane.YES_OPTION) return;
 
          try {
-               Long id = Long.parseLong((String) tablaClientes.getValueAt(fila, 8));
+               Long id = Long.parseLong((String) tablaClientes.getValueAt(fila, 9));
                 URL url = new URL("http://localhost:8080/cliente/" + id);
                 HttpURLConnection con = (HttpURLConnection) url.openConnection();
                 con.setRequestMethod("DELETE");
@@ -408,7 +436,7 @@ public class Clientes extends javax.swing.JFrame {
 
         try {
             // Suponiendo que la columna 8 es el ID
-            Long id = Long.parseLong(tablaClientes.getValueAt(fila, 8).toString());
+            Long id = Long.parseLong(tablaClientes.getValueAt(fila, 9).toString());
 
             // Petición GET al backend para obtener los datos del empleado
             URL url = new URL("http://localhost:8080/cliente/find?id=" + id);
@@ -425,8 +453,13 @@ public class Clientes extends javax.swing.JFrame {
                         response.append(line);
                     }
 
+                    // Crear Gson con soporte para LocalDate
+                    Gson gson = new GsonBuilder()
+                    .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
+                    .create();
+            
                     // Convertir JSON a objeto Empleado
-                    Cliente cliente = new Gson().fromJson(response.toString(), Cliente.class);
+                    Cliente cliente = gson.fromJson(response.toString(), Cliente.class);
 
                     // Abrir la ventana de modificación con los datos del empleado
                     ModificarCliente me = new ModificarCliente(cliente);

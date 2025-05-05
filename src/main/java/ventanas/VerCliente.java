@@ -7,6 +7,7 @@ package ventanas;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -15,30 +16,80 @@ import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.time.ZoneId;
 import java.util.Date;
-import javax.swing.table.DefaultTableModel;
 import models.Cliente;
 import models.TipoEntrada;
 
-/**
- *
- * @author luciarodriguezmartin
- */
 public class VerCliente extends javax.swing.JFrame {
 
     private Cliente cliente = null;
     
-    /**
-     * Creates new form AltaCliente
-     */
-    
+  
     
     public VerCliente(Cliente cliente) {
         initComponents();
         //Le pasamos el cliente de la ventana de Clientes
         this.cliente = cliente;
+        cargarTiposEntrada();
         cargarDatosCliente();
+        cambiarColorTexto();
+    }
+    
+    private void cambiarColorTexto() {
+        dni.setDisabledTextColor(Color.black);
+        nombre.setDisabledTextColor(Color.black);
+        apellidos.setDisabledTextColor(Color.black);
+        telefono.setDisabledTextColor(Color.black);
+        fecha.setForeground(Color.black);
+        tipoBono.setForeground(Color.black);
     }
  
+     private void cargarTiposEntrada() {
+        try {
+            URL url = new URL("http://localhost:8080/tipo_entrada/select-all");
+            HttpURLConnection con = (HttpURLConnection) url.openConnection();
+            con.setRequestMethod("GET");
+
+            BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream(), "utf-8"));
+
+            cargarDatosCombo(br);
+
+        } catch (IOException io) {
+            io.printStackTrace();
+        }
+    }
+    
+    private void cargarDatosCombo(BufferedReader entrada) {
+        try {
+            // Leer todo el contenido del BufferedReader
+            String datosLeidos = "";
+            String linea;
+            while ((linea = entrada.readLine()) != null) {
+                datosLeidos += linea;
+            }
+            
+            if (datosLeidos.startsWith("[")) {
+                // Parsear como JsonArray
+                JsonArray jsonArray = JsonParser.parseString(datosLeidos).getAsJsonArray();
+
+                //Recorrer el json e ir añadiendo las filas
+                for (int i = 0; i < jsonArray.size(); i++) {
+                    JsonObject obj = jsonArray.get(i).getAsJsonObject();
+
+                    //Añadimos los datos de la fila en un array
+                   TipoEntrada datos = new TipoEntrada(obj.get("id").getAsLong(), obj.get("tipo").getAsString(), 
+                           obj.get("descripcion").getAsString(), obj.get("publicoDestino").getAsString(), 
+                           obj.get("frecuencia").getAsString(), obj.get("precio").getAsDouble(), obj.get("notas").getAsString());
+
+                    //Al combo le añadimos el objeto completo
+                    tipoBono.addItem(datos);
+                }
+            }
+        }
+        catch (IOException io){
+            io.printStackTrace();
+        }
+    }
+    
     private void cargarDatosCliente() {
         SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy");
         
@@ -48,6 +99,7 @@ public class VerCliente extends javax.swing.JFrame {
         telefono.setText(cliente.getTelefono());
         fecha.setDate(Date.from(cliente.getFechaBono().atStartOfDay(ZoneId.systemDefault()).toInstant()));
         pieGato.setSelected(cliente.isPieGato());
+        tipoBono.setSelectedItem(cliente.getTipo_entrada());
     }
     
     /**
@@ -78,7 +130,7 @@ public class VerCliente extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
         jLabel10 = new javax.swing.JLabel();
-        tipoBono = new javax.swing.JTextField();
+        tipoBono = new javax.swing.JComboBox<>();
         jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -95,15 +147,28 @@ public class VerCliente extends javax.swing.JFrame {
 
         jLabel3.setText("DNI");
         jPanel1.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 40, 30, -1));
+
+        dni.setEnabled(false);
+        dni.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                dniActionPerformed(evt);
+            }
+        });
         jPanel1.add(dni, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 40, 170, -1));
 
         jLabel4.setText("Nombre");
         jPanel1.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 70, -1, -1));
+
+        nombre.setEnabled(false);
         jPanel1.add(nombre, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 70, 170, -1));
 
         jLabel5.setText("Reservas");
         jPanel1.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 290, -1, -1));
+
+        telefono.setEnabled(false);
         jPanel1.add(telefono, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 130, 240, -1));
+
+        apellidos.setEnabled(false);
         jPanel1.add(apellidos, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 100, 240, -1));
 
         jLabel6.setText("Apellido");
@@ -111,10 +176,14 @@ public class VerCliente extends javax.swing.JFrame {
 
         jLabel7.setText("Teléfono");
         jPanel1.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 130, -1, -1));
+
+        fecha.setEnabled(false);
         jPanel1.add(fecha, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 160, 170, 32));
 
         jLabel8.setText("Fecha");
         jPanel1.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 160, -1, -1));
+
+        pieGato.setEnabled(false);
         jPanel1.add(pieGato, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 240, -1, -1));
 
         jLabel9.setText("Tipo de bono");
@@ -139,13 +208,16 @@ public class VerCliente extends javax.swing.JFrame {
                 "Fecha", "Hora", "Sala", "Actividad"
             }
         ));
+        jTable1.setEnabled(false);
         jScrollPane1.setViewportView(jTable1);
 
         jPanel1.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 320, 700, 170));
 
         jLabel10.setText("Pies de gato");
         jPanel1.add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 240, -1, -1));
-        jPanel1.add(tipoBono, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 200, 240, -1));
+
+        tipoBono.setEnabled(false);
+        jPanel1.add(tipoBono, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 200, 330, -1));
 
         getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 80, 750, 570));
 
@@ -162,6 +234,10 @@ public class VerCliente extends javax.swing.JFrame {
            c.setVisible(true);
            this.dispose();
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void dniActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dniActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_dniActionPerformed
 
     /**
      * @param args the command line arguments
@@ -219,6 +295,6 @@ public class VerCliente extends javax.swing.JFrame {
     private javax.swing.JTextField nombre;
     private javax.swing.JCheckBox pieGato;
     private javax.swing.JTextField telefono;
-    private javax.swing.JTextField tipoBono;
+    private javax.swing.JComboBox<TipoEntrada> tipoBono;
     // End of variables declaration//GEN-END:variables
 }
