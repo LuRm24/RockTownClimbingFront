@@ -23,7 +23,10 @@ public class VerCliente extends javax.swing.JFrame {
 
     private Cliente cliente = null;
     
-  
+    /**
+     * Creates new form AltaCliente
+     */
+    
     
     public VerCliente(Cliente cliente) {
         initComponents();

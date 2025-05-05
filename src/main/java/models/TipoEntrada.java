@@ -27,4 +27,12 @@ public class TipoEntrada {
     public String toString() {
         return descripcion + "-" + publicoDestino + "-" + tipo;
     }
+    
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof TipoEntrada)) return false;
+        TipoEntrada that = (TipoEntrada) o;
+        return this.id.equals(that.id);
+    }
 }

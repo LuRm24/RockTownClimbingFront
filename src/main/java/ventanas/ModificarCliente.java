@@ -90,6 +90,7 @@ public class ModificarCliente extends javax.swing.JFrame {
         fecha.setDate(Date.from(cliente.getFechaBono().atStartOfDay(ZoneId.systemDefault()).toInstant()));
         pieGato.setSelected(cliente.isPieGato());
         tipoBono.setSelectedItem(cliente.getTipo_entrada());
+        //falta la edad
     }
     /**
      * This method is called from within the constructor to initialize the form.

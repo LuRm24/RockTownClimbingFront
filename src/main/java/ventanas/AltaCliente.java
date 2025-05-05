@@ -146,6 +146,11 @@ public class AltaCliente extends javax.swing.JFrame {
         jLabel8.setText("Fecha");
         jPanel1.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 190, -1, -1));
 
+        tipoBono.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                tipoBonoActionPerformed(evt);
+            }
+        });
         jPanel1.add(tipoBono, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 230, 320, -1));
         jPanel1.add(pieGato, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 270, -1, -1));
 
@@ -251,6 +256,10 @@ public class AltaCliente extends javax.swing.JFrame {
             
             
     }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void tipoBonoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tipoBonoActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_tipoBonoActionPerformed
 
     /**
      * @param args the command line arguments
