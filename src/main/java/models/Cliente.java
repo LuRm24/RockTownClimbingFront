@@ -15,6 +15,7 @@ public class Cliente {
     private int sesionesGastadas;
     private boolean pieGato;
     private boolean menorEdad;
+    private TipoEntrada tipo_entrada;
 
     //private List<Reserva> reservas = new ArrayList<>();
     //private List<Entrada> entradas = new ArrayList<>();
@@ -22,7 +23,7 @@ public class Cliente {
     public Cliente(){
     }
 
-    public Cliente(Long id, String nombre, String apellidos, String telefono, String dni, LocalDate fechaBono, int sesionesGastadas, boolean pieGato, boolean menorEdad) {
+    public Cliente(Long id, String nombre, String apellidos, String telefono, String dni, LocalDate fechaBono, int sesionesGastadas, boolean pieGato, boolean menorEdad, TipoEntrada tipoEntrada) {
         this.id = id;
         this.nombre = nombre;
         this.apellidos = apellidos;
@@ -32,6 +33,7 @@ public class Cliente {
         this.sesionesGastadas = sesionesGastadas;
         this.pieGato = pieGato;
         this.menorEdad = menorEdad;
+        this.tipo_entrada = tipoEntrada;
     }
 
     public Long getId() {
@@ -105,7 +107,13 @@ public class Cliente {
     public void setMenorEdad(boolean menorEdad) {
         this.menorEdad = menorEdad;
     }
-    
-    
+
+    public TipoEntrada getTipo_entrada() {
+        return tipo_entrada;
+    }
+
+    public void setTipo_entrada(TipoEntrada tipo_entrada) {
+        this.tipo_entrada = tipo_entrada;
+    } 
 }
 

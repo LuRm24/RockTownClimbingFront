@@ -5,7 +5,11 @@
 package ventanas;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
@@ -15,6 +19,7 @@ import java.time.ZoneId;
 import java.util.Date;
 import javax.swing.JOptionPane;
 import models.Cliente;
+import models.TipoEntrada;
 
 /**
  *
@@ -28,7 +33,55 @@ public class ModificarCliente extends javax.swing.JFrame {
         initComponents();
         this.cliente= cliente;
         this.setLocationRelativeTo(null);
+        cargarTiposEntrada();
         rellenarDatosCliente();
+    }
+    
+    private void cargarTiposEntrada() {
+        try {
+            URL url = new URL("http://localhost:8080/tipo_entrada/select-all");
+            HttpURLConnection con = (HttpURLConnection) url.openConnection();
+            con.setRequestMethod("GET");
+
+            BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream(), "utf-8"));
+
+            cargarDatosCombo(br);
+
+        } catch (IOException io) {
+            io.printStackTrace();
+        }
+    }
+    
+    private void cargarDatosCombo(BufferedReader entrada) {
+        try {
+            // Leer todo el contenido del BufferedReader
+            String datosLeidos = "";
+            String linea;
+            while ((linea = entrada.readLine()) != null) {
+                datosLeidos += linea;
+            }
+            
+            if (datosLeidos.startsWith("[")) {
+                // Parsear como JsonArray
+                JsonArray jsonArray = JsonParser.parseString(datosLeidos).getAsJsonArray();
+
+                //Recorrer el json e ir añadiendo las filas
+                for (int i = 0; i < jsonArray.size(); i++) {
+                    JsonObject obj = jsonArray.get(i).getAsJsonObject();
+
+                    //Añadimos los datos de la fila en un array
+                   TipoEntrada datos = new TipoEntrada(obj.get("id").getAsLong(), obj.get("tipo").getAsString(), 
+                           obj.get("descripcion").getAsString(), obj.get("publicoDestino").getAsString(), 
+                           obj.get("frecuencia").getAsString(), obj.get("precio").getAsDouble(), obj.get("notas").getAsString());
+
+                    //Al combo le añadimos el objeto completo
+                    tipoBono.addItem(datos);
+                }
+            }
+        }
+        catch (IOException io){
+            io.printStackTrace();
+        }
     }
     
     private void rellenarDatosCliente() {
@@ -36,23 +89,9 @@ public class ModificarCliente extends javax.swing.JFrame {
         telefono.setText(cliente.getTelefono());
         dni.setText(cliente.getDni());
         apellido.setText(cliente.getApellidos());
-
-        
-        if (cliente.getFechaBono() != null) {
-           Date fechaDate = Date.from(cliente.getFechaBono().atStartOfDay(ZoneId.systemDefault()).toInstant());
-           fecha.setDate(fechaDate);
-        }
-
+        fecha.setDate(Date.from(cliente.getFechaBono().atStartOfDay(ZoneId.systemDefault()).toInstant()));
         pieGato.setSelected(cliente.isPieGato());
-
-        if (cliente.isMenorEdad()) {
-           edad.setText("11"); // edad son 12 años
-        } else {
-           edad.setText("12");
-        }
-
-        //falta tipo de bono que no se como hacerlo aun
-    
+        tipoBono.setSelectedItem(cliente.getTipo_entrada());
     }
     /**
      * This method is called from within the constructor to initialize the form.
@@ -83,6 +122,11 @@ public class ModificarCliente extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         jLabel10 = new javax.swing.JLabel();
         edad = new javax.swing.JTextField();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jTable1 = new javax.swing.JTable();
+        jButton3 = new javax.swing.JButton();
+        jButton2 = new javax.swing.JButton();
+        jLabel11 = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -114,7 +158,6 @@ public class ModificarCliente extends javax.swing.JFrame {
         jLabel8.setText("Fecha");
         jPanel1.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 230, -1, -1));
 
-        tipoBono.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Bono de 10 entradas (Adultos)", "Bono de 10 entradas (Niño)", "Abonos de entrada libre", "Abono mensual (Adulto)", "Abono mensual (Niños)", "Abono trimestral (Adultos)", "Abono semestral (Adultos)", "Abono anual (Adultos)", "Clases escalada 2 días a la semana (Adultos)", "Acceso libre a RockTown + 2 clases a la semana (Adultos)", "Clases escalada 1 día a la semana (Adultos)", "Una hora de clase a la semana (Niños)", "Dos horas a la semana (Niños)", "Dos horas a la semana + acceso libre al centro (Niños)" }));
         jPanel1.add(tipoBono, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 270, 270, -1));
         jPanel1.add(pieGato, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 310, -1, -1));
 
@@ -127,15 +170,15 @@ public class ModificarCliente extends javax.swing.JFrame {
                 cancelarActionPerformed(evt);
             }
         });
-        jPanel1.add(cancelar, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 360, -1, -1));
+        jPanel1.add(cancelar, new org.netbeans.lib.awtextra.AbsoluteConstraints(510, 570, -1, -1));
 
-        modificar.setText("Modificar");
+        modificar.setText("Guardar cambios");
         modificar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 modificarActionPerformed(evt);
             }
         });
-        jPanel1.add(modificar, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 360, -1, -1));
+        jPanel1.add(modificar, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 570, -1, -1));
 
         jLabel2.setFont(new java.awt.Font("Tahoma", 1, 36)); // NOI18N
         jLabel2.setText("Modificar Cliente");
@@ -146,10 +189,44 @@ public class ModificarCliente extends javax.swing.JFrame {
         jPanel1.add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 310, -1, -1));
         jPanel1.add(edad, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 310, 80, -1));
 
-        getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 20, 490, 390));
+        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Fecha", "Hora", "Sala", "Actividad"
+            }
+        ));
+        jScrollPane1.setViewportView(jTable1);
+
+        jPanel1.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 390, 700, 170));
+
+        jButton3.setText("Añadir reserva");
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
+        jPanel1.add(jButton3, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 570, -1, -1));
+
+        jButton2.setText("Eliminar reserva");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
+        jPanel1.add(jButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 570, -1, -1));
+
+        jLabel11.setText("Reservas");
+        jPanel1.add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 370, -1, -1));
+
+        getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 20, 780, 610));
 
         jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/FondoPrincipal.png"))); // NOI18N
-        getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 550, 420));
+        getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 10, 810, 690));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -216,6 +293,14 @@ public class ModificarCliente extends javax.swing.JFrame {
 
     }//GEN-LAST:event_modificarActionPerformed
 
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButton3ActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButton2ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -257,8 +342,11 @@ public class ModificarCliente extends javax.swing.JFrame {
     private javax.swing.JTextField dni;
     private javax.swing.JTextField edad;
     private com.toedter.calendar.JDateChooser fecha;
+    private javax.swing.JButton jButton2;
+    private javax.swing.JButton jButton3;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -268,10 +356,12 @@ public class ModificarCliente extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTable jTable1;
     private javax.swing.JButton modificar;
     private javax.swing.JTextField nombre;
     private javax.swing.JCheckBox pieGato;
     private javax.swing.JTextField telefono;
-    private javax.swing.JComboBox<String> tipoBono;
+    private javax.swing.JComboBox<TipoEntrada> tipoBono;
     // End of variables declaration//GEN-END:variables
 }

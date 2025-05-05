@@ -19,6 +19,7 @@ import java.time.LocalDate;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import models.Cliente;
+import models.TipoEntrada;
 
 /**
  *
@@ -35,17 +36,17 @@ public class Clientes extends javax.swing.JFrame {
     }
     
     
-     private void cargarDatosTabla(BufferedReader entrada) {
+    private void cargarDatosTabla(BufferedReader entrada) {
         try {
             //Definir las columnas de la tabla
-            String[] columnas = {"Nombre", "Apellidos", "Telefono", "DNI", "Fecha Bono", "Sesiones Gastadas", "Pies de Gato", "Menor de edad", "Id"};
+            String[] columnas = {"Nombre", "Apellidos", "Telefono", "DNI", "Fecha Bono", "Sesiones Gastadas", "Pies de Gato", "Menor de edad", "Tipo entrada", "Id"};
             DefaultTableModel model = new DefaultTableModel(columnas, 0);
             
             // Leer todo el contenido del BufferedReader
             String datosLeidos = "";
             String linea;
             while ((linea = entrada.readLine()) != null) {
-            datosLeidos += linea;
+                    datosLeidos += linea;
             }
             //Si la entrada tiene datos
             if (datosLeidos.equals("Datos vacios") == false){
@@ -68,6 +69,7 @@ public class Clientes extends javax.swing.JFrame {
                         obj.get("sesionesGastadas").getAsString(),
                         obj.get("pieGato").getAsString(),
                         obj.get("menorEdad").getAsString(),
+                        obj.get("tipo_entrada").getAsString(),
                         obj.get("id").getAsString()
                         };
                         //Al modelo le añadimos los datos como una fila
@@ -87,6 +89,7 @@ public class Clientes extends javax.swing.JFrame {
                         obj.get("sesionesGastadas").getAsString(),
                         obj.get("pieGato").getAsString(),
                         obj.get("menorEdad").getAsString(),
+                        obj.get("tipo_entrada").getAsString(),
                         obj.get("id").getAsString()
                         };
                     model.addRow(datos); 
@@ -105,18 +108,18 @@ public class Clientes extends javax.swing.JFrame {
 
     private void cargarClientes() {
         try {
-        URL url = new URL("http://localhost:8080/cliente/select-all");
-        HttpURLConnection con = (HttpURLConnection) url.openConnection();
-        con.setRequestMethod("GET");
+            URL url = new URL("http://localhost:8080/cliente/select-all");
+            HttpURLConnection con = (HttpURLConnection) url.openConnection();
+            con.setRequestMethod("GET");
 
-        BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream(), "utf-8"));
+            BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream(), "utf-8"));
 
-        // Aquí usamos el método que ya tienes hecho para cargar datos en la tabla
-        cargarDatosTabla(br);
+            // Aquí usamos el método que ya tienes hecho para cargar datos en la tabla
+            cargarDatosTabla(br);
 
-    } catch (IOException io) {
-        io.printStackTrace();
-    }
+        } catch (IOException io) {
+            io.printStackTrace();
+        }
     }
  
     private void limpiarBusqueda() {
@@ -283,7 +286,7 @@ public class Clientes extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Seleccione un cliente para visualizar", "Selección", JOptionPane.WARNING_MESSAGE);
         }
         else {
-            Cliente cliente = new Cliente(Long.parseLong(String.valueOf(tablaClientes.getModel().getValueAt(fila, 8))), 
+            Cliente cliente = new Cliente(Long.parseLong(String.valueOf(tablaClientes.getModel().getValueAt(fila, 9))), 
                                             String.valueOf(tablaClientes.getModel().getValueAt(fila, 0)), 
                                             String.valueOf(tablaClientes.getModel().getValueAt(fila, 1)),
                                             String.valueOf(tablaClientes.getModel().getValueAt(fila, 2)), 
@@ -291,7 +294,8 @@ public class Clientes extends javax.swing.JFrame {
                                             LocalDate.parse(String.valueOf(tablaClientes.getModel().getValueAt(fila, 4))), 
                                             Integer.parseInt(String.valueOf(tablaClientes.getModel().getValueAt(fila, 5))), 
                                             Boolean.parseBoolean(String.valueOf(tablaClientes.getModel().getValueAt(fila, 6))),
-                                            Boolean.parseBoolean(String.valueOf(tablaClientes.getModel().getValueAt(fila, 7))));
+                                            Boolean.parseBoolean(String.valueOf(tablaClientes.getModel().getValueAt(fila, 7))),
+                                            (TipoEntrada)tablaClientes.getModel().getValueAt(fila, 8));
         
             //Abrir al ventana de VerCliente pasandole los datos del cliente seleccionado
             VerCliente verCli = new VerCliente(cliente);
