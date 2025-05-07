@@ -41,7 +41,7 @@ public class Clientes extends javax.swing.JFrame {
     private void cargarDatosTabla(BufferedReader entrada) {
         try {
             //Definir las columnas de la tabla
-            String[] columnas = {"Nombre", "Apellidos", "Telefono", "DNI", "Fecha Bono", "Sesiones Gastadas", "Pies de Gato", "Menor de edad", "Tipo entrada", "Id"};
+            String[] columnas = {"Nombre", "Apellidos", "Telefono", "DNI", "Fecha Bono", "Sesiones Gastadas", "Pies de Gato", "Edad", "Tipo entrada", "Id"};
             DefaultTableModel model = new DefaultTableModel(columnas, 0);
             
             // Leer todo el contenido del BufferedReader
@@ -70,7 +70,7 @@ public class Clientes extends javax.swing.JFrame {
                         obj.get("fechaBono").getAsString(),
                         obj.get("sesionesGastadas").getAsString(),
                         obj.get("pieGato").getAsString(),
-                        obj.get("menorEdad").getAsString(),
+                        obj.get("edad").getAsString(),
                         obj.getAsJsonObject("tipo_entrada").get("descripcion").getAsString(),
                         obj.get("id").getAsString()
                         };
@@ -90,7 +90,7 @@ public class Clientes extends javax.swing.JFrame {
                         obj.get("fechaBono").getAsString(),
                         obj.get("sesionesGastadas").getAsString(),
                         obj.get("pieGato").getAsString(),
-                        obj.get("menorEdad").getAsString(),
+                        obj.get("edad").getAsString(),
                         obj.getAsJsonObject("tipo_entrada").get("descripcion").getAsString(),
                         obj.get("id").getAsString()
                         };

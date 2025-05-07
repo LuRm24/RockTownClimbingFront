@@ -4,20 +4,13 @@
  */
 package ventanas;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import java.awt.Color;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.time.ZoneId;
 import java.util.Date;
 import models.Cliente;
 import models.TipoEntrada;
+import utils.Utils;
 
 public class VerCliente extends javax.swing.JFrame {
 
@@ -32,7 +25,7 @@ public class VerCliente extends javax.swing.JFrame {
         initComponents();
         //Le pasamos el cliente de la ventana de Clientes
         this.cliente = cliente;
-        cargarTiposEntrada();
+        Utils.cargarTiposEntrada(tipoBono);
         cargarDatosCliente();
         cambiarColorTexto();
     }
@@ -42,57 +35,11 @@ public class VerCliente extends javax.swing.JFrame {
         nombre.setDisabledTextColor(Color.black);
         apellidos.setDisabledTextColor(Color.black);
         telefono.setDisabledTextColor(Color.black);
+        edad.setDisabledTextColor(Color.black);
         fecha.setForeground(Color.black);
         tipoBono.setForeground(Color.black);
     }
- 
-     private void cargarTiposEntrada() {
-        try {
-            URL url = new URL("http://localhost:8080/tipo_entrada/select-all");
-            HttpURLConnection con = (HttpURLConnection) url.openConnection();
-            con.setRequestMethod("GET");
 
-            BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream(), "utf-8"));
-
-            cargarDatosCombo(br);
-
-        } catch (IOException io) {
-            io.printStackTrace();
-        }
-    }
-    
-    private void cargarDatosCombo(BufferedReader entrada) {
-        try {
-            // Leer todo el contenido del BufferedReader
-            String datosLeidos = "";
-            String linea;
-            while ((linea = entrada.readLine()) != null) {
-                datosLeidos += linea;
-            }
-            
-            if (datosLeidos.startsWith("[")) {
-                // Parsear como JsonArray
-                JsonArray jsonArray = JsonParser.parseString(datosLeidos).getAsJsonArray();
-
-                //Recorrer el json e ir añadiendo las filas
-                for (int i = 0; i < jsonArray.size(); i++) {
-                    JsonObject obj = jsonArray.get(i).getAsJsonObject();
-
-                    //Añadimos los datos de la fila en un array
-                   TipoEntrada datos = new TipoEntrada(obj.get("id").getAsLong(), obj.get("tipo").getAsString(), 
-                           obj.get("descripcion").getAsString(), obj.get("publicoDestino").getAsString(), 
-                           obj.get("frecuencia").getAsString(), obj.get("precio").getAsDouble(), obj.get("notas").getAsString());
-
-                    //Al combo le añadimos el objeto completo
-                    tipoBono.addItem(datos);
-                }
-            }
-        }
-        catch (IOException io){
-            io.printStackTrace();
-        }
-    }
-    
     private void cargarDatosCliente() {
         SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy");
         
@@ -103,6 +50,7 @@ public class VerCliente extends javax.swing.JFrame {
         fecha.setDate(Date.from(cliente.getFechaBono().atStartOfDay(ZoneId.systemDefault()).toInstant()));
         pieGato.setSelected(cliente.isPieGato());
         tipoBono.setSelectedItem(cliente.getTipo_entrada());
+        edad.setText(String.valueOf(cliente.getEdad()));
     }
     
     /**
@@ -134,6 +82,8 @@ public class VerCliente extends javax.swing.JFrame {
         jTable1 = new javax.swing.JTable();
         jLabel10 = new javax.swing.JLabel();
         tipoBono = new javax.swing.JComboBox<>();
+        jLabel11 = new javax.swing.JLabel();
+        edad = new javax.swing.JTextField();
         jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -222,6 +172,12 @@ public class VerCliente extends javax.swing.JFrame {
         tipoBono.setEnabled(false);
         jPanel1.add(tipoBono, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 200, 330, -1));
 
+        jLabel11.setText("Edad");
+        jPanel1.add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 240, -1, -1));
+
+        edad.setEnabled(false);
+        jPanel1.add(edad, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 240, 80, -1));
+
         getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 80, 750, 570));
 
         jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/FondoPrincipal.png"))); // NOI18N
@@ -280,10 +236,12 @@ public class VerCliente extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextField apellidos;
     private javax.swing.JTextField dni;
+    private javax.swing.JTextField edad;
     private com.toedter.calendar.JDateChooser fecha;
     private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;

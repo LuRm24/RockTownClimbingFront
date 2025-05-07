@@ -6,12 +6,6 @@ package ventanas;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -22,6 +16,7 @@ import javax.swing.JOptionPane;
 import models.Cliente;
 import models.TipoEntrada;
 import utils.LocalDateAdapter;
+import utils.Utils;
 
 public class ModificarCliente extends javax.swing.JFrame {
 
@@ -31,55 +26,8 @@ public class ModificarCliente extends javax.swing.JFrame {
         initComponents();
         this.cliente= cliente;
         this.setLocationRelativeTo(null);
-        cargarTiposEntrada();
+        Utils.cargarTiposEntrada(tipoBono);
         rellenarDatosCliente();
-    }
-    
-    private void cargarTiposEntrada() {
-        try {
-            URL url = new URL("http://localhost:8080/tipo_entrada/select-all");
-            HttpURLConnection con = (HttpURLConnection) url.openConnection();
-            con.setRequestMethod("GET");
-
-            BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream(), "utf-8"));
-
-            cargarDatosCombo(br);
-
-        } catch (IOException io) {
-            io.printStackTrace();
-        }
-    }
-    
-    private void cargarDatosCombo(BufferedReader entrada) {
-        try {
-            // Leer todo el contenido del BufferedReader
-            String datosLeidos = "";
-            String linea;
-            while ((linea = entrada.readLine()) != null) {
-                datosLeidos += linea;
-            }
-            
-            if (datosLeidos.startsWith("[")) {
-                // Parsear como JsonArray
-                JsonArray jsonArray = JsonParser.parseString(datosLeidos).getAsJsonArray();
-
-                //Recorrer el json e ir añadiendo las filas
-                for (int i = 0; i < jsonArray.size(); i++) {
-                    JsonObject obj = jsonArray.get(i).getAsJsonObject();
-
-                    //Añadimos los datos de la fila en un array
-                   TipoEntrada datos = new TipoEntrada(obj.get("id").getAsLong(), obj.get("tipo").getAsString(), 
-                           obj.get("descripcion").getAsString(), obj.get("publicoDestino").getAsString(), 
-                           obj.get("frecuencia").getAsString(), obj.get("precio").getAsDouble(), obj.get("notas").getAsString());
-
-                    //Al combo le añadimos el objeto completo
-                    tipoBono.addItem(datos);
-                }
-            }
-        }
-        catch (IOException io){
-            io.printStackTrace();
-        }
     }
     
     private void rellenarDatosCliente() {
@@ -90,7 +38,7 @@ public class ModificarCliente extends javax.swing.JFrame {
         fecha.setDate(Date.from(cliente.getFechaBono().atStartOfDay(ZoneId.systemDefault()).toInstant()));
         pieGato.setSelected(cliente.isPieGato());
         tipoBono.setSelectedItem(cliente.getTipo_entrada());
-        //falta la edad
+        edad.setText(String.valueOf(cliente.getEdad()));
     }
     /**
      * This method is called from within the constructor to initialize the form.
@@ -252,9 +200,8 @@ public class ModificarCliente extends javax.swing.JFrame {
                     cliente.setFechaBono(fechaBono);
                 }
 
-                // Edad -> menorEdad
-                int edadCliente = Integer.parseInt(edad.getText());
-                cliente.setMenorEdad(edadCliente < 12);
+                // Edad
+                cliente.setEdad(Integer.parseInt(edad.getText()));
 
                 // Pie de gato
                 cliente.setPieGato(pieGato.isSelected());

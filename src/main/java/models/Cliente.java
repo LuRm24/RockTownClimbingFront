@@ -1,7 +1,8 @@
 package models;
 
 import java.time.LocalDate;
-
+import java.util.ArrayList;
+import java.util.List;
 
 public class Cliente {
 
@@ -13,7 +14,7 @@ public class Cliente {
     private LocalDate fechaBono;
     private int sesionesGastadas;
     private boolean pieGato;
-    private boolean menorEdad;
+    private int edad;
     private TipoEntrada tipo_entrada;
 
     //private List<Reserva> reservas = new ArrayList<>();
@@ -22,7 +23,7 @@ public class Cliente {
     public Cliente(){
     }
 
-    public Cliente(Long id, String nombre, String apellidos, String telefono, String dni, LocalDate fechaBono, int sesionesGastadas, boolean pieGato, boolean menorEdad, TipoEntrada tipoEntrada) {
+    public Cliente(Long id, String nombre, String apellidos, String telefono, String dni, LocalDate fechaBono, int sesionesGastadas, boolean pieGato, int edad, TipoEntrada tipoEntrada) {
         this.id = id;
         this.nombre = nombre;
         this.apellidos = apellidos;
@@ -31,7 +32,7 @@ public class Cliente {
         this.fechaBono = fechaBono;
         this.sesionesGastadas = sesionesGastadas;
         this.pieGato = pieGato;
-        this.menorEdad = menorEdad;
+        this.edad = edad;
         this.tipo_entrada = tipoEntrada;
     }
 
@@ -99,12 +100,12 @@ public class Cliente {
         this.pieGato = pieGato;
     }
 
-    public boolean isMenorEdad() {
-        return menorEdad;
+    public int getEdad() {
+        return edad;
     }
 
-    public void setMenorEdad(boolean menorEdad) {
-        this.menorEdad = menorEdad;
+    public void setEdad(int edad) {
+        this.edad = edad;
     }
 
     public TipoEntrada getTipo_entrada() {

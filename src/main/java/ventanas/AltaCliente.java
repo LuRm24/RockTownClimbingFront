@@ -6,12 +6,6 @@ package ventanas;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -21,6 +15,7 @@ import javax.swing.JOptionPane;
 import models.Cliente;
 import models.TipoEntrada;
 import utils.LocalDateAdapter;
+import utils.Utils;
 
 
 public class AltaCliente extends javax.swing.JFrame {
@@ -30,57 +25,8 @@ public class AltaCliente extends javax.swing.JFrame {
      */
     public AltaCliente() {
         initComponents();
-        cargarTiposEntrada();
+        Utils.cargarTiposEntrada(tipoBono);
     }
-    
-
-    private void cargarTiposEntrada() {
-        try {
-            URL url = new URL("http://localhost:8080/tipo_entrada/select-all");
-            HttpURLConnection con = (HttpURLConnection) url.openConnection();
-            con.setRequestMethod("GET");
-
-            BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream(), "utf-8"));
-
-            cargarDatosCombo(br);
-
-        } catch (IOException io) {
-            io.printStackTrace();
-        }
-    }
-    
-    private void cargarDatosCombo(BufferedReader entrada) {
-        try {
-            // Leer todo el contenido del BufferedReader
-            String datosLeidos = "";
-            String linea;
-            while ((linea = entrada.readLine()) != null) {
-                datosLeidos += linea;
-            }
-            
-            if (datosLeidos.startsWith("[")) {
-                // Parsear como JsonArray
-                JsonArray jsonArray = JsonParser.parseString(datosLeidos).getAsJsonArray();
-
-                //Recorrer el json e ir añadiendo las filas
-                for (int i = 0; i < jsonArray.size(); i++) {
-                    JsonObject obj = jsonArray.get(i).getAsJsonObject();
-
-                    //Añadimos los datos de la fila en un array
-                   TipoEntrada datos = new TipoEntrada(obj.get("id").getAsLong(), obj.get("tipo").getAsString(), 
-                           obj.get("descripcion").getAsString(), obj.get("publicoDestino").getAsString(), 
-                           obj.get("frecuencia").getAsString(), obj.get("precio").getAsDouble(), obj.get("notas").getAsString());
-
-                    //Al combo le añadimos el objeto completo
-                    tipoBono.addItem(datos);
-                }
-            }
-        }
-        catch (IOException io){
-            io.printStackTrace();
-        }
-    }
-
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -146,11 +92,6 @@ public class AltaCliente extends javax.swing.JFrame {
         jLabel8.setText("Fecha");
         jPanel1.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 190, -1, -1));
 
-        tipoBono.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                tipoBonoActionPerformed(evt);
-            }
-        });
         jPanel1.add(tipoBono, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 230, 320, -1));
         jPanel1.add(pieGato, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 270, -1, -1));
 
@@ -213,9 +154,8 @@ public class AltaCliente extends javax.swing.JFrame {
             // Pie de gato (checkbox)
             nuevoCliente.setPieGato(pieGato.isSelected());
 
-            // Menor de edad (a partir de edad introducida)
-            int edadNum = Integer.parseInt(edad.getText().trim());
-            nuevoCliente.setMenorEdad(edadNum < 18);
+            // Edad
+            nuevoCliente.setEdad(Integer.parseInt(edad.getText().trim()));
 
             // Crear Gson con soporte para LocalDate
             Gson gson = new GsonBuilder()
@@ -256,10 +196,6 @@ public class AltaCliente extends javax.swing.JFrame {
             
             
     }//GEN-LAST:event_jButton2ActionPerformed
-
-    private void tipoBonoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tipoBonoActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_tipoBonoActionPerformed
 
     /**
      * @param args the command line arguments
