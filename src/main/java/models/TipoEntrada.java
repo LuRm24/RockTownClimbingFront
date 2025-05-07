@@ -23,6 +23,71 @@ public class TipoEntrada {
         this.notas = notas;
     }
 
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getTipo() {
+        return tipo;
+    }
+
+    public void setTipo(String tipo) {
+        this.tipo = tipo;
+    }
+
+    public String getDescripcion() {
+        return descripcion;
+    }
+
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+
+    public String getPublicoDestino() {
+        return publicoDestino;
+    }
+
+    public void setPublicoDestino(String publicoDestino) {
+        this.publicoDestino = publicoDestino;
+    }
+
+    public String getFrecuencia() {
+        return frecuencia;
+    }
+
+    public void setFrecuencia(String frecuencia) {
+        this.frecuencia = frecuencia;
+    }
+
+    public double getPrecio() {
+        return precio;
+    }
+
+    public void setPrecio(double precio) {
+        this.precio = precio;
+    }
+
+    public String getNotas() {
+        return notas;
+    }
+
+    public void setNotas(String notas) {
+        this.notas = notas;
+    }
+
+    public List<Entrada> getEntradas() {
+        return entradas;
+    }
+
+    public void setEntradas(List<Entrada> entradas) {
+        this.entradas = entradas;
+    }
+    
+
     @Override
     public String toString() {
         return descripcion + "-" + publicoDestino + "-" + tipo;

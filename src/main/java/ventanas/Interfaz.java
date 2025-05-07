@@ -28,7 +28,69 @@ public class Interfaz extends javax.swing.JFrame {
         initComponents();
         this.setLocationRelativeTo(null);
     }
+    
+    private void login(){
+                                         
+       String usuario = user.getText();
+       String pass = new String(password.getPassword());
+    
+       try {
+        // Crear objeto Empleado con datos del login
+        Empleado loginRequest = new Empleado();
+        loginRequest.setNombreUsuario(usuario);
+        loginRequest.setContrasenaHash(pass); 
 
+        // Convertir a JSON
+        String json = new Gson().toJson(loginRequest);
+
+        // Conexión HTTP POST
+        URL url = new URL("http://localhost:8080/empleado/login");
+        HttpURLConnection con = (HttpURLConnection) url.openConnection();
+        con.setRequestMethod("POST");
+        con.setRequestProperty("Content-Type", "application/json");
+        con.setDoOutput(true);
+
+        try (OutputStream os = con.getOutputStream()) {
+            byte[] input = json.getBytes("utf-8");//convierte el json en un array de bytes. Usa UTF-8 por si hay caracteres especiales tipo acentos
+            os.write(input, 0, input.length);//lo envia al backend desde el indice 0 hasta el final
+        }
+
+        int responseCode = con.getResponseCode();
+        if (responseCode == HttpURLConnection.HTTP_OK) {
+            // Leer el empleado devuelto
+            try (BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream(), "utf-8"))) {
+                StringBuilder response = new StringBuilder();
+                String line;
+                while ((line = br.readLine()) != null) {
+                    response.append(line);
+                }
+
+                Empleado empleado = new Gson().fromJson(response.toString(), Empleado.class);
+
+                // Guardar el ID del empleado
+                Interfaz.ID_EMP = empleado.getId();
+                
+                // Mostrar mensaje de login correcto
+                JOptionPane.showMessageDialog(this, "Inicio de sesión correcto. ¡Bienvenide " + empleado.getNombre() + "!");
+
+
+                // Ir al panel principal
+                Principal p = new Principal();
+                p.setVisible(true);
+                this.dispose();
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, "Usuario o contraseña incorrectos");
+        }
+
+    } catch (Exception e) {
+        e.printStackTrace();
+        JOptionPane.showMessageDialog(this, "Error de conexión: " + e.getMessage());
+    }
+    
+    }                                        
+
+  
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -87,67 +149,12 @@ public class Interfaz extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-       String usuario = user.getText();
-       String pass = new String(password.getPassword());
-    
-       try {
-        // Crear objeto Empleado con datos del login
-        Empleado loginRequest = new Empleado();
-        loginRequest.setNombreUsuario(usuario);
-        loginRequest.setContrasenaHash(pass); 
-
-        // Convertir a JSON
-        String json = new Gson().toJson(loginRequest);
-
-        // Conexión HTTP POST
-        URL url = new URL("http://localhost:8080/empleado/login");
-        HttpURLConnection con = (HttpURLConnection) url.openConnection();
-        con.setRequestMethod("POST");
-        con.setRequestProperty("Content-Type", "application/json");
-        con.setDoOutput(true);
-
-        try (OutputStream os = con.getOutputStream()) {
-            byte[] input = json.getBytes("utf-8");//convierte el json en un array de bytes. Usa UTF-8 por si hay caracteres especiales tipo acentos
-            os.write(input, 0, input.length);//lo envia al backend desde el indice 0 hasta el final
-        }
-
-        int responseCode = con.getResponseCode();
-        if (responseCode == HttpURLConnection.HTTP_OK) {
-            // Leer el empleado devuelto
-            try (BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream(), "utf-8"))) {
-                StringBuilder response = new StringBuilder();
-                String line;
-                while ((line = br.readLine()) != null) {
-                    response.append(line);
-                }
-
-                Empleado empleado = new Gson().fromJson(response.toString(), Empleado.class);
-
-                // Guardar el ID del empleado
-                Interfaz.ID_EMP = empleado.getId();
-                
-                // Mostrar mensaje de login correcto
-                JOptionPane.showMessageDialog(this, "Inicio de sesión correcto. ¡Bienvenide " + empleado.getNombre() + "!");
-
-
-                // Ir al panel principal
-                Principal p = new Principal();
-                p.setVisible(true);
-                this.dispose();
-            }
-        } else {
-            JOptionPane.showMessageDialog(this, "Usuario o contraseña incorrectos");
-        }
-
-    } catch (Exception e) {
-        e.printStackTrace();
-        JOptionPane.showMessageDialog(this, "Error de conexión: " + e.getMessage());
-    }
-    
+        login();
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void passwordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_passwordActionPerformed
         // TODO add your handling code here:
+        login();
     }//GEN-LAST:event_passwordActionPerformed
 
     /**

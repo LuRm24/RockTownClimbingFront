@@ -4,18 +4,116 @@
  */
 package ventanas;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import javax.swing.JComboBox;
+import javax.swing.table.DefaultTableModel;
 import models.TipoEntrada;
 import models.Producto;
 import utils.Utils;
 
 public class Caja extends javax.swing.JFrame {
 
-    /**
-     * Creates new form Caja
-     */
+    private double total = 0.0;
+
     public Caja() {
         initComponents();
         Utils.cargarTiposEntrada(tipoBono);
+        cargarProductos(productos);
+    }
+    
+    public static void cargarProductos(JComboBox productos) {
+        try {
+            URL url = new URL("http://localhost:8080/producto/select-all");
+            HttpURLConnection con = (HttpURLConnection) url.openConnection();
+            con.setRequestMethod("GET");
+
+            BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream(), "utf-8"));
+            cargarDatosProductoCombo(br, productos);
+
+        } catch (IOException io) {
+            io.printStackTrace();
+        }
+    }
+
+    public static void cargarDatosProductoCombo(BufferedReader entrada, JComboBox productos) {
+        try {
+            String datosLeidos = "";
+            String linea;
+            while ((linea = entrada.readLine()) != null) {
+                datosLeidos += linea;
+            }
+
+            if (datosLeidos.startsWith("[")) {
+                JsonArray jsonArray = JsonParser.parseString(datosLeidos).getAsJsonArray();
+
+                for (int i = 0; i < jsonArray.size(); i++) {
+                    JsonObject obj = jsonArray.get(i).getAsJsonObject();
+
+                    Producto p = new Producto(
+                        obj.get("id").getAsLong(),
+                        obj.get("nombre").getAsString(),
+                        obj.get("precio").getAsDouble()
+                    );
+
+                    productos.addItem(p);
+                }
+            }
+        } catch (IOException io) {
+            io.printStackTrace();
+        }
+    }
+
+    private void numeroPulsado(String num) {
+        visorOperacion.setText(visorOperacion.getText() + num);
+    }
+
+    private void ejecutarSimbolo(String simbolo) {
+        visorOperacion.setText(visorOperacion.getText() + " " + simbolo + " ");
+    }
+
+    private void resolverOperacionManual() {
+        String expresion = visorOperacion.getText().replace("x", "*");
+        if (expresion.isEmpty()) return;
+
+        try {
+            double resultado = evaluarExpresionSimple(expresion);
+            visorOperacion.setText(expresion + " = " + resultado);
+            double totalFinal = total + resultado;
+            precioTotal.setText(String.format("%.2f", totalFinal));
+        } catch (Exception e) {
+            visorOperacion.setText("Error");
+            precioTotal.setText("Error");
+        }
+    }
+
+    private double evaluarExpresionSimple(String expr) throws Exception {
+        String[] tokens = expr.split(" ");
+        double resultado = Double.parseDouble(tokens[0]);
+
+        for (int i = 1; i < tokens.length; i += 2) {
+            String operador = tokens[i];
+            double siguienteNumero = Double.parseDouble(tokens[i + 1]);
+
+            switch (operador) {
+                case "+" -> resultado += siguienteNumero;
+                case "-" -> resultado -= siguienteNumero;
+                case "*" -> resultado *= siguienteNumero;
+                case "/" -> {
+                    if (siguienteNumero == 0) throw new ArithmeticException("División por cero");
+                    resultado /= siguienteNumero;
+                }
+                default -> throw new IllegalArgumentException("Operador inválido: " + operador);
+            }
+        }
+
+        return resultado;
     }
 
     /**
@@ -45,48 +143,161 @@ public class Caja extends javax.swing.JFrame {
         jButton14 = new javax.swing.JButton();
         jButton15 = new javax.swing.JButton();
         jButton16 = new javax.swing.JButton();
+        visorOperacion = new javax.swing.JTextField();
         jLabel2 = new javax.swing.JLabel();
         panelVisor = new javax.swing.JPanel();
         jLabel9 = new javax.swing.JLabel();
         tipoBono = new javax.swing.JComboBox<>();
         jLabel11 = new javax.swing.JLabel();
-        tipoBono2 = new javax.swing.JComboBox<>();
+        productos = new javax.swing.JComboBox<>();
         jButton17 = new javax.swing.JButton();
         jButton18 = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        tablaVisor = new javax.swing.JTable();
         jButton20 = new javax.swing.JButton();
-        jTextField1 = new javax.swing.JTextField();
+        precioTotal = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
         jButton19 = new javax.swing.JButton();
+        precioTotal1 = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setPreferredSize(new java.awt.Dimension(520, 449));
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         panelNumeros.setOpaque(false);
 
         jButton7.setText("7");
+        jButton7.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jButton7MouseClicked(evt);
+            }
+        });
+        jButton7.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton7ActionPerformed(evt);
+            }
+        });
 
         jButton8.setText("8");
+        jButton8.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jButton8MouseClicked(evt);
+            }
+        });
+        jButton8.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton8ActionPerformed(evt);
+            }
+        });
 
         jButton9.setText("9");
+        jButton9.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jButton9MouseClicked(evt);
+            }
+        });
+        jButton9.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton9ActionPerformed(evt);
+            }
+        });
 
         jButton6.setText("6");
+        jButton6.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jButton6MouseClicked(evt);
+            }
+        });
+        jButton6.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton6ActionPerformed(evt);
+            }
+        });
 
         jButton5.setText("5");
+        jButton5.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jButton5MouseClicked(evt);
+            }
+        });
+        jButton5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton5ActionPerformed(evt);
+            }
+        });
 
         jButton4.setText("4");
+        jButton4.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jButton4MouseClicked(evt);
+            }
+        });
+        jButton4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton4ActionPerformed(evt);
+            }
+        });
 
         jButton1.setText("1");
+        jButton1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jButton1MouseClicked(evt);
+            }
+        });
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         jButton2.setText("2");
+        jButton2.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jButton2MouseClicked(evt);
+            }
+        });
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
 
         jButton3.setText("3");
+        jButton3.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jButton3MouseClicked(evt);
+            }
+        });
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
 
         jButton11.setText(".");
+        jButton11.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jButton11MouseClicked(evt);
+            }
+        });
+        jButton11.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton11ActionPerformed(evt);
+            }
+        });
 
         jButton10.setText("0");
+        jButton10.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jButton10MouseClicked(evt);
+            }
+        });
+        jButton10.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton10ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout panelNumerosLayout = new javax.swing.GroupLayout(panelNumeros);
         panelNumeros.setLayout(panelNumerosLayout);
@@ -117,7 +328,7 @@ public class Caja extends javax.swing.JFrame {
                         .addComponent(jButton10, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(0, 0, 0)
                         .addComponent(jButton11, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(12, Short.MAX_VALUE))
         );
         panelNumerosLayout.setVerticalGroup(
             panelNumerosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -147,9 +358,24 @@ public class Caja extends javax.swing.JFrame {
 
         jButton12.setText("x");
         jButton12.setPreferredSize(new java.awt.Dimension(42, 24));
+        jButton12.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jButton12MouseClicked(evt);
+            }
+        });
+        jButton12.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton12ActionPerformed(evt);
+            }
+        });
 
         jButton13.setText("+");
         jButton13.setPreferredSize(new java.awt.Dimension(45, 24));
+        jButton13.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jButton13MouseClicked(evt);
+            }
+        });
         jButton13.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton13ActionPerformed(evt);
@@ -158,9 +384,24 @@ public class Caja extends javax.swing.JFrame {
 
         jButton14.setText("=");
         jButton14.setPreferredSize(new java.awt.Dimension(45, 24));
+        jButton14.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jButton14MouseClicked(evt);
+            }
+        });
+        jButton14.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton14ActionPerformed(evt);
+            }
+        });
 
         jButton15.setText("-");
         jButton15.setPreferredSize(new java.awt.Dimension(40, 24));
+        jButton15.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jButton15MouseClicked(evt);
+            }
+        });
         jButton15.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton15ActionPerformed(evt);
@@ -169,6 +410,11 @@ public class Caja extends javax.swing.JFrame {
 
         jButton16.setText("/");
         jButton16.setPreferredSize(new java.awt.Dimension(42, 24));
+        jButton16.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jButton16MouseClicked(evt);
+            }
+        });
         jButton16.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton16ActionPerformed(evt);
@@ -182,15 +428,20 @@ public class Caja extends javax.swing.JFrame {
             .addGroup(panelSimbolosLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(panelSimbolosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jButton12, javax.swing.GroupLayout.PREFERRED_SIZE, 142, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(panelSimbolosLayout.createSequentialGroup()
                         .addComponent(jButton13, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(0, 0, 0)
                         .addComponent(jButton14, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(0, 0, 0)
-                        .addComponent(jButton15, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jButton16, javax.swing.GroupLayout.PREFERRED_SIZE, 142, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addComponent(jButton15, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(visorOperacion, javax.swing.GroupLayout.DEFAULT_SIZE, 160, Short.MAX_VALUE))
+                    .addGroup(panelSimbolosLayout.createSequentialGroup()
+                        .addGroup(panelSimbolosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jButton12, javax.swing.GroupLayout.PREFERRED_SIZE, 142, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jButton16, javax.swing.GroupLayout.PREFERRED_SIZE, 142, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addContainerGap())
         );
         panelSimbolosLayout.setVerticalGroup(
             panelSimbolosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -200,12 +451,15 @@ public class Caja extends javax.swing.JFrame {
                 .addGroup(panelSimbolosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jButton13, javax.swing.GroupLayout.PREFERRED_SIZE, 84, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jButton14, javax.swing.GroupLayout.PREFERRED_SIZE, 84, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton15, javax.swing.GroupLayout.PREFERRED_SIZE, 84, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jButton15, javax.swing.GroupLayout.PREFERRED_SIZE, 84, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelSimbolosLayout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(visorOperacion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addComponent(jButton16, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        getContentPane().add(panelSimbolos, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 300, 160, 170));
+        getContentPane().add(panelSimbolos, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 300, 320, 170));
 
         jLabel2.setFont(new java.awt.Font("Tahoma", 1, 36)); // NOI18N
         jLabel2.setText("Caja");
@@ -215,6 +469,12 @@ public class Caja extends javax.swing.JFrame {
         panelVisor.setOpaque(false);
 
         jLabel9.setText("Tipo de bono");
+
+        tipoBono.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                tipoBonoActionPerformed(evt);
+            }
+        });
 
         jLabel11.setText("Productos");
 
@@ -232,15 +492,15 @@ public class Caja extends javax.swing.JFrame {
             }
         });
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        tablaVisor.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
             new String [] {
-                "Fecha", "Hora", "Sala", "Actividad"
+                "Concepto", "Precio"
             }
         ));
-        jScrollPane1.setViewportView(jTable1);
+        jScrollPane1.setViewportView(tablaVisor);
 
         jButton20.setText("-");
         jButton20.addActionListener(new java.awt.event.ActionListener() {
@@ -262,7 +522,7 @@ public class Caja extends javax.swing.JFrame {
                             .addGroup(panelVisorLayout.createSequentialGroup()
                                 .addComponent(jLabel11)
                                 .addGap(28, 28, 28)
-                                .addComponent(tipoBono2, javax.swing.GroupLayout.PREFERRED_SIZE, 270, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(productos, javax.swing.GroupLayout.PREFERRED_SIZE, 270, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(panelVisorLayout.createSequentialGroup()
                                 .addComponent(jLabel9)
                                 .addGap(28, 28, 28)
@@ -273,7 +533,7 @@ public class Caja extends javax.swing.JFrame {
                             .addComponent(jButton18))))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jButton20)
-                .addContainerGap(46, Short.MAX_VALUE))
+                .addContainerGap(14, Short.MAX_VALUE))
         );
         panelVisorLayout.setVerticalGroup(
             panelVisorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -291,18 +551,18 @@ public class Caja extends javax.swing.JFrame {
                 .addGap(18, 18, 18)
                 .addGroup(panelVisorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(panelVisorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(tipoBono2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(productos, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(jButton18))
                     .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 14, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(21, Short.MAX_VALUE))
         );
 
-        getContentPane().add(panelVisor, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 80, 570, 220));
+        getContentPane().add(panelVisor, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 80, 520, 220));
 
-        jTextField1.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
-        jTextField1.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        jTextField1.setText("0.00");
-        getContentPane().add(jTextField1, new org.netbeans.lib.awtextra.AbsoluteConstraints(330, 480, 110, 40));
+        precioTotal.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
+        precioTotal.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        precioTotal.setText("0.00");
+        getContentPane().add(precioTotal, new org.netbeans.lib.awtextra.AbsoluteConstraints(330, 470, 110, 40));
 
         jLabel3.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
         jLabel3.setText("€");
@@ -310,7 +570,8 @@ public class Caja extends javax.swing.JFrame {
 
         jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/FondoPrincipal.png"))); // NOI18N
         jLabel1.setText("jLabel1");
-        getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 640, 549));
+        jLabel1.setPreferredSize(new java.awt.Dimension(640, 570));
+        getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, -1, 630, 550));
 
         jButton19.setText("+");
         jButton19.addActionListener(new java.awt.event.ActionListener() {
@@ -320,27 +581,49 @@ public class Caja extends javax.swing.JFrame {
         });
         getContentPane().add(jButton19, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, -1));
 
+        precioTotal1.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
+        precioTotal1.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        precioTotal1.setText("0.00");
+        getContentPane().add(precioTotal1, new org.netbeans.lib.awtextra.AbsoluteConstraints(330, 460, 110, 60));
+
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton13ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton13ActionPerformed
         // TODO add your handling code here:
+        ejecutarSimbolo("+"); 
     }//GEN-LAST:event_jButton13ActionPerformed
 
     private void jButton15ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton15ActionPerformed
         // TODO add your handling code here:
+        ejecutarSimbolo("-");
     }//GEN-LAST:event_jButton15ActionPerformed
 
     private void jButton16ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton16ActionPerformed
         // TODO add your handling code here:
+        ejecutarSimbolo("/");
     }//GEN-LAST:event_jButton16ActionPerformed
 
     private void jButton17ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton17ActionPerformed
-        // TODO add your handling code here:
+        
+        TipoEntrada entrada = (TipoEntrada) tipoBono.getSelectedItem();
+    if (entrada != null) {
+        DefaultTableModel model = (DefaultTableModel) tablaVisor.getModel();
+        model.addRow(new Object[]{entrada.getTipo(), entrada.getPrecio()});
+        total += entrada.getPrecio();
+        precioTotal.setText(String.format("%.2f", total));
+    }
     }//GEN-LAST:event_jButton17ActionPerformed
 
     private void jButton18ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton18ActionPerformed
-        // TODO add your handling code here:
+        
+        Producto prod = (Producto) productos.getSelectedItem();
+    if (prod != null) {
+        DefaultTableModel model = (DefaultTableModel) tablaVisor.getModel();
+        model.addRow(new Object[]{prod.getNombre(), prod.getPrecio()});
+        total += prod.getPrecio();
+        precioTotal.setText(String.format("%.2f", total));
+    }
     }//GEN-LAST:event_jButton18ActionPerformed
 
     private void jButton19ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton19ActionPerformed
@@ -348,8 +631,168 @@ public class Caja extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton19ActionPerformed
 
     private void jButton20ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton20ActionPerformed
-        // TODO add your handling code here:
+        
+        int selectedRow = tablaVisor.getSelectedRow();
+    if (selectedRow != -1) {
+        DefaultTableModel model = (DefaultTableModel) tablaVisor.getModel();
+        Object precioObj = model.getValueAt(selectedRow, 1);
+        if (precioObj instanceof Number) {
+            total -= ((Number) precioObj).doubleValue();
+            precioTotal.setText(String.format("%.2f", total));
+        }
+        model.removeRow(selectedRow);
+    }
     }//GEN-LAST:event_jButton20ActionPerformed
+
+    private void tipoBonoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tipoBonoActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_tipoBonoActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // TODO add your handling code here:
+        numeroPulsado("1");
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jButton1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton1MouseClicked
+        // TODO add your handling code here:
+        
+
+    }//GEN-LAST:event_jButton1MouseClicked
+
+    private void jButton13MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton13MouseClicked
+        // TODO add your handling code here:
+
+    }//GEN-LAST:event_jButton13MouseClicked
+
+    private void jButton14ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton14ActionPerformed
+        // TODO add your handling code here:
+        resolverOperacionManual();
+     
+    }//GEN-LAST:event_jButton14ActionPerformed
+
+    private void jButton14MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton14MouseClicked
+        // TODO add your handling code here:
+        
+    }//GEN-LAST:event_jButton14MouseClicked
+
+    private void jButton12MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton12MouseClicked
+        // TODO add your handling code here:
+        
+    }//GEN-LAST:event_jButton12MouseClicked
+
+    private void jButton15MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton15MouseClicked
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButton15MouseClicked
+
+    private void jButton16MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton16MouseClicked
+        // TODO add your handling code here:
+        
+    }//GEN-LAST:event_jButton16MouseClicked
+
+    private void jButton2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton2MouseClicked
+        // TODO add your handling code here:
+        
+    }//GEN-LAST:event_jButton2MouseClicked
+
+    private void jButton3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton3MouseClicked
+        // TODO add your handling code here:
+        
+    }//GEN-LAST:event_jButton3MouseClicked
+
+    private void jButton4MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton4MouseClicked
+        // TODO add your handling code here:
+        
+    }//GEN-LAST:event_jButton4MouseClicked
+
+    private void jButton5MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton5MouseClicked
+        // TODO add your handling code here:
+        
+    }//GEN-LAST:event_jButton5MouseClicked
+
+    private void jButton6MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton6MouseClicked
+        // TODO add your handling code here:
+        
+    }//GEN-LAST:event_jButton6MouseClicked
+
+    private void jButton7MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton7MouseClicked
+        // TODO add your handling code here:
+        
+    }//GEN-LAST:event_jButton7MouseClicked
+
+    private void jButton8MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton8MouseClicked
+        // TODO add your handling code here:
+        
+    }//GEN-LAST:event_jButton8MouseClicked
+
+    private void jButton9MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton9MouseClicked
+        // TODO add your handling code here:
+        
+    }//GEN-LAST:event_jButton9MouseClicked
+
+    private void jButton10MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton10MouseClicked
+        // TODO add your handling code here:
+        
+    }//GEN-LAST:event_jButton10MouseClicked
+
+    private void jButton11MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton11MouseClicked
+        // TODO add your handling code here:
+        
+    }//GEN-LAST:event_jButton11MouseClicked
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        // TODO add your handling code here:
+        numeroPulsado("2");
+    }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void jButton11ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton11ActionPerformed
+        // TODO add your handling code here:
+        numeroPulsado(".");
+    }//GEN-LAST:event_jButton11ActionPerformed
+
+    private void jButton10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton10ActionPerformed
+        // TODO add your handling code here:
+        numeroPulsado("0");
+    }//GEN-LAST:event_jButton10ActionPerformed
+
+    private void jButton9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton9ActionPerformed
+        // TODO add your handling code here:
+        numeroPulsado("9");
+    }//GEN-LAST:event_jButton9ActionPerformed
+
+    private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
+        // TODO add your handling code here:
+        numeroPulsado("8");
+    }//GEN-LAST:event_jButton8ActionPerformed
+
+    private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
+        // TODO add your handling code here:
+        numeroPulsado("7");
+    }//GEN-LAST:event_jButton7ActionPerformed
+
+    private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
+        // TODO add your handling code here:
+        numeroPulsado("6");
+    }//GEN-LAST:event_jButton6ActionPerformed
+
+    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
+        // TODO add your handling code here:
+        numeroPulsado("5");
+    }//GEN-LAST:event_jButton5ActionPerformed
+
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        // TODO add your handling code here:
+        numeroPulsado("3");
+    }//GEN-LAST:event_jButton3ActionPerformed
+
+    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+        // TODO add your handling code here:
+        numeroPulsado("4");
+    }//GEN-LAST:event_jButton4ActionPerformed
+
+    private void jButton12ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton12ActionPerformed
+        // TODO add your handling code here:
+        ejecutarSimbolo("*");
+    }//GEN-LAST:event_jButton12ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -413,12 +856,14 @@ public class Caja extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable jTable1;
-    private javax.swing.JTextField jTextField1;
     private javax.swing.JPanel panelNumeros;
     private javax.swing.JPanel panelSimbolos;
     private javax.swing.JPanel panelVisor;
+    private javax.swing.JTextField precioTotal;
+    private javax.swing.JTextField precioTotal1;
+    private javax.swing.JComboBox<Producto> productos;
+    private javax.swing.JTable tablaVisor;
     private javax.swing.JComboBox<TipoEntrada> tipoBono;
-    private javax.swing.JComboBox<Producto> tipoBono2;
+    private javax.swing.JTextField visorOperacion;
     // End of variables declaration//GEN-END:variables
 }
