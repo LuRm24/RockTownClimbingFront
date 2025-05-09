@@ -4,13 +4,14 @@
  */
 package ventanas;
 
+import br.com.thiaguten.umbrella.support.security.BCryptPasswordEncoder;
 import models.Empleado;
 import com.google.gson.Gson;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import javax.swing.JOptionPane;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
 
 public class AltaEmpleado extends javax.swing.JFrame {
 
