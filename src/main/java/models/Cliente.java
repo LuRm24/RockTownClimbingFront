@@ -23,19 +23,6 @@ public class Cliente {
     public Cliente(){
     }
 
-    public Cliente(Long id, String nombre, String apellidos, String telefono, String dni, LocalDate fechaBono, int sesionesGastadas, boolean pieGato, int edad, TipoEntrada tipoEntrada) {
-        this.id = id;
-        this.nombre = nombre;
-        this.apellidos = apellidos;
-        this.telefono = telefono;
-        this.dni = dni;
-        this.fechaBono = fechaBono;
-        this.sesionesGastadas = sesionesGastadas;
-        this.pieGato = pieGato;
-        this.edad = edad;
-        this.tipo_entrada = tipoEntrada;
-    }
-
     public Long getId() {
         return id;
     }

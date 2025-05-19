@@ -4,6 +4,21 @@
  */
 package ventanas;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.time.LocalDate;
+import javax.swing.JOptionPane;
+import models.Actividad;
+import models.Empleado;
+import utils.LocalDateAdapter;
+import utils.Utils;
+
 public class AltaActividades extends javax.swing.JFrame {
 
     /**
@@ -11,7 +26,26 @@ public class AltaActividades extends javax.swing.JFrame {
      */
     public AltaActividades() {
         initComponents();
+        cargarEmpleados();
     }
+
+    private void cargarEmpleados() {
+        try {
+            URL url = new URL("http://localhost:8080/empleado/select-all");
+            HttpURLConnection con = (HttpURLConnection) url.openConnection();
+            con.setRequestMethod("GET");
+
+            BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream(), "utf-8"));
+
+            // Aquí usamos el método que ya tienes hecho para cargar datos en la tabla
+            Utils.cargarDatosComboEmpleado(br, monitor);
+
+        } catch (IOException io) {
+            io.printStackTrace();
+        }
+    }
+     
+     
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -25,18 +59,15 @@ public class AltaActividades extends javax.swing.JFrame {
         jPanel1 = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
-        jTextField3 = new javax.swing.JTextField();
+        nombre = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
-        jComboBox1 = new javax.swing.JComboBox<>();
-        jRadioButton1 = new javax.swing.JRadioButton();
-        jRadioButton2 = new javax.swing.JRadioButton();
+        monitor = new javax.swing.JComboBox<>();
         jLabel5 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTextArea1 = new javax.swing.JTextArea();
+        descripcion = new javax.swing.JTextArea();
         jScrollPane2 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
-        jLabel7 = new javax.swing.JLabel();
         EliminarHorario = new javax.swing.JButton();
         menuPrincipal = new javax.swing.JButton();
         insertarHorario = new javax.swing.JButton();
@@ -57,38 +88,28 @@ public class AltaActividades extends javax.swing.JFrame {
 
         jLabel3.setText("Nombre actividad");
         jPanel1.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 90, -1, -1));
-        jPanel1.add(jTextField3, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 90, 310, -1));
+        jPanel1.add(nombre, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 90, 310, -1));
 
         jLabel4.setText("Monitor asignado");
         jPanel1.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 240, -1, -1));
 
         jLabel6.setText("Horarios disponibles");
-        jPanel1.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 330, -1, -1));
+        jPanel1.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 300, -1, -1));
 
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-        jPanel1.add(jComboBox1, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 240, 310, -1));
-
-        jRadioButton1.setText("Sala inferior");
-        jPanel1.add(jRadioButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 290, -1, -1));
-
-        jRadioButton2.setText("Sala superior");
-        jPanel1.add(jRadioButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 290, -1, -1));
+        jPanel1.add(monitor, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 240, 310, -1));
 
         jLabel5.setText("Descripción");
         jPanel1.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 140, -1, -1));
 
-        jTextArea1.setColumns(20);
-        jTextArea1.setRows(5);
-        jScrollPane1.setViewportView(jTextArea1);
+        descripcion.setColumns(20);
+        descripcion.setRows(5);
+        jScrollPane1.setViewportView(descripcion);
 
         jPanel1.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 130, 310, -1));
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null}
+
             },
             new String [] {
                 "Dia Semana", "Hora inicio", "Hora fin"
@@ -96,10 +117,7 @@ public class AltaActividades extends javax.swing.JFrame {
         ));
         jScrollPane2.setViewportView(jTable1);
 
-        jPanel1.add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 360, 530, 140));
-
-        jLabel7.setText("Sala asignada");
-        jPanel1.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 290, -1, -1));
+        jPanel1.add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 330, 530, 170));
 
         EliminarHorario.setText("Eliminar horario");
         EliminarHorario.addActionListener(new java.awt.event.ActionListener() {
@@ -118,6 +136,11 @@ public class AltaActividades extends javax.swing.JFrame {
         jPanel1.add(menuPrincipal, new org.netbeans.lib.awtextra.AbsoluteConstraints(460, 510, -1, -1));
 
         insertarHorario.setText("Añadir horario");
+        insertarHorario.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                insertarHorarioActionPerformed(evt);
+            }
+        });
         jPanel1.add(insertarHorario, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 510, -1, -1));
 
         guardar.setText("Guardar todo");
@@ -149,7 +172,54 @@ public class AltaActividades extends javax.swing.JFrame {
 
     private void guardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_guardarActionPerformed
         // TODO add your handling code here:
+        try {
+            // Construir objeto actividad
+            Actividad nuevaActividad = new Actividad();
+            nuevaActividad.setNombre(nombre.getText());
+            nuevaActividad.setDescripcion(descripcion.getText());
+            nuevaActividad.setEmpleado((Empleado) monitor.getSelectedItem());
+
+             // Crear Gson con soporte para LocalDate
+            Gson gson = new GsonBuilder()
+            .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
+            .create();
+   
+            // Serializar a JSON
+            String json = gson.toJson(nuevaActividad);
+            
+            // Crear conexión HTTP
+            URL url = new URL("http://localhost:8080/actividad/insert");
+            HttpURLConnection con = (HttpURLConnection) url.openConnection();
+            con.setRequestMethod("POST");
+            con.setDoOutput(true);
+            con.setRequestProperty("Content-Type", "application/json");
+
+            // Enviar datos al servidor
+            try (OutputStream os = con.getOutputStream()) {
+                byte[] input = json.getBytes("utf-8");
+                os.write(input, 0, input.length);
+            }
+
+            int responseCode = con.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                JOptionPane.showMessageDialog(this, "Actividad insertada correctamente");
+                Clientes client = new Clientes();
+                client.setVisible(true);
+                this.dispose();
+            } else {
+                JOptionPane.showMessageDialog(this, "Error al insertar la actividad");
+            }
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error de conexión: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }  
     }//GEN-LAST:event_guardarActionPerformed
+
+    private void insertarHorarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_insertarHorarioActionPerformed
+        // TODO add your handling code here:
+        
+    }//GEN-LAST:event_insertarHorarioActionPerformed
 
     /**
      * @param args the command line arguments
@@ -191,24 +261,21 @@ public class AltaActividades extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton EliminarHorario;
+    private javax.swing.JTextArea descripcion;
     private javax.swing.JButton guardar;
     private javax.swing.JButton insertarHorario;
-    private javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
-    private javax.swing.JLabel jLabel7;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JRadioButton jRadioButton1;
-    private javax.swing.JRadioButton jRadioButton2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTable jTable1;
-    private javax.swing.JTextArea jTextArea1;
-    private javax.swing.JTextField jTextField3;
     private javax.swing.JButton menuPrincipal;
+    private javax.swing.JComboBox<Empleado> monitor;
+    private javax.swing.JTextField nombre;
     // End of variables declaration//GEN-END:variables
 }

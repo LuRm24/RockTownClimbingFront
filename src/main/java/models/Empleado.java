@@ -16,6 +16,23 @@ public class Empleado {
     private Long id;
     private String telefono;
 
+    public Empleado() {
+        
+    }
+    
+    public Empleado(String dni, String nombre, String apellidos, String direccion, String rol, String nombreUsuario, String email, Long id, String telefono) {
+        this.dni = dni;
+        this.nombre = nombre;
+        this.apellidos = apellidos;
+        this.direccion = direccion;
+        this.rol = rol;
+        this.nombreUsuario = nombreUsuario;
+        this.email = email;
+        this.contrasenaHash = contrasenaHash;
+        this.id = id;
+        this.telefono = telefono;
+    }
+
     // Getters y setters como vimos antes
     public String getDni() { return dni; }
     public void setDni(String dni) { this.dni = dni; }

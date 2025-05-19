@@ -191,10 +191,7 @@ public class AltaCliente extends javax.swing.JFrame {
         } catch (Exception e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(this, "Error de conexión: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-        }
-
-            
-            
+        }  
     }//GEN-LAST:event_jButton2ActionPerformed
 
     /**

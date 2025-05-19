@@ -26,31 +26,30 @@ public class Principal extends javax.swing.JFrame {
     private int lineasInicio;
     private int lineasFinal;
     private Empleado emp;
-    
+
     /**
      * Creates new form Principal
      */
     public Principal() {
-        
+
         initComponents();
         this.setLocationRelativeTo(null);
         cargarUsuarioLogueado();
         cargarRecordatorios();
-        
+
     }
-    
+
     private void habilitarPermisos() {
-      
+
         if (emp != null) {
-         System.out.println("Rol del empleado logueado: " + emp.getRol());
+            System.out.println("Rol del empleado logueado: " + emp.getRol());
             boolean esAdmin = "ADMINISTRADOR".equalsIgnoreCase(emp.getRol());
             empleados.setEnabled(esAdmin); // Si es admin, lo habilitas, si no, lo desactivas
         } else {
             empleados.setEnabled(false); // Si no hay empleado, no dejamos usar el botón
         }
-    } 
-    
-    
+    }
+
     private void cargarUsuarioLogueado() {
 
         try {
@@ -60,7 +59,6 @@ public class Principal extends javax.swing.JFrame {
             con.setRequestMethod("GET");
 
             int responseCode = con.getResponseCode();
-           
 
             if (responseCode == HttpURLConnection.HTTP_OK) {
                 try (BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()))) {
@@ -73,48 +71,46 @@ public class Principal extends javax.swing.JFrame {
                     String json = datosLeidos.toString();
                     Gson gson = new Gson();
                     emp = gson.fromJson(json, Empleado.class);
-                    
+
                     habilitarPermisos();
-                 
-                }
-                catch (IOException io) {
+
+                } catch (IOException io) {
                     io.printStackTrace();
                 }
             }
-        }
-        catch (IOException io) {
-           io.printStackTrace();
+        } catch (IOException io) {
+            io.printStackTrace();
         }
     }
-    
+
     private void cargarRecordatorios() {
         try {
-           // Suponiendo que tienes acceso al ID del empleado conectado
-           Long idEmpleado = Interfaz.ID_EMP; // o usa tu variable local
+            // Suponiendo que tienes acceso al ID del empleado conectado
+            Long idEmpleado = Interfaz.ID_EMP; // o usa tu variable local
 
-           URL url = new URL("http://localhost:8080/recordatorio/find-by-emp?empleadoId=" + idEmpleado);
-           HttpURLConnection con = (HttpURLConnection) url.openConnection();
-           con.setRequestMethod("GET");
+            URL url = new URL("http://localhost:8080/recordatorio/find-by-emp?empleadoId=" + idEmpleado);
+            HttpURLConnection con = (HttpURLConnection) url.openConnection();
+            con.setRequestMethod("GET");
 
-           BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream(), "utf-8"));
-           StringBuilder jsonBuilder = new StringBuilder();
-           String line;
-           while ((line = br.readLine()) != null) {
-               jsonBuilder.append(line);
-           }
-           String json = jsonBuilder.toString();
-
-           
-            java.lang.reflect.Type listType = new com.google.gson.reflect.TypeToken<List<Recordatorio>>(){}.getType();
-            recordatorios = new Gson().fromJson(json, listType);
-            
-            // Mostrar los recordatorios en el jTextArea
-            jTextArea1.setText(""); 
-            
-            for (Recordatorio r : recordatorios) {
-                jTextArea1.append("• " + r.getTexto()+ "\n");
+            BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream(), "utf-8"));
+            StringBuilder jsonBuilder = new StringBuilder();
+            String line;
+            while ((line = br.readLine()) != null) {
+                jsonBuilder.append(line);
             }
-            
+            String json = jsonBuilder.toString();
+
+            java.lang.reflect.Type listType = new com.google.gson.reflect.TypeToken<List<Recordatorio>>() {
+            }.getType();
+            recordatorios = new Gson().fromJson(json, listType);
+
+            // Mostrar los recordatorios en el jTextArea
+            jTextArea1.setText("");
+
+            for (Recordatorio r : recordatorios) {
+                jTextArea1.append("• " + r.getTexto() + "\n");
+            }
+
             lineasInicio = jTextArea1.getLineCount() - 1;
 
         } catch (Exception e) {
@@ -122,12 +118,11 @@ public class Principal extends javax.swing.JFrame {
             jTextArea1.setText("Error al cargar los recordatorios.");
         }
     }
-    
-    private void cargarRecordatoriosLista(BufferedReader entrada){
+
+    private void cargarRecordatoriosLista(BufferedReader entrada) {
         try {
-           System.out.println(entrada.readLine()); 
-        }
-        catch (IOException io){
+            System.out.println(entrada.readLine());
+        } catch (IOException io) {
             io.printStackTrace();
         }
     }
@@ -143,11 +138,10 @@ public class Principal extends javax.swing.JFrame {
 
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
-        salas = new javax.swing.JLabel();
-        actividades = new javax.swing.JLabel();
-        empleados = new javax.swing.JLabel();
-        clientes = new javax.swing.JLabel();
-        caja = new javax.swing.JLabel();
+        caja = new javax.swing.JButton();
+        empleados = new javax.swing.JButton();
+        actividades = new javax.swing.JButton();
+        clientes = new javax.swing.JButton();
         jLabel2 = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
         jLabel14 = new javax.swing.JLabel();
@@ -169,50 +163,39 @@ public class Principal extends javax.swing.JFrame {
         jLabel1.setText("Panel de Control");
         jLabel1.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
-        salas.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        salas.setText("Salas");
-        salas.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
-        salas.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                salasMouseClicked(evt);
+        caja.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
+        caja.setText("Caja");
+        caja.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED, java.awt.Color.white, java.awt.Color.white, java.awt.Color.white, java.awt.Color.white));
+        caja.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cajaActionPerformed(evt);
+            }
+        });
+
+        empleados.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
+        empleados.setText("Empleados");
+        empleados.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED, java.awt.Color.white, java.awt.Color.white, java.awt.Color.white, java.awt.Color.white));
+        empleados.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                empleadosActionPerformed(evt);
             }
         });
 
         actividades.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
-        actividades.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         actividades.setText("Actividades");
-        actividades.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
-        actividades.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                actividadesMouseClicked(evt);
+        actividades.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED, java.awt.Color.white, java.awt.Color.white, java.awt.Color.white, java.awt.Color.white));
+        actividades.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                actividadesActionPerformed(evt);
             }
         });
 
-        empleados.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        empleados.setText("Empleados");
-        empleados.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
-        empleados.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                empleadosMouseClicked(evt);
-            }
-        });
-
-        clientes.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        clientes.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
         clientes.setText("Clientes");
-        clientes.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
-        clientes.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                clientesMouseClicked(evt);
-            }
-        });
-
-        caja.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
-        caja.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        caja.setText("Caja");
-        caja.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
-        caja.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                cajaMouseClicked(evt);
+        clientes.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED, java.awt.Color.white, java.awt.Color.white, java.awt.Color.white, java.awt.Color.white));
+        clientes.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                clientesActionPerformed(evt);
             }
         });
 
@@ -228,11 +211,10 @@ public class Principal extends javax.swing.JFrame {
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(31, 31, 31)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(actividades, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(salas, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(caja, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(empleados, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(clientes, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(caja, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                            .addComponent(actividades, javax.swing.GroupLayout.DEFAULT_SIZE, 110, Short.MAX_VALUE)
+                            .addComponent(clientes, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                 .addContainerGap(19, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
@@ -241,19 +223,17 @@ public class Principal extends javax.swing.JFrame {
                 .addGap(16, 16, 16)
                 .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(caja, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGap(18, 18, 18)
-                .addComponent(actividades, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGap(18, 18, 18)
-                .addComponent(salas, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(empleados, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(clientes, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(30, 30, 30))
+                .addComponent(caja, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(actividades, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(empleados, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(clientes, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(25, Short.MAX_VALUE))
         );
 
-        getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 130, 190, 270));
+        getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 130, 190, 260));
 
         jLabel2.setFont(new java.awt.Font("Tahoma", 1, 36)); // NOI18N
         jLabel2.setText("¡Bienvenido a RockTown Climbing!");
@@ -298,66 +278,35 @@ public class Principal extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void clientesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_clientesMouseClicked
-        // TODO add your handling code here:
-        Clientes c = new Clientes();
-        c.setVisible(true);
-        this.dispose();
-    }//GEN-LAST:event_clientesMouseClicked
-
-    private void empleadosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_empleadosMouseClicked
-        // TODO add your handling code here:
-        if (empleados.isEnabled()) {
-        Empleados empleadosVentana = new Empleados();
-        empleadosVentana.setVisible(true);
-        this.dispose();
-        }
-    }//GEN-LAST:event_empleadosMouseClicked
-
     private void jButtonBorrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonBorrarActionPerformed
         // TODO add your handling code here:
         try {
-                int opcion = JOptionPane.showConfirmDialog(this, "¿Está seguro de eliminar los recordatorios?", 
-                        "Confirmación", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-                
-                //0 => Si, 1 => No
-                if (opcion == 0) {
-                    // Crear conexión HTTP
-                    URL url = new URL("http://localhost:8080/recordatorio/delete");
-                    HttpURLConnection con = (HttpURLConnection) url.openConnection();
-                    con.setRequestMethod("DELETE");
-                    con.setDoOutput(true);
-                    con.setRequestProperty("Content-Type", "application/json");
+            int opcion = JOptionPane.showConfirmDialog(this, "¿Está seguro de eliminar los recordatorios?",
+                    "Confirmación", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 
-                    int responseCode = con.getResponseCode();
-                    //Si la respuesta no ha ido bien, indicamos que ha habido un error
-                    if (responseCode == HttpURLConnection.HTTP_NO_CONTENT) {
-                        JOptionPane.showMessageDialog(this, "Recordatorios eliminados correctamente");
-                        cargarRecordatorios();
-                    } else {
-                        JOptionPane.showMessageDialog(this, "Error al eliminar recordatorios");
-                    }
+            //0 => Si, 1 => No
+            if (opcion == 0) {
+                // Crear conexión HTTP
+                URL url = new URL("http://localhost:8080/recordatorio/delete");
+                HttpURLConnection con = (HttpURLConnection) url.openConnection();
+                con.setRequestMethod("DELETE");
+                con.setDoOutput(true);
+                con.setRequestProperty("Content-Type", "application/json");
+
+                int responseCode = con.getResponseCode();
+                //Si la respuesta no ha ido bien, indicamos que ha habido un error
+                if (responseCode == HttpURLConnection.HTTP_NO_CONTENT) {
+                    JOptionPane.showMessageDialog(this, "Recordatorios eliminados correctamente");
+                    cargarRecordatorios();
+                } else {
+                    JOptionPane.showMessageDialog(this, "Error al eliminar recordatorios");
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
-                JOptionPane.showMessageDialog(this, "Error de conexión: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             }
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error de conexión: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_jButtonBorrarActionPerformed
-
-    private void salasMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_salasMouseClicked
-        // TODO add your handling code here:
-        Salas s = new Salas();
-        s.setVisible(true);
-        this.dispose();
-    }//GEN-LAST:event_salasMouseClicked
-
-    private void actividadesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_actividadesMouseClicked
-        // TODO add your handling code here:
-        AltaActividades ac = new AltaActividades();
-        ac.setVisible(true);
-        this.dispose();
-        
-    }//GEN-LAST:event_actividadesMouseClicked
 
     private void jButtonGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonGuardarActionPerformed
         // TODO add your handling code here:    
@@ -365,7 +314,7 @@ public class Principal extends javax.swing.JFrame {
         String texto = jTextArea1.getText();
         String[] lineas = texto.split("\n");
         boolean error = false;
-        
+
         for (int i = lineasInicio; i < lineasFinal && error == false; i++) {
 
             Recordatorio nuevoRecordatorio = new Recordatorio();
@@ -399,7 +348,7 @@ public class Principal extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(this, "Error de conexión: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
-        
+
         //Si no ha habido error, mostramos mensaje OK
         if (error == false) {
             JOptionPane.showMessageDialog(this, "Recordatorios guardados correctamente");
@@ -409,12 +358,36 @@ public class Principal extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_jButtonGuardarActionPerformed
 
-    private void cajaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_cajaMouseClicked
+    private void cajaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cajaActionPerformed
         // TODO add your handling code here:
         Caja caja = new Caja();
         caja.setVisible(true);
         this.dispose();
-    }//GEN-LAST:event_cajaMouseClicked
+    }//GEN-LAST:event_cajaActionPerformed
+
+    private void empleadosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_empleadosActionPerformed
+        // TODO add your handling code here:
+        if (empleados.isEnabled()) {
+            Empleados empleadosVentana = new Empleados();
+            empleadosVentana.setVisible(true);
+            this.dispose();
+        }
+    }//GEN-LAST:event_empleadosActionPerformed
+
+    private void actividadesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_actividadesActionPerformed
+        // TODO add your handling code here:
+        AltaActividades ac = new AltaActividades();
+        ac.setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_actividadesActionPerformed
+
+    private void clientesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clientesActionPerformed
+        // TODO add your handling code here:
+        Clientes c = new Clientes();
+        c.setVisible(true);
+        this.dispose();
+        
+    }//GEN-LAST:event_clientesActionPerformed
 
     /**
      * @param args the command line arguments
@@ -453,10 +426,10 @@ public class Principal extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JLabel actividades;
-    private javax.swing.JLabel caja;
-    private javax.swing.JLabel clientes;
-    private javax.swing.JLabel empleados;
+    private javax.swing.JButton actividades;
+    private javax.swing.JButton caja;
+    private javax.swing.JButton clientes;
+    private javax.swing.JButton empleados;
     private javax.swing.JButton jButtonBorrar;
     private javax.swing.JButton jButtonGuardar;
     private javax.swing.JLabel jLabel1;
@@ -467,6 +440,5 @@ public class Principal extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTextArea jTextArea1;
-    private javax.swing.JLabel salas;
     // End of variables declaration//GEN-END:variables
 }
