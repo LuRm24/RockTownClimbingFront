@@ -13,4 +13,74 @@ public class HorarioDisponible {
     private LocalTime horaFin;
 
     private Actividad actividad;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public DayOfWeek getDiaSemana() {
+        return diaSemana;
+    }
+
+    public void setDiaSemana(DayOfWeek diaSemana) {
+        this.diaSemana = diaSemana;
+    }
+
+    public LocalTime getHoraInicio() {
+        return horaInicio;
+    }
+
+    public void setHoraInicio(LocalTime horaInicio) {
+        this.horaInicio = horaInicio;
+    }
+
+    public LocalTime getHoraFin() {
+        return horaFin;
+    }
+
+    public void setHoraFin(LocalTime horaFin) {
+        this.horaFin = horaFin;
+    }
+
+    public Actividad getActividad() {
+        return actividad;
+    }
+
+    public void setActividad(Actividad actividad) {
+        this.actividad = actividad;
+    }
+    
+    public static DayOfWeek diaSemana(String diaStr){
+        DayOfWeek dia = null;
+        
+        switch (diaStr){
+            case "Lunes":
+                dia = DayOfWeek.MONDAY;
+                break;
+            case "Martes":
+                dia = DayOfWeek.TUESDAY;
+                break;
+            case "Miércoles":
+                dia = DayOfWeek.WEDNESDAY;
+                break;
+            case "Jueves":
+                dia = DayOfWeek.THURSDAY;
+                break;
+            case "Viernes":
+                dia = DayOfWeek.FRIDAY;
+                break;
+            case "Sábado":
+                dia = DayOfWeek.SATURDAY;
+                break;
+            case "Domingo":
+                dia = DayOfWeek.SUNDAY;
+                break;
+        }
+        
+        return dia;
+    }
 }

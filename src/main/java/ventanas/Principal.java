@@ -376,8 +376,8 @@ public class Principal extends javax.swing.JFrame {
 
     private void actividadesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_actividadesActionPerformed
         // TODO add your handling code here:
-        AltaActividades ac = new AltaActividades();
-        ac.setVisible(true);
+        VerActividades vact = new VerActividades();
+        vact.setVisible(true);
         this.dispose();
     }//GEN-LAST:event_actividadesActionPerformed
 

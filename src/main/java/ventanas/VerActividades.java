@@ -4,12 +4,12 @@
  */
 package ventanas;
 
-public class ActividadesSala extends javax.swing.JFrame {
+public class VerActividades extends javax.swing.JFrame {
 
     /**
-     * Creates new form AltaActividades
+     * Creates new form GestionActividades
      */
-    public ActividadesSala() {
+    public VerActividades() {
         initComponents();
     }
 
@@ -26,9 +26,10 @@ public class ActividadesSala extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         jScrollPane2 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
-        eliminarActividad = new javax.swing.JButton();
+        verActividad = new javax.swing.JButton();
         cancelar = new javax.swing.JButton();
         insertarActividad = new javax.swing.JButton();
+        eliminarActividad1 = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -39,9 +40,9 @@ public class ActividadesSala extends javax.swing.JFrame {
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel2.setFont(new java.awt.Font("Tahoma", 1, 36)); // NOI18N
-        jLabel2.setText("Ver Actividades");
+        jLabel2.setText("Actividades");
         jLabel2.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-        jPanel1.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 10, -1, -1));
+        jPanel1.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 10, -1, -1));
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -56,15 +57,15 @@ public class ActividadesSala extends javax.swing.JFrame {
         ));
         jScrollPane2.setViewportView(jTable1);
 
-        jPanel1.add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 80, 620, 190));
+        jPanel1.add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 80, 720, 190));
 
-        eliminarActividad.setText("Eliminar actividad");
-        eliminarActividad.addActionListener(new java.awt.event.ActionListener() {
+        verActividad.setText("Ver actividad");
+        verActividad.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                eliminarActividadActionPerformed(evt);
+                verActividadActionPerformed(evt);
             }
         });
-        jPanel1.add(eliminarActividad, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 300, -1, -1));
+        jPanel1.add(verActividad, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 300, -1, -1));
 
         cancelar.setText("Cancelar");
         cancelar.addActionListener(new java.awt.event.ActionListener() {
@@ -72,7 +73,7 @@ public class ActividadesSala extends javax.swing.JFrame {
                 cancelarActionPerformed(evt);
             }
         });
-        jPanel1.add(cancelar, new org.netbeans.lib.awtextra.AbsoluteConstraints(360, 300, -1, -1));
+        jPanel1.add(cancelar, new org.netbeans.lib.awtextra.AbsoluteConstraints(610, 300, -1, -1));
 
         insertarActividad.setText("Añadir actividad");
         insertarActividad.addActionListener(new java.awt.event.ActionListener() {
@@ -80,19 +81,29 @@ public class ActividadesSala extends javax.swing.JFrame {
                 insertarActividadActionPerformed(evt);
             }
         });
-        jPanel1.add(insertarActividad, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 300, -1, -1));
+        jPanel1.add(insertarActividad, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 300, -1, -1));
 
-        getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 650, 350));
+        eliminarActividad1.setText("Eliminar actividad");
+        eliminarActividad1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                eliminarActividad1ActionPerformed(evt);
+            }
+        });
+        jPanel1.add(eliminarActividad1, new org.netbeans.lib.awtextra.AbsoluteConstraints(390, 300, -1, -1));
+
+        getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 750, 350));
 
         jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/FondoPrincipal.png"))); // NOI18N
-        getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 670, 370));
+        getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 760, 370));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void eliminarActividadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_eliminarActividadActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_eliminarActividadActionPerformed
+    private void verActividadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_verActividadActionPerformed
+        GestionActividades act = new GestionActividades(false);
+        act.setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_verActividadActionPerformed
 
     private void cancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelarActionPerformed
         Principal p = new Principal();
@@ -102,55 +113,25 @@ public class ActividadesSala extends javax.swing.JFrame {
 
     private void insertarActividadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_insertarActividadActionPerformed
         // TODO add your handling code here:
-        AltaActividades act = new AltaActividades();
+        GestionActividades act = new GestionActividades(true);
         act.setVisible(true);
         this.dispose();
     }//GEN-LAST:event_insertarActividadActionPerformed
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(AltaActividades.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(AltaActividades.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(AltaActividades.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(AltaActividades.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-        //</editor-fold>
+    private void eliminarActividad1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_eliminarActividad1ActionPerformed
 
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new AltaActividades().setVisible(true);
-            }
-        });
-    }
+    }//GEN-LAST:event_eliminarActividad1ActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton cancelar;
-    private javax.swing.JButton eliminarActividad;
+    private javax.swing.JButton eliminarActividad1;
     private javax.swing.JButton insertarActividad;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTable jTable1;
+    private javax.swing.JButton verActividad;
     // End of variables declaration//GEN-END:variables
 }
