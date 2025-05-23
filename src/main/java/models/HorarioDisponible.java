@@ -5,6 +5,7 @@
 package models;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
+import jakarta.persistence.Transient;
 
 public class HorarioDisponible {
     private Long id;
@@ -12,7 +13,8 @@ public class HorarioDisponible {
     private LocalTime horaInicio;
     private LocalTime horaFin;
 
-    private Actividad actividad;
+    @Transient
+    private transient Actividad actividad;
 
     public Long getId() {
         return id;
@@ -64,7 +66,7 @@ public class HorarioDisponible {
             case "Martes":
                 dia = DayOfWeek.TUESDAY;
                 break;
-            case "Miércoles":
+            case "Miercoles":
                 dia = DayOfWeek.WEDNESDAY;
                 break;
             case "Jueves":
@@ -73,7 +75,7 @@ public class HorarioDisponible {
             case "Viernes":
                 dia = DayOfWeek.FRIDAY;
                 break;
-            case "Sábado":
+            case "Sabado":
                 dia = DayOfWeek.SATURDAY;
                 break;
             case "Domingo":
@@ -82,5 +84,35 @@ public class HorarioDisponible {
         }
         
         return dia;
+    }
+    
+    public static String diaSemanaStr(DayOfWeek dia){
+        String diaSemana = null;
+        
+        switch (dia){
+            case MONDAY:
+                diaSemana = "Lunes";
+                break;
+            case TUESDAY:
+                diaSemana = "Martes";
+                break;
+            case WEDNESDAY:
+                diaSemana = "Miercoles";
+                break;
+            case THURSDAY:
+                diaSemana = "Jueves";
+                break;
+            case FRIDAY:
+                diaSemana = "Viernes";
+                break;
+            case SATURDAY:
+                diaSemana = "Sabado";
+                break;
+            case SUNDAY:
+                diaSemana = "Domingo";
+                break;
+        }
+        
+        return diaSemana;
     }
 }

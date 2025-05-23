@@ -13,7 +13,12 @@ import java.time.LocalDate;
 public class LocalDateAdapter extends TypeAdapter<LocalDate> {
     @Override
     public void write(JsonWriter out, LocalDate value) throws IOException {
-        out.value(value.toString());
+        if (value == null) {
+            out.nullValue();
+        }
+        else {
+           out.value(value.toString()); 
+        }
     }
 
     @Override

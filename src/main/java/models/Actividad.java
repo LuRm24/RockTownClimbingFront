@@ -13,7 +13,6 @@ public class Actividad {
     private String descripcion;
     private Empleado empleado;
     
-    // private List<Reserva> reservas = new ArrayList<>();
     private List<HorarioDisponible> horarios = new ArrayList<>();
 
     public Long getId() {
@@ -48,4 +47,26 @@ public class Actividad {
         this.empleado = empleado;
     }
     
+    public List<HorarioDisponible> getHorarios() {
+        return horarios;
+    }
+
+    public void setHorarios(List<HorarioDisponible> horarios) {
+        this.horarios = horarios;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Actividad other = (Actividad) obj;
+        return this.id.equals(other.id);
+    }
 }

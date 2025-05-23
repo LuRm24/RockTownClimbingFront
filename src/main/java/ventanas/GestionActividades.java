@@ -1,3 +1,4 @@
+
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
@@ -6,6 +7,9 @@ package ventanas;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -18,37 +22,79 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
 import models.Actividad;
 import models.Empleado;
 import models.HorarioDisponible;
-import models.TipoEntrada;
 import utils.LocalDateAdapter;
 import utils.LocalTimeAdapter;
 import utils.Utils;
 
 public class GestionActividades extends javax.swing.JFrame {
+    Actividad actividad;
     /**
      * Creates new form Actividades
      */
-    public GestionActividades(boolean insertActividad) {
+    public GestionActividades(boolean insertActividad, Actividad actividad) {
         initComponents();
         cargarEmpleados();
         cargarHoras("Lunes", comboHoraInicio);
         cargarHoras("Lunes", comboHoraFin);
+        this.actividad = actividad;
         
         if (insertActividad) {
             insertarHorario.setEnabled(false);
             tablaHorarios.setEnabled(false);
             eliminarHorario.setEnabled(false);
+            comboHoraInicio.setEnabled(false);
+            comboHoraFin.setEnabled(false);
+            diaSemana.setEnabled(false);
+            
         }
         else {
             insertarHorario.setEnabled(true);
             tablaHorarios.setEnabled(true);
             eliminarHorario.setEnabled(true);
+            comboHoraInicio.setEnabled(true);
+            comboHoraFin.setEnabled(true);
+            diaSemana.setEnabled(true);
+            
+            //Cuando modificas cargamos la actividad
+            rellenarDatosActividad();
+            
+            //Cargar horarios Actividad
+            cargarHorariosTabla();
         }
     }
+    
+    private void cargarHorariosTabla() {
+        //Definir las columnas de la tabla
+        String[] columnas = {"Dia semana", "Hora inicio", "Hora Fin", "Id"};
+        DefaultTableModel model = new DefaultTableModel(columnas, 0);
+        
+        //Recorrer la lista de horarios de la actividad
+        for (HorarioDisponible horario: actividad.getHorarios()) {
+            String[] datos = {
+                       HorarioDisponible.diaSemanaStr(horario.getDiaSemana()),
+                       horario.getHoraInicio().format(DateTimeFormatter.ofPattern("HH:mm")),
+                       horario.getHoraFin().format(DateTimeFormatter.ofPattern("HH:mm")),
+                       String.valueOf(horario.getId())
+                       };
+                       //Al modelo le añadimos los datos como una fila
+                       model.addRow(datos); 
+        }
+        
+        //A la tabla se le asigna el modelo
+        tablaHorarios.setModel(model);
+    }
+    
+    private void rellenarDatosActividad() {
+        nombre.setText(actividad.getNombre());
+        descripcion.setText(actividad.getDescripcion());
+        monitor.setSelectedItem((Empleado)actividad.getEmpleado());
+    }
 
-    private void cargarHorarios(JComboBox hora, LocalTime inicio, LocalTime fin){
+    private void cargarHorariosCombo(JComboBox hora, LocalTime inicio, LocalTime fin){
         //Antes de cargar, eliminar si hay horarios en el combo
         hora.removeAllItems();
         
@@ -62,20 +108,20 @@ public class GestionActividades extends javax.swing.JFrame {
     
     private void cargarHoras(String diaSelecc, JComboBox hora) { 
         //Si el dia es de lunes a jueves
-        if (diaSelecc.equals("Lunes") || diaSelecc.equals("Martes") || diaSelecc.equals("Miércoles")
+        if (diaSelecc.equals("Lunes") || diaSelecc.equals("Martes") || diaSelecc.equals("Miercoles")
                 || diaSelecc.equals("Jueves")) {
             //Cargar las horas desde las 12 hasta las 22h
-            cargarHorarios(hora, LocalTime.of(12, 0), LocalTime.of(22, 0));
+            cargarHorariosCombo(hora, LocalTime.of(12, 0), LocalTime.of(22, 0));
         }
         //Si es viernes
         else if (diaSelecc.equals("Viernes")){
             //Cargar las horas desde las 12 hasta las 20h
-            cargarHorarios(hora, LocalTime.of(12, 0), LocalTime.of(20, 0));
+            cargarHorariosCombo(hora, LocalTime.of(12, 0), LocalTime.of(20, 0));
         }
         //Si es sabado o domingo
         else {
             //Cargar las horas desde las 12 hasta las 20h
-            cargarHorarios(hora, LocalTime.of(10, 0), LocalTime.of(20, 0));
+            cargarHorariosCombo(hora, LocalTime.of(10, 0), LocalTime.of(20, 0));
         }
     }
     
@@ -237,7 +283,38 @@ public class GestionActividades extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void eliminarHorarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_eliminarHorarioActionPerformed
-        // TODO add your handling code here:
+        int fila = tablaHorarios.getSelectedRow();
+
+         if (fila == -1) {
+             JOptionPane.showMessageDialog(this, "Seleccionar horario a eliminar");
+             return;
+         }
+
+        int confirmacion = JOptionPane.showConfirmDialog(this, "¿Deseas borrar el horario?", "Confirmar borrado", JOptionPane.YES_NO_OPTION);
+        if (confirmacion != JOptionPane.YES_OPTION) return;
+
+        try {
+            Long id = Long.parseLong((String) tablaHorarios.getValueAt(fila, 3));
+            URL url = new URL("http://localhost:8080/horarios/" + id);
+            HttpURLConnection con = (HttpURLConnection) url.openConnection();
+            con.setRequestMethod("DELETE");
+            con.connect();
+
+            int responseCode = con.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                JOptionPane.showMessageDialog(this, "Horario eliminado correctamente");
+                //Eliminar el horario de la actividad que esta cargada en la ventana
+                actividad.getHorarios().remove(fila);
+                //Cargamos los horarios de nuevo en la tabla
+                cargarHorariosTabla();
+            } else {
+                JOptionPane.showMessageDialog(this, "Error al eliminar el horario. Código: " + responseCode);
+            }
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error en la operación: " + ex.getMessage());
+        }
     }//GEN-LAST:event_eliminarHorarioActionPerformed
 
     private void menuPrincipalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuPrincipalActionPerformed
@@ -309,11 +386,18 @@ public class GestionActividades extends javax.swing.JFrame {
             LocalTime horaInicio = LocalTime.parse(horaIniCombo, DateTimeFormatter.ofPattern("HH:mm"));
             LocalTime horaFin = LocalTime.parse(horaFinCombo, DateTimeFormatter.ofPattern("HH:mm"));
 
+            //Si el horario de fin es menor que el inicio
+            if (horaFin.isBefore(horaInicio)){
+                JOptionPane.showMessageDialog(this, "El horario de fin es menor que el horario de inicio", "Error horario", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            
             // Construir objeto Horario
             HorarioDisponible horario = new HorarioDisponible();
             horario.setDiaSemana(dia);
             horario.setHoraInicio(horaInicio);
             horario.setHoraFin(horaFin);
+            horario.setActividad(actividad);
         
             // Serializar a JSON
            // Crear Gson con soporte para LocalDate
@@ -339,10 +423,26 @@ public class GestionActividades extends javax.swing.JFrame {
 
             int responseCode = con.getResponseCode();
             if (responseCode == HttpURLConnection.HTTP_OK) {
+                
+                //Recuperar la respuesta del servidor una vez insertado para guardar el id nuevo
+                //que acaba de insertar
+                try (BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream(), "utf-8"))) {
+                    
+                    String respuesta = "";
+                    JsonObject obj = null; 
+                    //Leemos la respuesta y la guardamos en un String
+                    respuesta = br.readLine();
+                    //Convertimos el String a JSON
+                    obj = JsonParser.parseString(respuesta).getAsJsonObject();
+                    //Del JSON guardamos el id en el horario
+                    horario.setId(obj.get("id").getAsLong());
+                } 
+                
                 JOptionPane.showMessageDialog(this, "Horario insertado correctamente");
-                Clientes client = new Clientes();
-                client.setVisible(true);
-                this.dispose();
+                //Añadir el horario a la tabla
+                actividad.getHorarios().add(horario);
+                //Actualizar tabla
+                cargarHorariosTabla();
             } else {
                 JOptionPane.showMessageDialog(this, "Error al insertar el horario");
             }

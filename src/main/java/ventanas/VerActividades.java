@@ -4,6 +4,25 @@
  */
 package ventanas;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+import models.Actividad;
+import models.Cliente;
+import utils.LocalDateAdapter;
+import utils.LocalTimeAdapter;
+
 public class VerActividades extends javax.swing.JFrame {
 
     /**
@@ -11,8 +30,83 @@ public class VerActividades extends javax.swing.JFrame {
      */
     public VerActividades() {
         initComponents();
+        cargarActividades();
     }
 
+    private void cargarActividades() {
+        try {
+            URL url = new URL("http://localhost:8080/actividad/select-all");
+            HttpURLConnection con = (HttpURLConnection) url.openConnection();
+            con.setRequestMethod("GET");
+
+            BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream(), "utf-8"));
+
+            // Aquí usamos el método que ya tienes hecho para cargar datos en la tabla
+            cargarDatosTabla(br);
+
+        } catch (IOException io) {
+            io.printStackTrace();
+        }
+    }
+    
+    private void cargarDatosTabla(BufferedReader entrada) {
+        try {
+            //Definir las columnas de la tabla
+            String[] columnas = {"Nombre", "Descripción", "Empleado", "Id"};
+            DefaultTableModel model = new DefaultTableModel(columnas, 0);
+            
+            // Leer todo el contenido del BufferedReader
+            String datosLeidos = "";
+            String linea;
+            while ((linea = entrada.readLine()) != null) {
+                    datosLeidos += linea;
+            }
+            //Si la entrada tiene datos
+            if (datosLeidos.equals("Datos vacios") == false){
+            
+                if (datosLeidos.startsWith("[")) {
+                    // Parsear como JsonArray
+                    JsonArray jsonArray = JsonParser.parseString(datosLeidos).getAsJsonArray();
+
+                    //Recorrer el json e ir añadiendo las filas
+                    for (int i = 0; i < jsonArray.size(); i++) {
+                        JsonObject obj = jsonArray.get(i).getAsJsonObject();
+                   
+                        //Añadimos los datos de la fila en un array
+                       String[] datos = {
+                        obj.get("nombre").getAsString(),
+                        obj.get("descripcion").getAsString(),
+                        obj.getAsJsonObject("empleado").get("nombre").getAsString() + " " + 
+                            obj.getAsJsonObject("empleado").get("apellidos").getAsString(),
+                        obj.get("id").getAsString()
+                        };
+                        //Al modelo le añadimos los datos como una fila
+                        model.addRow(datos); 
+                    }
+                }
+                else {
+                    JsonObject obj = JsonParser.parseString(datosLeidos).getAsJsonObject();
+
+                        //Añadimos los datos de la fila en un array
+                      String[] datos = {
+                        obj.get("nombre").getAsString(),
+                        obj.get("descripcion").getAsString(),
+                        obj.getAsJsonObject("empleado").get("nombre").getAsString() + " " + 
+                            obj.getAsJsonObject("empleado").get("apellidos").getAsString(),
+                        obj.get("id").getAsString()
+                        };
+                    model.addRow(datos); 
+                }
+            }
+            
+            //A la tabla se le asigna el modelo
+            tablaActividades.setModel(model);
+        }
+        catch (IOException io){
+            io.printStackTrace();
+        }
+    }
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -25,7 +119,7 @@ public class VerActividades extends javax.swing.JFrame {
         jPanel1 = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
         jScrollPane2 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        tablaActividades = new javax.swing.JTable();
         verActividad = new javax.swing.JButton();
         cancelar = new javax.swing.JButton();
         insertarActividad = new javax.swing.JButton();
@@ -44,18 +138,15 @@ public class VerActividades extends javax.swing.JFrame {
         jLabel2.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         jPanel1.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 10, -1, -1));
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        tablaActividades.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null}
+
             },
             new String [] {
-                "Id", "Nombre", "Descripcion", "Empleado", "Horario disponible"
+                "Nombre", "Descripcion", "Empleado"
             }
         ));
-        jScrollPane2.setViewportView(jTable1);
+        jScrollPane2.setViewportView(tablaActividades);
 
         jPanel1.add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 80, 720, 190));
 
@@ -65,15 +156,15 @@ public class VerActividades extends javax.swing.JFrame {
                 verActividadActionPerformed(evt);
             }
         });
-        jPanel1.add(verActividad, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 300, -1, -1));
+        jPanel1.add(verActividad, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 300, -1, -1));
 
-        cancelar.setText("Cancelar");
+        cancelar.setText("Menú Principal");
         cancelar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cancelarActionPerformed(evt);
             }
         });
-        jPanel1.add(cancelar, new org.netbeans.lib.awtextra.AbsoluteConstraints(610, 300, -1, -1));
+        jPanel1.add(cancelar, new org.netbeans.lib.awtextra.AbsoluteConstraints(550, 300, -1, -1));
 
         insertarActividad.setText("Añadir actividad");
         insertarActividad.addActionListener(new java.awt.event.ActionListener() {
@@ -89,7 +180,7 @@ public class VerActividades extends javax.swing.JFrame {
                 eliminarActividad1ActionPerformed(evt);
             }
         });
-        jPanel1.add(eliminarActividad1, new org.netbeans.lib.awtextra.AbsoluteConstraints(390, 300, -1, -1));
+        jPanel1.add(eliminarActividad1, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 300, -1, -1));
 
         getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 750, 350));
 
@@ -100,9 +191,57 @@ public class VerActividades extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void verActividadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_verActividadActionPerformed
-        GestionActividades act = new GestionActividades(false);
-        act.setVisible(true);
-        this.dispose();
+        
+        // TODO add your handling code here:
+        int fila = tablaActividades.getSelectedRow();
+
+        if (fila == -1) {
+            JOptionPane.showMessageDialog(this, "Selecciona un cliente para modificar");
+            return;
+        }
+
+        try {
+            // Suponiendo que la columna 8 es el ID
+            Long id = Long.parseLong(tablaActividades.getValueAt(fila, 3).toString());
+
+            // Petición GET al backend para obtener los datos del empleado
+            URL url = new URL("http://localhost:8080/actividad/find?id=" + id);
+            HttpURLConnection con = (HttpURLConnection) url.openConnection();
+            con.setRequestMethod("GET");
+            con.connect();
+
+            int responseCode = con.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                try (BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream(), "utf-8"))) {
+                    StringBuilder response = new StringBuilder();
+                    String line;
+                    while ((line = in.readLine()) != null) {
+                        response.append(line);
+                    }
+
+                    // Crear Gson con soporte para LocalDate
+                    Gson gson = new GsonBuilder()
+                    .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
+                    .registerTypeAdapter(LocalTime.class, new LocalTimeAdapter())
+                    .create();
+            
+                    // Convertir JSON a objeto Empleado
+                    Actividad actividad = gson.fromJson(response.toString(), Actividad.class);
+
+                    // Abrir la ventana de modificación con los datos del empleado
+                    GestionActividades act = new GestionActividades(false, actividad);
+                    act.setVisible(true);
+                    this.dispose();
+
+                }
+            } else {
+                JOptionPane.showMessageDialog(this, "Error al obtener datos del empleado. Código: " + responseCode);
+            }
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error en la operación: " + ex.getMessage());
+        }
     }//GEN-LAST:event_verActividadActionPerformed
 
     private void cancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelarActionPerformed
@@ -113,13 +252,41 @@ public class VerActividades extends javax.swing.JFrame {
 
     private void insertarActividadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_insertarActividadActionPerformed
         // TODO add your handling code here:
-        GestionActividades act = new GestionActividades(true);
+        GestionActividades act = new GestionActividades(true, null);
         act.setVisible(true);
         this.dispose();
     }//GEN-LAST:event_insertarActividadActionPerformed
 
     private void eliminarActividad1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_eliminarActividad1ActionPerformed
+        int fila = tablaActividades.getSelectedRow();
 
+         if (fila == -1) {
+             JOptionPane.showMessageDialog(this, "Seleccionar actividad a eliminar");
+             return;
+         }
+
+        int confirmacion = JOptionPane.showConfirmDialog(this, "¿Deseas borrar la actividad?", "Confirmar borrado", JOptionPane.YES_NO_OPTION);
+        if (confirmacion != JOptionPane.YES_OPTION) return;
+
+        try {
+            Long id = Long.parseLong((String) tablaActividades.getValueAt(fila, 3));
+            URL url = new URL("http://localhost:8080/actividad/" + id);
+            HttpURLConnection con = (HttpURLConnection) url.openConnection();
+            con.setRequestMethod("DELETE");
+            con.connect();
+
+            int responseCode = con.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                JOptionPane.showMessageDialog(this, "Actividad eliminada correctamente");
+                cargarActividades();
+            } else {
+                JOptionPane.showMessageDialog(this, "Error al eliminar la actividad. Código: " + responseCode);
+            }
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error en la operación: " + ex.getMessage());
+        }
     }//GEN-LAST:event_eliminarActividad1ActionPerformed
 
 
@@ -131,7 +298,7 @@ public class VerActividades extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JTable jTable1;
+    private javax.swing.JTable tablaActividades;
     private javax.swing.JButton verActividad;
     // End of variables declaration//GEN-END:variables
 }
