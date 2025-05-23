@@ -21,6 +21,7 @@ import javax.swing.JOptionPane;
 import models.Actividad;
 import models.Empleado;
 import models.HorarioDisponible;
+import models.TipoEntrada;
 import utils.LocalDateAdapter;
 import utils.LocalTimeAdapter;
 import utils.Utils;
