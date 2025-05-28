@@ -13,9 +13,6 @@ public class HorarioDisponible {
     private LocalTime horaInicio;
     private LocalTime horaFin;
 
-    @Transient
-    private transient Actividad actividad;
-
     public Long getId() {
         return id;
     }
@@ -48,14 +45,6 @@ public class HorarioDisponible {
         this.horaFin = horaFin;
     }
 
-    public Actividad getActividad() {
-        return actividad;
-    }
-
-    public void setActividad(Actividad actividad) {
-        this.actividad = actividad;
-    }
-    
     public static DayOfWeek diaSemana(String diaStr){
         DayOfWeek dia = null;
         

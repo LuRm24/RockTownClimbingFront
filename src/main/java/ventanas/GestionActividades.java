@@ -141,6 +141,24 @@ public class GestionActividades extends javax.swing.JFrame {
         }
     }
      
+    //Funcion para modificar la actividad una vez insertada
+    private void modificarActividadHorario(Long horarioId, Long actividadId) {
+        try {
+            URL url = new URL("http://localhost:8080/horarios/" + horarioId + "/actividad/" + actividadId);
+            HttpURLConnection con = (HttpURLConnection) url.openConnection();
+            con.setRequestMethod("PUT");
+            con.setDoOutput(true);
+            con.setRequestProperty("Content-Type", "application/json");
+            
+            int responseCode = con.getResponseCode();
+            if (responseCode != HttpURLConnection.HTTP_OK) {
+                JOptionPane.showMessageDialog(this, "Error al actualizar la actividad del horario");
+            }
+        }
+        catch (IOException io) {
+            io.printStackTrace();
+        }
+    }
      
 
     /**
@@ -327,12 +345,6 @@ public class GestionActividades extends javax.swing.JFrame {
     private void guardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_guardarActionPerformed
         // TODO add your handling code here:
         try {
-            // Construir objeto actividad
-            Actividad nuevaActividad = new Actividad();
-            nuevaActividad.setNombre(nombre.getText());
-            nuevaActividad.setDescripcion(descripcion.getText());
-            nuevaActividad.setEmpleado((Empleado) monitor.getSelectedItem());
-
              // Crear Gson con soporte para LocalDate
             Gson gson = new GsonBuilder()
             .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
@@ -340,8 +352,22 @@ public class GestionActividades extends javax.swing.JFrame {
             .create();
    
             // Serializar a JSON
-            String json = gson.toJson(nuevaActividad);
+            String json;
             
+            if (actividad == null){
+                Actividad nuevaActividad = new Actividad();
+                nuevaActividad.setNombre(nombre.getText());
+                nuevaActividad.setDescripcion(descripcion.getText());
+                nuevaActividad.setEmpleado((Empleado) monitor.getSelectedItem());
+                json = gson.toJson(nuevaActividad);
+            }
+            else {
+               actividad.setNombre(nombre.getText());
+               actividad.setDescripcion(descripcion.getText());
+               actividad.setEmpleado((Empleado) monitor.getSelectedItem());
+               json = gson.toJson(actividad);
+            }
+
             // Crear conexión HTTP
             URL url = new URL("http://localhost:8080/actividad/insert");
             HttpURLConnection con = (HttpURLConnection) url.openConnection();
@@ -387,7 +413,7 @@ public class GestionActividades extends javax.swing.JFrame {
             LocalTime horaFin = LocalTime.parse(horaFinCombo, DateTimeFormatter.ofPattern("HH:mm"));
 
             //Si el horario de fin es menor que el inicio
-            if (horaFin.isBefore(horaInicio)){
+            if (horaFin.isBefore(horaInicio) || horaFin.equals(horaInicio)){
                 JOptionPane.showMessageDialog(this, "El horario de fin es menor que el horario de inicio", "Error horario", JOptionPane.ERROR_MESSAGE);
                 return;
             }
@@ -397,7 +423,6 @@ public class GestionActividades extends javax.swing.JFrame {
             horario.setDiaSemana(dia);
             horario.setHoraInicio(horaInicio);
             horario.setHoraFin(horaFin);
-            horario.setActividad(actividad);
         
             // Serializar a JSON
            // Crear Gson con soporte para LocalDate
@@ -438,6 +463,9 @@ public class GestionActividades extends javax.swing.JFrame {
                     horario.setId(obj.get("id").getAsLong());
                 } 
                 
+                //Modificar la actividad en la bbdd una vez insertado el horario
+                modificarActividadHorario(horario.getId(), actividad.getId());
+
                 JOptionPane.showMessageDialog(this, "Horario insertado correctamente");
                 //Añadir el horario a la tabla
                 actividad.getHorarios().add(horario);

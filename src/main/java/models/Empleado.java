@@ -69,5 +69,18 @@ public class Empleado {
         return nombre + "-" + apellidos;
     }
     
-    
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Empleado other = (Empleado) obj;
+        return this.getId() == other.getId();
+    }
 }

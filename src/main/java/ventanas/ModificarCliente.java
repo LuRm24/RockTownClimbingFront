@@ -69,11 +69,8 @@ public class ModificarCliente extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         jLabel10 = new javax.swing.JLabel();
         edad = new javax.swing.JTextField();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
         jButton3 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
-        jLabel11 = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -117,7 +114,7 @@ public class ModificarCliente extends javax.swing.JFrame {
                 cancelarActionPerformed(evt);
             }
         });
-        jPanel1.add(cancelar, new org.netbeans.lib.awtextra.AbsoluteConstraints(510, 570, -1, -1));
+        jPanel1.add(cancelar, new org.netbeans.lib.awtextra.AbsoluteConstraints(500, 380, -1, -1));
 
         modificar.setText("Guardar cambios");
         modificar.addActionListener(new java.awt.event.ActionListener() {
@@ -125,7 +122,7 @@ public class ModificarCliente extends javax.swing.JFrame {
                 modificarActionPerformed(evt);
             }
         });
-        jPanel1.add(modificar, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 570, -1, -1));
+        jPanel1.add(modificar, new org.netbeans.lib.awtextra.AbsoluteConstraints(330, 380, -1, -1));
 
         jLabel2.setFont(new java.awt.Font("Tahoma", 1, 36)); // NOI18N
         jLabel2.setText("Modificar Cliente");
@@ -136,28 +133,13 @@ public class ModificarCliente extends javax.swing.JFrame {
         jPanel1.add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 310, -1, -1));
         jPanel1.add(edad, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 310, 80, -1));
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
-            },
-            new String [] {
-                "Fecha", "Hora", "Sala", "Actividad"
-            }
-        ));
-        jScrollPane1.setViewportView(jTable1);
-
-        jPanel1.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 390, 700, 170));
-
         jButton3.setText("Añadir reserva");
         jButton3.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton3ActionPerformed(evt);
             }
         });
-        jPanel1.add(jButton3, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 570, -1, -1));
+        jPanel1.add(jButton3, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 380, -1, -1));
 
         jButton2.setText("Eliminar reserva");
         jButton2.addActionListener(new java.awt.event.ActionListener() {
@@ -165,15 +147,12 @@ public class ModificarCliente extends javax.swing.JFrame {
                 jButton2ActionPerformed(evt);
             }
         });
-        jPanel1.add(jButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 570, -1, -1));
+        jPanel1.add(jButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 380, -1, -1));
 
-        jLabel11.setText("Reservas");
-        jPanel1.add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 370, -1, -1));
-
-        getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 20, 780, 610));
+        getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 20, 780, 440));
 
         jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/FondoPrincipal.png"))); // NOI18N
-        getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 10, 810, 690));
+        getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 10, 810, 450));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -300,7 +279,6 @@ public class ModificarCliente extends javax.swing.JFrame {
     private javax.swing.JButton jButton3;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
-    private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -310,8 +288,6 @@ public class ModificarCliente extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable jTable1;
     private javax.swing.JButton modificar;
     private javax.swing.JTextField nombre;
     private javax.swing.JCheckBox pieGato;

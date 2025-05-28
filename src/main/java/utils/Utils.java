@@ -97,4 +97,18 @@ public class Utils {
             io.printStackTrace();
         }
     }
+    
+    public static boolean validarDNI(String dni) {
+        //Devolver si el dni cuadra con el patron
+        return dni.matches("[0-9]{8}[A-Z]{1}");
+    }
+    
+    public static boolean validarEmail(String email) {
+        return email.matches("^[\\w-\\.]+@([\\w-]+\\.)+[a-zA-Z]{2,}$");
+    }
+    
+    public static boolean validarContrasena(String contrasena) {
+        return contrasena.matches(".*[A-Z].*") && contrasena.matches(".*[!@#$%^&*()_+\\-={}:;\"'<>,.?/~`].*")
+               && contrasena.length() >= 6 && contrasena.length() <= 10;
+    }
 }

@@ -4,12 +4,17 @@
  */
 package ventanas;
 
+import br.com.thiaguten.umbrella.support.security.BCryptPasswordEncoder;
 import com.google.gson.Gson;
+import java.awt.Color;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import javax.swing.BorderFactory;
 import javax.swing.JOptionPane;
+import javax.swing.border.Border;
 import models.Empleado;
+import utils.Utils;
 
 public class ModificarEmpleado extends javax.swing.JFrame {
 
@@ -146,8 +151,41 @@ public class ModificarEmpleado extends javax.swing.JFrame {
 
     private void modificarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_modificarActionPerformed
         // TODO add your handling code here:
-        try {
-        // Actualizamos los datos del empleado
+         try {
+        int error = 0;
+        Border bordeRojo = BorderFactory.createLineBorder(Color.red, 1);
+        Border bordeNormal = BorderFactory.createLineBorder(Color.gray, 1);
+
+        // Validaciones de campos obligatorios
+        if (dni.getText().isEmpty() || !Utils.validarDNI(dni.getText())) {
+            dni.setBorder(bordeRojo); error++;
+        } else { dni.setBorder(bordeNormal); }
+
+        if (nombre.getText().isEmpty()) {
+            nombre.setBorder(bordeRojo); error++;
+        } else { nombre.setBorder(bordeNormal); }
+
+        if (apellido.getText().isEmpty()) {
+            apellido.setBorder(bordeRojo); error++;
+        } else { apellido.setBorder(bordeNormal); }
+
+        if (direccion.getText().isEmpty()) {
+            direccion.setBorder(bordeRojo); error++;
+        } else { direccion.setBorder(bordeNormal); }
+
+        if (usuario.getText().isEmpty()) {
+            usuario.setBorder(bordeRojo); error++;
+        } else { usuario.setBorder(bordeNormal); }
+
+        if (mail.getText().isEmpty() || !Utils.validarEmail(mail.getText())) {
+            mail.setBorder(bordeRojo); error++;
+        } else { mail.setBorder(bordeNormal); }
+
+        if (telefono.getText().isEmpty()) {
+            telefono.setBorder(bordeRojo); error++;
+        } else { telefono.setBorder(bordeNormal); }
+
+        // Actualización de datos básicos
         empleado.setNombre(nombre.getText());
         empleado.setApellidos(apellido.getText());
         empleado.setDni(dni.getText());
@@ -157,34 +195,45 @@ public class ModificarEmpleado extends javax.swing.JFrame {
         empleado.setDireccion(direccion.getText());
         empleado.setRol(rol.getSelectedItem().toString());
 
-        String nuevaContrasena = contrasena.getText();
+      
+        // Validar y actualizar contraseña solo si se ha escrito una nueva
+        String nuevaContrasena = String.valueOf(contrasena.getPassword()).trim();
         if (!nuevaContrasena.isEmpty()) {
-            empleado.setContrasenaHash(nuevaContrasena); // Luego el back hasheará esto
-        }
+            if (nuevaContrasena.length() >= 6 &&
+                nuevaContrasena.length() <= 10 &&
+                Utils.validarContrasena(nuevaContrasena)) {
+                // Enviamos la contraseña en texto plano, para que se hashee en el backend
+                empleado.setContrasenaHash(nuevaContrasena);
+            } else {
+                JOptionPane.showMessageDialog(this, "La contraseña debe tener entre 6 y 10 caracteres, mayúsculas y un carácter especial.");
+                contrasena.setBorder(BorderFactory.createLineBorder(Color.red, 1));
+                return;
+            }
+                }
 
-        // Serializar a JSON
-        String json = new Gson().toJson(empleado);
+        if (error == 0) {
+            // Enviar al backend
+            String json = new Gson().toJson(empleado);
+            URL url = new URL("http://localhost:8080/empleado/update");
+            HttpURLConnection con = (HttpURLConnection) url.openConnection();
+            con.setRequestMethod("PUT");
+            con.setRequestProperty("Content-Type", "application/json");
+            con.setDoOutput(true);
 
-        // Enviar al backend
-        URL url = new URL("http://localhost:8080/empleado/update");
-        HttpURLConnection con = (HttpURLConnection) url.openConnection();
-        con.setRequestMethod("PUT");
-        con.setRequestProperty("Content-Type", "application/json");
-        con.setDoOutput(true);
+            try (OutputStream os = con.getOutputStream()) {
+                byte[] input = json.getBytes("utf-8");
+                os.write(input, 0, input.length);
+            }
 
-        try (OutputStream os = con.getOutputStream()) {
-            byte[] input = json.getBytes("utf-8");
-            os.write(input, 0, input.length);
-        }
-
-        int responseCode = con.getResponseCode();
-        if (responseCode == HttpURLConnection.HTTP_OK) {
-            JOptionPane.showMessageDialog(this, "Empleado modificado correctamente");
-            Empleados vistaEmpleados = new Empleados();
-            vistaEmpleados.setVisible(true);
-            this.dispose();
-        } else {
-            JOptionPane.showMessageDialog(this, "Error al modificar el empleado. Código: " + responseCode);
+            int responseCode = con.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                JOptionPane.showMessageDialog(this, "Empleado modificado correctamente");
+                Empleados vistaEmpleados = new Empleados();
+                vistaEmpleados.setVisible(true);
+                this.dispose();
+            } else {
+                JOptionPane.showMessageDialog(this, "Error al modificar el empleado. Código: " + responseCode);
+            }
         }
 
     } catch (Exception e) {

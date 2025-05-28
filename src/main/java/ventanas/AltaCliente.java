@@ -6,12 +6,15 @@ package ventanas;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import java.awt.Color;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import javax.swing.BorderFactory;
 import javax.swing.JOptionPane;
+import javax.swing.border.Border;
 import models.Cliente;
 import models.TipoEntrada;
 import utils.LocalDateAdapter;
@@ -71,6 +74,14 @@ public class AltaCliente extends javax.swing.JFrame {
 
         jLabel3.setText("DNI");
         jPanel1.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 20, -1, -1));
+
+        dni.addInputMethodListener(new java.awt.event.InputMethodListener() {
+            public void caretPositionChanged(java.awt.event.InputMethodEvent evt) {
+            }
+            public void inputMethodTextChanged(java.awt.event.InputMethodEvent evt) {
+                dniInputMethodTextChanged(evt);
+            }
+        });
         jPanel1.add(dni, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 20, 170, -1));
 
         jLabel4.setText("Nombre");
@@ -137,55 +148,109 @@ public class AltaCliente extends javax.swing.JFrame {
     private void insertarClienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_insertarClienteActionPerformed
         // TODO add your handling code here:
         try {
-            // Construir objeto Cliente
-            Cliente nuevoCliente = new Cliente();
-            nuevoCliente.setDni(dni.getText());
-            nuevoCliente.setNombre(nombre.getText());
-            nuevoCliente.setApellidos(apellido.getText());
-            nuevoCliente.setTelefono(telefono.getText());
-            nuevoCliente.setTipo_entrada((TipoEntrada) tipoBono.getSelectedItem());
-            // Fecha
-            if (fecha.getDate() != null) {
-                nuevoCliente.setFechaBono(fecha.getDate().toInstant()
-                        .atZone(ZoneId.systemDefault())
-                        .toLocalDate());
+            int error = 0;
+            Border bordeRojo = BorderFactory.createLineBorder(Color.red, 1);
+            Border bordeNormal = BorderFactory.createLineBorder(Color.gray, 1);
+            //Comprobar los datos que sean correctos
+            if (dni.getText().equals("") || !Utils.validarDNI(dni.getText())) {
+                dni.setBorder(bordeRojo);
+                error++;
             }
-
-            // Pie de gato (checkbox)
-            nuevoCliente.setPieGato(pieGato.isSelected());
-
-            // Edad
-            nuevoCliente.setEdad(Integer.parseInt(edad.getText().trim()));
-
-            // Crear Gson con soporte para LocalDate
-            Gson gson = new GsonBuilder()
-            .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
-            .create();
-   
-            // Serializar a JSON
-            String json = gson.toJson(nuevoCliente);
-
-            // Crear conexión HTTP
-            URL url = new URL("http://localhost:8080/cliente/insert");
-            HttpURLConnection con = (HttpURLConnection) url.openConnection();
-            con.setRequestMethod("POST");
-            con.setDoOutput(true);
-            con.setRequestProperty("Content-Type", "application/json");
-
-            // Enviar datos al servidor
-            try (OutputStream os = con.getOutputStream()) {
-                byte[] input = json.getBytes("utf-8");
-                os.write(input, 0, input.length);
+            else {
+                dni.setBorder(bordeNormal); 
             }
+            
+            if (nombre.getText().equals("")) {
+                nombre.setBorder(bordeRojo);
+                error++;
+            }
+            else {
+                nombre.setBorder(bordeNormal);
+            }
+            
+            if (apellido.getText().equals("")) {
+                apellido.setBorder(bordeRojo);
+                error++;
+            }
+            else {
+                apellido.setBorder(bordeNormal);
+            }
+             
+            if (telefono.getText().equals("")) {
+                telefono.setBorder(bordeRojo);  
+                error++;
+            }
+            else {
+                telefono.setBorder(bordeNormal);
+            }
+            
+            if (fecha.getDate() == null){
+                fecha.setBorder(bordeRojo);
+                error++;
+            }
+            else {
+                fecha.setBorder(bordeNormal);
+            }
+            
+            if (edad.getText().equals("")) {
+                edad.setBorder(bordeRojo);  
+                error++;
+            }
+            else {
+                edad.setBorder(bordeNormal);
+            }
+            
+            if (error == 0) {
+                // Construir objeto Cliente
+                Cliente nuevoCliente = new Cliente();
+                nuevoCliente.setDni(dni.getText());
+                nuevoCliente.setNombre(nombre.getText());
+                nuevoCliente.setApellidos(apellido.getText());
+                nuevoCliente.setTelefono(telefono.getText());
+                nuevoCliente.setTipo_entrada((TipoEntrada) tipoBono.getSelectedItem());
+                // Fecha
+                if (fecha.getDate() != null) {
+                    nuevoCliente.setFechaBono(fecha.getDate().toInstant()
+                            .atZone(ZoneId.systemDefault())
+                            .toLocalDate());
+                }
 
-            int responseCode = con.getResponseCode();
-            if (responseCode == HttpURLConnection.HTTP_OK) {
-                JOptionPane.showMessageDialog(this, "Cliente insertado correctamente");
-                Clientes client = new Clientes();
-                client.setVisible(true);
-                this.dispose();
-            } else {
-                JOptionPane.showMessageDialog(this, "Error al insertar el cliente");
+                // Pie de gato (checkbox)
+                nuevoCliente.setPieGato(pieGato.isSelected());
+
+                // Edad
+                nuevoCliente.setEdad(Integer.parseInt(edad.getText().trim()));
+
+                // Crear Gson con soporte para LocalDate
+                Gson gson = new GsonBuilder()
+                .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
+                .create();
+
+                // Serializar a JSON
+                String json = gson.toJson(nuevoCliente);
+
+                // Crear conexión HTTP
+                URL url = new URL("http://localhost:8080/cliente/insert");
+                HttpURLConnection con = (HttpURLConnection) url.openConnection();
+                con.setRequestMethod("POST");
+                con.setDoOutput(true);
+                con.setRequestProperty("Content-Type", "application/json");
+
+                // Enviar datos al servidor
+                try (OutputStream os = con.getOutputStream()) {
+                    byte[] input = json.getBytes("utf-8");
+                    os.write(input, 0, input.length);
+                }
+
+                int responseCode = con.getResponseCode();
+                if (responseCode == HttpURLConnection.HTTP_OK) {
+                    JOptionPane.showMessageDialog(this, "Cliente insertado correctamente");
+                    Clientes client = new Clientes();
+                    client.setVisible(true);
+                    this.dispose();
+                } else {
+                    JOptionPane.showMessageDialog(this, "Error al insertar el cliente");
+                }
             }
             
         } catch (Exception e) {
@@ -193,6 +258,10 @@ public class AltaCliente extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Error de conexión: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }  
     }//GEN-LAST:event_insertarClienteActionPerformed
+
+    private void dniInputMethodTextChanged(java.awt.event.InputMethodEvent evt) {//GEN-FIRST:event_dniInputMethodTextChanged
+
+    }//GEN-LAST:event_dniInputMethodTextChanged
 
     /**
      * @param args the command line arguments
