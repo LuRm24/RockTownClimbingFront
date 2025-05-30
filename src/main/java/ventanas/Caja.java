@@ -232,6 +232,7 @@ public class Caja extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         tablaVisor = new javax.swing.JTable();
         jButton20 = new javax.swing.JButton();
+        verBono = new javax.swing.JButton();
         volver = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
 
@@ -242,6 +243,7 @@ public class Caja extends javax.swing.JFrame {
 
         panelNumeros.setOpaque(false);
 
+        jButton7.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
         jButton7.setText("7");
         jButton7.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 1, true));
         jButton7.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -255,6 +257,7 @@ public class Caja extends javax.swing.JFrame {
             }
         });
 
+        jButton8.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
         jButton8.setText("8");
         jButton8.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 1, true));
         jButton8.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -268,6 +271,7 @@ public class Caja extends javax.swing.JFrame {
             }
         });
 
+        jButton9.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
         jButton9.setText("9");
         jButton9.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 1, true));
         jButton9.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -281,6 +285,7 @@ public class Caja extends javax.swing.JFrame {
             }
         });
 
+        jButton6.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
         jButton6.setText("6");
         jButton6.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 1, true));
         jButton6.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -294,6 +299,7 @@ public class Caja extends javax.swing.JFrame {
             }
         });
 
+        jButton5.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
         jButton5.setText("5");
         jButton5.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 1, true));
         jButton5.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -307,6 +313,7 @@ public class Caja extends javax.swing.JFrame {
             }
         });
 
+        jButton4.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
         jButton4.setText("4");
         jButton4.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 1, true));
         jButton4.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -320,6 +327,7 @@ public class Caja extends javax.swing.JFrame {
             }
         });
 
+        jButton1.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
         jButton1.setText("1");
         jButton1.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 1, true));
         jButton1.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -333,6 +341,7 @@ public class Caja extends javax.swing.JFrame {
             }
         });
 
+        jButton2.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
         jButton2.setText("2");
         jButton2.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 1, true));
         jButton2.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -346,6 +355,7 @@ public class Caja extends javax.swing.JFrame {
             }
         });
 
+        jButton3.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
         jButton3.setText("3");
         jButton3.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 1, true));
         jButton3.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -359,6 +369,7 @@ public class Caja extends javax.swing.JFrame {
             }
         });
 
+        jButton11.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
         jButton11.setText(".");
         jButton11.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 1, true));
         jButton11.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -372,6 +383,7 @@ public class Caja extends javax.swing.JFrame {
             }
         });
 
+        jButton10.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
         jButton10.setText("0");
         jButton10.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 1, true));
         jButton10.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -451,6 +463,7 @@ public class Caja extends javax.swing.JFrame {
         panelSimbolos.setOpaque(false);
         panelSimbolos.setPreferredSize(new java.awt.Dimension(380, 440));
 
+        jButton12.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
         jButton12.setText("x");
         jButton12.setPreferredSize(new java.awt.Dimension(42, 24));
         jButton12.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -464,6 +477,7 @@ public class Caja extends javax.swing.JFrame {
             }
         });
 
+        clear.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
         clear.setText("C");
         clear.setPreferredSize(new java.awt.Dimension(45, 24));
         clear.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -477,6 +491,7 @@ public class Caja extends javax.swing.JFrame {
             }
         });
 
+        jButton14.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
         jButton14.setText("=");
         jButton14.setPreferredSize(new java.awt.Dimension(45, 24));
         jButton14.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -490,6 +505,7 @@ public class Caja extends javax.swing.JFrame {
             }
         });
 
+        jButton15.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
         jButton15.setText("-");
         jButton15.setPreferredSize(new java.awt.Dimension(45, 24));
         jButton15.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -503,6 +519,7 @@ public class Caja extends javax.swing.JFrame {
             }
         });
 
+        jButton16.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
         jButton16.setText("÷");
         jButton16.setMaximumSize(new java.awt.Dimension(45, 67));
         jButton16.setMinimumSize(new java.awt.Dimension(50, 50));
@@ -518,13 +535,16 @@ public class Caja extends javax.swing.JFrame {
             }
         });
 
-        precioTotal.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
+        visorOperacion.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
+
+        precioTotal.setFont(new java.awt.Font("Malayalam MN", 1, 24)); // NOI18N
         precioTotal.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         precioTotal.setText("0.00");
 
-        jLabel3.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
+        jLabel3.setFont(new java.awt.Font("Malayalam MN", 1, 24)); // NOI18N
         jLabel3.setText("€");
 
+        descuentoVeinticinco.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
         descuentoVeinticinco.setText("10%");
         descuentoVeinticinco.setPreferredSize(new java.awt.Dimension(42, 24));
         descuentoVeinticinco.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -538,6 +558,7 @@ public class Caja extends javax.swing.JFrame {
             }
         });
 
+        descuentoCincuenta.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
         descuentoCincuenta.setText("50%");
         descuentoCincuenta.setPreferredSize(new java.awt.Dimension(42, 24));
         descuentoCincuenta.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -551,6 +572,7 @@ public class Caja extends javax.swing.JFrame {
             }
         });
 
+        descuentoCustom.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
         descuentoCustom.setText("%");
         descuentoCustom.setPreferredSize(new java.awt.Dimension(42, 24));
         descuentoCustom.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -564,6 +586,7 @@ public class Caja extends javax.swing.JFrame {
             }
         });
 
+        pagoTarjeta.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
         pagoTarjeta.setText("TARJETA");
         pagoTarjeta.setPreferredSize(new java.awt.Dimension(42, 24));
         pagoTarjeta.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -577,6 +600,7 @@ public class Caja extends javax.swing.JFrame {
             }
         });
 
+        psagoEfectivo.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
         psagoEfectivo.setText("EFECTIVO");
         psagoEfectivo.setPreferredSize(new java.awt.Dimension(42, 24));
         psagoEfectivo.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -590,6 +614,7 @@ public class Caja extends javax.swing.JFrame {
             }
         });
 
+        jButton19.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
         jButton19.setText("+");
         jButton19.setPreferredSize(new java.awt.Dimension(45, 24));
         jButton19.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -603,6 +628,7 @@ public class Caja extends javax.swing.JFrame {
             }
         });
 
+        descuentoVeinticinco1.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
         descuentoVeinticinco1.setText("25%");
         descuentoVeinticinco1.setPreferredSize(new java.awt.Dimension(42, 24));
         descuentoVeinticinco1.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -640,7 +666,7 @@ public class Caja extends javax.swing.JFrame {
                                 .addComponent(psagoEfectivo, javax.swing.GroupLayout.PREFERRED_SIZE, 103, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(pagoTarjeta, javax.swing.GroupLayout.PREFERRED_SIZE, 103, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addContainerGap(28, Short.MAX_VALUE))
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelSimbolosLayout.createSequentialGroup()
                                 .addGroup(panelSimbolosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                                     .addGroup(panelSimbolosLayout.createSequentialGroup()
@@ -658,9 +684,9 @@ public class Caja extends javax.swing.JFrame {
                         .addComponent(jButton14, javax.swing.GroupLayout.PREFERRED_SIZE, 139, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(precioTotal, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(25, 25, 25)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(jLabel3)
-                        .addGap(0, 9, Short.MAX_VALUE))))
+                        .addGap(0, 0, Short.MAX_VALUE))))
         );
         panelSimbolosLayout.setVerticalGroup(
             panelSimbolosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -685,37 +711,42 @@ public class Caja extends javax.swing.JFrame {
                         .addComponent(descuentoCustom, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGroup(panelSimbolosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(panelSimbolosLayout.createSequentialGroup()
-                        .addGap(14, 14, 14)
-                        .addComponent(jLabel3))
-                    .addGroup(panelSimbolosLayout.createSequentialGroup()
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(clear, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelSimbolosLayout.createSequentialGroup()
                         .addGap(8, 8, 8)
                         .addGroup(panelSimbolosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jButton14, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(precioTotal, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelSimbolosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(precioTotal, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(jLabel3)))))
                 .addGap(12, 12, 12))
         );
 
         getContentPane().add(panelSimbolos, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 290, 390, 240));
 
-        jLabel2.setFont(new java.awt.Font("Tahoma", 1, 36)); // NOI18N
+        jLabel2.setFont(new java.awt.Font("Didot", 1, 36)); // NOI18N
         jLabel2.setText("Caja");
-        getContentPane().add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 10, -1, -1));
+        getContentPane().add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(240, 10, -1, -1));
 
         panelVisor.setOpaque(false);
 
+        jLabel9.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
         jLabel9.setText("Tipo de bono");
 
+        tipoBono.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
         tipoBono.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 tipoBonoActionPerformed(evt);
             }
         });
 
+        jLabel11.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
         jLabel11.setText("Productos");
 
+        productos.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
+
+        jButton17.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
         jButton17.setText("+");
         jButton17.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -723,6 +754,7 @@ public class Caja extends javax.swing.JFrame {
             }
         });
 
+        jButton18.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
         jButton18.setText("+");
         jButton18.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -730,6 +762,7 @@ public class Caja extends javax.swing.JFrame {
             }
         });
 
+        tablaVisor.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
         tablaVisor.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
@@ -740,10 +773,19 @@ public class Caja extends javax.swing.JFrame {
         ));
         jScrollPane1.setViewportView(tablaVisor);
 
+        jButton20.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
         jButton20.setText("-");
         jButton20.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton20ActionPerformed(evt);
+            }
+        });
+
+        verBono.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
+        verBono.setText("Ver bono");
+        verBono.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                verBonoActionPerformed(evt);
             }
         });
 
@@ -752,7 +794,7 @@ public class Caja extends javax.swing.JFrame {
         panelVisorLayout.setHorizontalGroup(
             panelVisorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelVisorLayout.createSequentialGroup()
-                .addGroup(panelVisorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(panelVisorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(panelVisorLayout.createSequentialGroup()
                         .addGap(29, 29, 29)
                         .addGroup(panelVisorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
@@ -766,14 +808,17 @@ public class Caja extends javax.swing.JFrame {
                                 .addComponent(tipoBono, javax.swing.GroupLayout.PREFERRED_SIZE, 270, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(panelVisorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jButton17)
-                            .addComponent(jButton18)))
+                            .addComponent(jButton18)
+                            .addGroup(panelVisorLayout.createSequentialGroup()
+                                .addComponent(jButton17)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(verBono))))
                     .addGroup(panelVisorLayout.createSequentialGroup()
                         .addContainerGap()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 471, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButton20)
-                .addContainerGap())
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 471, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jButton20)))
+                .addGap(60, 60, 60))
         );
         panelVisorLayout.setVerticalGroup(
             panelVisorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -786,30 +831,32 @@ public class Caja extends javax.swing.JFrame {
                 .addGroup(panelVisorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel9)
                     .addComponent(tipoBono, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton17))
+                    .addComponent(jButton17)
+                    .addComponent(verBono))
                 .addGap(20, 20, 20)
                 .addGroup(panelVisorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(panelVisorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(productos, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(jButton18))
                     .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 14, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(28, Short.MAX_VALUE))
         );
 
         getContentPane().add(panelVisor, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 60, 590, 230));
 
+        volver.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
         volver.setText("<--");
         volver.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 volverActionPerformed(evt);
             }
         });
-        getContentPane().add(volver, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 10, 70, -1));
+        getContentPane().add(volver, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 20, 70, -1));
 
         jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/FondoPrincipal.png"))); // NOI18N
         jLabel1.setText("jLabel1");
         jLabel1.setPreferredSize(new java.awt.Dimension(640, 570));
-        getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, -1));
+        getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, 550));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -1143,12 +1190,12 @@ public class Caja extends javax.swing.JFrame {
          aplicarDescuento(0.25); 
     }//GEN-LAST:event_descuentoVeinticinco1ActionPerformed
 
-    private void jButton13ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton13ActionPerformed
+    private void verBonoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_verBonoActionPerformed
         // TODO add your handling code here:
         Principal p = new Principal();
         p.setVisible(true);
         this.dispose();
-    }//GEN-LAST:event_jButton13ActionPerformed
+    }//GEN-LAST:event_verBonoActionPerformed
 
     private void volverActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_volverActionPerformed
         // TODO add your handling code here:
@@ -1232,6 +1279,7 @@ public class Caja extends javax.swing.JFrame {
     private javax.swing.JButton psagoEfectivo;
     private javax.swing.JTable tablaVisor;
     private javax.swing.JComboBox<TipoEntrada> tipoBono;
+    private javax.swing.JButton verBono;
     private javax.swing.JTextField visorOperacion;
     private javax.swing.JButton volver;
     // End of variables declaration//GEN-END:variables

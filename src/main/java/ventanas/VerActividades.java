@@ -133,11 +133,12 @@ public class VerActividades extends javax.swing.JFrame {
         jPanel1.setPreferredSize(new java.awt.Dimension(500, 600));
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jLabel2.setFont(new java.awt.Font("Tahoma", 1, 36)); // NOI18N
+        jLabel2.setFont(new java.awt.Font("Didot", 1, 36)); // NOI18N
         jLabel2.setText("Actividades");
         jLabel2.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-        jPanel1.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 10, -1, -1));
+        jPanel1.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 20, -1, -1));
 
+        tablaActividades.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
         tablaActividades.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
@@ -148,44 +149,48 @@ public class VerActividades extends javax.swing.JFrame {
         ));
         jScrollPane2.setViewportView(tablaActividades);
 
-        jPanel1.add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 80, 720, 190));
+        jPanel1.add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 80, 630, 190));
 
+        verActividad.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
         verActividad.setText("Ver actividad");
         verActividad.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 verActividadActionPerformed(evt);
             }
         });
-        jPanel1.add(verActividad, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 300, -1, -1));
+        jPanel1.add(verActividad, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 300, -1, -1));
 
+        cancelar.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
         cancelar.setText("Menú Principal");
         cancelar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cancelarActionPerformed(evt);
             }
         });
-        jPanel1.add(cancelar, new org.netbeans.lib.awtextra.AbsoluteConstraints(550, 300, -1, -1));
+        jPanel1.add(cancelar, new org.netbeans.lib.awtextra.AbsoluteConstraints(500, 300, -1, -1));
 
+        insertarActividad.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
         insertarActividad.setText("Añadir actividad");
         insertarActividad.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 insertarActividadActionPerformed(evt);
             }
         });
-        jPanel1.add(insertarActividad, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 300, -1, -1));
+        jPanel1.add(insertarActividad, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 300, -1, -1));
 
+        eliminarActividad1.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
         eliminarActividad1.setText("Eliminar actividad");
         eliminarActividad1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 eliminarActividad1ActionPerformed(evt);
             }
         });
-        jPanel1.add(eliminarActividad1, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 300, -1, -1));
+        jPanel1.add(eliminarActividad1, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 300, -1, -1));
 
-        getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 750, 350));
+        getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 660, 350));
 
         jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/FondoPrincipal.png"))); // NOI18N
-        getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 760, 370));
+        getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 670, 370));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents

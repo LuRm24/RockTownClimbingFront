@@ -77,35 +77,52 @@ public class ModificarCliente extends javax.swing.JFrame {
         jPanel1.setOpaque(false);
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
+        jLabel3.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
         jLabel3.setText("DNI");
         jPanel1.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 100, -1, -1));
+
+        dni.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
         jPanel1.add(dni, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 100, 170, -1));
 
+        jLabel4.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
         jLabel4.setText("Nombre");
         jPanel1.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 130, -1, -1));
+
+        nombre.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
         jPanel1.add(nombre, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 130, 170, -1));
 
+        jLabel5.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
         jLabel5.setText("Pies de gato");
         jPanel1.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 310, -1, -1));
+
+        telefono.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
         jPanel1.add(telefono, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 190, 170, -1));
+
+        apellido.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
         jPanel1.add(apellido, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 160, 260, -1));
 
+        jLabel6.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
         jLabel6.setText("Apellido");
         jPanel1.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 160, -1, -1));
 
+        jLabel7.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
         jLabel7.setText("Teléfono");
         jPanel1.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 190, -1, -1));
         jPanel1.add(fecha, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 220, 170, 32));
 
+        jLabel8.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
         jLabel8.setText("Fecha");
         jPanel1.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 230, -1, -1));
 
+        tipoBono.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
         jPanel1.add(tipoBono, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 270, 270, -1));
         jPanel1.add(pieGato, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 310, -1, -1));
 
+        jLabel9.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
         jLabel9.setText("Tipo de bono");
         jPanel1.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 270, -1, -1));
 
+        cancelar.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
         cancelar.setText("Cancelar");
         cancelar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -114,6 +131,7 @@ public class ModificarCliente extends javax.swing.JFrame {
         });
         jPanel1.add(cancelar, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 380, -1, -1));
 
+        modificar.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
         modificar.setText("Guardar cambios");
         modificar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -122,13 +140,16 @@ public class ModificarCliente extends javax.swing.JFrame {
         });
         jPanel1.add(modificar, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 380, -1, -1));
 
-        jLabel2.setFont(new java.awt.Font("Tahoma", 1, 36)); // NOI18N
+        jLabel2.setFont(new java.awt.Font("Didot", 1, 36)); // NOI18N
         jLabel2.setText("Modificar Cliente");
         jLabel2.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         jPanel1.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 20, -1, -1));
 
+        jLabel10.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
         jLabel10.setText("Edad");
         jPanel1.add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 310, -1, -1));
+
+        edad.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
         jPanel1.add(edad, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 310, 80, -1));
 
         getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 20, 500, 440));

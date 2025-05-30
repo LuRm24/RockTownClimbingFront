@@ -145,6 +145,7 @@ public class Empleados extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
+        tablaEmpleados.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
         tablaEmpleados.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
@@ -161,6 +162,7 @@ public class Empleados extends javax.swing.JFrame {
         jPanel1.setOpaque(false);
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
+        jButtonBuscar.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
         jButtonBuscar.setText("Buscar");
         jButtonBuscar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -169,63 +171,78 @@ public class Empleados extends javax.swing.JFrame {
         });
         jPanel1.add(jButtonBuscar, new org.netbeans.lib.awtextra.AbsoluteConstraints(580, 100, -1, -1));
 
+        jButtonAlta.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
         jButtonAlta.setText("Nuevo empleado");
         jButtonAlta.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonAltaActionPerformed(evt);
             }
         });
-        jPanel1.add(jButtonAlta, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 20, -1, 30));
+        jPanel1.add(jButtonAlta, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 20, -1, -1));
 
+        jLabel2.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
         jLabel2.setText("Nombre Usuario");
         jPanel1.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(480, 70, -1, -1));
 
+        jLabel3.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
         jLabel3.setText("DNI");
         jPanel1.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(540, 10, -1, -1));
 
+        jLabel4.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
         jLabel4.setText("Apellido");
         jPanel1.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(520, 40, -1, -1));
 
+        TFApellidos.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
         TFApellidos.setEnabled(false);
         TFApellidos.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 TFApellidosMouseClicked(evt);
             }
         });
-        jPanel1.add(TFApellidos, new org.netbeans.lib.awtextra.AbsoluteConstraints(580, 40, 170, -1));
+        jPanel1.add(TFApellidos, new org.netbeans.lib.awtextra.AbsoluteConstraints(580, 40, 170, 20));
 
+        TFUsuario.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
         TFUsuario.setEnabled(false);
         TFUsuario.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 TFUsuarioMouseClicked(evt);
             }
         });
-        jPanel1.add(TFUsuario, new org.netbeans.lib.awtextra.AbsoluteConstraints(580, 70, 170, -1));
+        TFUsuario.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                TFUsuarioActionPerformed(evt);
+            }
+        });
+        jPanel1.add(TFUsuario, new org.netbeans.lib.awtextra.AbsoluteConstraints(580, 70, 170, 20));
 
+        TFDNI.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
         TFDNI.setEnabled(false);
         TFDNI.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 TFDNIMouseClicked(evt);
             }
         });
-        jPanel1.add(TFDNI, new org.netbeans.lib.awtextra.AbsoluteConstraints(580, 10, 170, -1));
+        jPanel1.add(TFDNI, new org.netbeans.lib.awtextra.AbsoluteConstraints(580, 10, 170, 20));
 
+        jButtonEliminar.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
         jButtonEliminar.setText("Eliminar empleado");
         jButtonEliminar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonEliminarActionPerformed(evt);
             }
         });
-        jPanel1.add(jButtonEliminar, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 20, -1, 30));
+        jPanel1.add(jButtonEliminar, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 20, -1, -1));
 
+        jButtonModificar.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
         jButtonModificar.setText("Modificar Empleado");
         jButtonModificar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonModificarActionPerformed(evt);
             }
         });
-        jPanel1.add(jButtonModificar, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 20, -1, 30));
+        jPanel1.add(jButtonModificar, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 20, -1, -1));
 
+        jButtonRecargar.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
         jButtonRecargar.setText("<--");
         jButtonRecargar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -234,13 +251,14 @@ public class Empleados extends javax.swing.JFrame {
         });
         jPanel1.add(jButtonRecargar, new org.netbeans.lib.awtextra.AbsoluteConstraints(680, 100, 70, -1));
 
+        jButtonMenuPrinc.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
         jButtonMenuPrinc.setText("Menú Principal");
         jButtonMenuPrinc.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonMenuPrincActionPerformed(evt);
             }
         });
-        jPanel1.add(jButtonMenuPrinc, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 80, -1, -1));
+        jPanel1.add(jButtonMenuPrinc, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 90, -1, -1));
 
         getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 250, 770, 130));
 
@@ -430,6 +448,10 @@ public class Empleados extends javax.swing.JFrame {
         p.setVisible(true);
         this.dispose();
     }//GEN-LAST:event_jButtonMenuPrincActionPerformed
+
+    private void TFUsuarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TFUsuarioActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_TFUsuarioActionPerformed
 
     /**
      * @param args the command line arguments

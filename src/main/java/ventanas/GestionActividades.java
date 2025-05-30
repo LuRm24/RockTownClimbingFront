@@ -211,21 +211,27 @@ public class GestionActividades extends javax.swing.JFrame {
         jPanel1.setPreferredSize(new java.awt.Dimension(500, 600));
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jLabel2.setFont(new java.awt.Font("Tahoma", 1, 36)); // NOI18N
+        jLabel2.setFont(new java.awt.Font("Didot", 1, 36)); // NOI18N
         jLabel2.setText("Gestión Actividades");
         jLabel2.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         jPanel1.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 20, -1, -1));
 
+        jLabel3.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
         jLabel3.setText("Nombre actividad");
         jPanel1.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 90, -1, -1));
+
+        nombre.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
         jPanel1.add(nombre, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 90, 390, -1));
 
+        jLabel4.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
         jLabel4.setText("Monitor asignado");
         jPanel1.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 240, -1, -1));
 
+        jLabel6.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
         jLabel6.setText("Horarios disponibles");
         jPanel1.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 350, -1, -1));
 
+        monitor.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
         monitor.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 monitorActionPerformed(evt);
@@ -233,15 +239,18 @@ public class GestionActividades extends javax.swing.JFrame {
         });
         jPanel1.add(monitor, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 240, 390, -1));
 
+        jLabel5.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
         jLabel5.setText("Descripción");
         jPanel1.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 140, -1, -1));
 
         descripcion.setColumns(20);
+        descripcion.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
         descripcion.setRows(5);
         jScrollPane1.setViewportView(descripcion);
 
         jPanel1.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 130, 390, -1));
 
+        tablaHorarios.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
         tablaHorarios.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
@@ -254,6 +263,7 @@ public class GestionActividades extends javax.swing.JFrame {
 
         jPanel1.add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 380, 530, 170));
 
+        eliminarHorario.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
         eliminarHorario.setText("Eliminar horario");
         eliminarHorario.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -262,6 +272,7 @@ public class GestionActividades extends javax.swing.JFrame {
         });
         jPanel1.add(eliminarHorario, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 560, -1, -1));
 
+        menuPrincipal.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
         menuPrincipal.setText("Menú Principal");
         menuPrincipal.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -270,6 +281,7 @@ public class GestionActividades extends javax.swing.JFrame {
         });
         jPanel1.add(menuPrincipal, new org.netbeans.lib.awtextra.AbsoluteConstraints(390, 560, -1, -1));
 
+        insertarHorario.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
         insertarHorario.setText("+");
         insertarHorario.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -278,6 +290,7 @@ public class GestionActividades extends javax.swing.JFrame {
         });
         jPanel1.add(insertarHorario, new org.netbeans.lib.awtextra.AbsoluteConstraints(580, 310, 50, -1));
 
+        guardar.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
         guardar.setText("Guardar todo");
         guardar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -286,18 +299,23 @@ public class GestionActividades extends javax.swing.JFrame {
         });
         jPanel1.add(guardar, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 560, -1, -1));
 
+        horaInicio.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
         horaInicio.setText("Hora inicio");
         jPanel1.add(horaInicio, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 290, -1, -1));
 
+        comboHoraFin.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
         jPanel1.add(comboHoraFin, new org.netbeans.lib.awtextra.AbsoluteConstraints(420, 330, 140, -1));
 
+        jLabel8.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
         jLabel8.setText("Dia semana");
         jPanel1.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 300, -1, -1));
 
+        jLabel9.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
         jLabel9.setText("Hora fin");
         jPanel1.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 330, -1, -1));
 
-        diaSemana.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo" }));
+        diaSemana.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
+        diaSemana.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sabado", "Domingo" }));
         diaSemana.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 diaSemanaActionPerformed(evt);
@@ -305,6 +323,7 @@ public class GestionActividades extends javax.swing.JFrame {
         });
         jPanel1.add(diaSemana, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 300, 120, -1));
 
+        comboHoraInicio.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
         jPanel1.add(comboHoraInicio, new org.netbeans.lib.awtextra.AbsoluteConstraints(420, 290, 140, -1));
 
         insertarHorario1.setText("+");
@@ -323,6 +342,7 @@ public class GestionActividades extends javax.swing.JFrame {
         });
         jPanel1.add(jButtonRecargar, new org.netbeans.lib.awtextra.AbsoluteConstraints(660, 100, 70, -1));
 
+        volver.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
         volver.setText("<--");
         volver.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {

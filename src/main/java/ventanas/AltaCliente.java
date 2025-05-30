@@ -64,7 +64,7 @@ public class AltaCliente extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jLabel2.setFont(new java.awt.Font("Tahoma", 1, 36)); // NOI18N
+        jLabel2.setFont(new java.awt.Font("Didot", 1, 36)); // NOI18N
         jLabel2.setText("Alta de Cliente");
         jLabel2.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         getContentPane().add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 20, -1, -1));
@@ -72,9 +72,11 @@ public class AltaCliente extends javax.swing.JFrame {
         jPanel1.setOpaque(false);
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
+        jLabel3.setFont(jLabel3.getFont());
         jLabel3.setText("DNI");
         jPanel1.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 20, -1, -1));
 
+        dni.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
         dni.addInputMethodListener(new java.awt.event.InputMethodListener() {
             public void caretPositionChanged(java.awt.event.InputMethodEvent evt) {
             }
@@ -84,31 +86,45 @@ public class AltaCliente extends javax.swing.JFrame {
         });
         jPanel1.add(dni, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 20, 170, -1));
 
+        jLabel4.setFont(new java.awt.Font("Myanmar MN", 0, 13)); // NOI18N
         jLabel4.setText("Nombre");
         jPanel1.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 60, -1, -1));
+
+        nombre.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
         jPanel1.add(nombre, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 60, 170, -1));
 
+        jLabel5.setFont(new java.awt.Font("Myanmar MN", 0, 13)); // NOI18N
         jLabel5.setText("Pies de gato");
         jPanel1.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 270, -1, -1));
+
+        telefono.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
         jPanel1.add(telefono, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 140, 170, -1));
+
+        apellido.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
         jPanel1.add(apellido, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 100, 320, -1));
 
+        jLabel6.setFont(new java.awt.Font("Myanmar MN", 0, 13)); // NOI18N
         jLabel6.setText("Apellido");
         jPanel1.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 100, -1, -1));
 
+        jLabel7.setFont(new java.awt.Font("Myanmar MN", 0, 13)); // NOI18N
         jLabel7.setText("Teléfono");
         jPanel1.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 140, -1, -1));
         jPanel1.add(fecha, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 180, 170, 32));
 
+        jLabel8.setFont(new java.awt.Font("Myanmar MN", 0, 13)); // NOI18N
         jLabel8.setText("Fecha");
         jPanel1.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 190, -1, -1));
 
+        tipoBono.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
         jPanel1.add(tipoBono, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 230, 320, -1));
         jPanel1.add(pieGato, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 270, -1, -1));
 
+        jLabel9.setFont(new java.awt.Font("Myanmar MN", 0, 13)); // NOI18N
         jLabel9.setText("Tipo de bono");
         jPanel1.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 230, -1, -1));
 
+        cancelar.setFont(new java.awt.Font("Kohinoor Bangla", 0, 13)); // NOI18N
         cancelar.setText("Cancelar");
         cancelar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -117,6 +133,7 @@ public class AltaCliente extends javax.swing.JFrame {
         });
         jPanel1.add(cancelar, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 330, -1, -1));
 
+        insertarCliente.setFont(new java.awt.Font("Kohinoor Bangla", 0, 13)); // NOI18N
         insertarCliente.setText("Añadir");
         insertarCliente.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -125,8 +142,11 @@ public class AltaCliente extends javax.swing.JFrame {
         });
         jPanel1.add(insertarCliente, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 330, -1, -1));
 
+        jLabel10.setFont(new java.awt.Font("Myanmar MN", 0, 13)); // NOI18N
         jLabel10.setText("Edad");
         jPanel1.add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 270, -1, -1));
+
+        edad.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
         jPanel1.add(edad, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 270, 80, -1));
 
         getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 80, 500, 370));

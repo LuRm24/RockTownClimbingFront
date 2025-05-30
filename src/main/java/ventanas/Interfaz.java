@@ -112,6 +112,7 @@ public class Interfaz extends javax.swing.JFrame {
         setUndecorated(true);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
+        jButton1.setFont(new java.awt.Font("Kohinoor Bangla", 0, 13)); // NOI18N
         jButton1.setText("Entrar");
         jButton1.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
         jButton1.addActionListener(new java.awt.event.ActionListener() {
@@ -124,14 +125,15 @@ public class Interfaz extends javax.swing.JFrame {
         icono.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/logo(300x300).png"))); // NOI18N
         getContentPane().add(icono, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 20, 290, 280));
 
-        jLabel1.setFont(new java.awt.Font("Helvetica", 1, 13)); // NOI18N
+        jLabel1.setFont(new java.awt.Font("Malayalam MN", 1, 13)); // NOI18N
         jLabel1.setText("Usuario:");
         getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 340, 60, -1));
 
-        jLabel2.setFont(new java.awt.Font("Helvetica", 1, 13)); // NOI18N
+        jLabel2.setFont(new java.awt.Font("Malayalam MN", 1, 13)); // NOI18N
         jLabel2.setText("Contraseña:");
         getContentPane().add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 390, -1, -1));
 
+        user.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
         user.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         getContentPane().add(user, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 330, 200, 30));
 

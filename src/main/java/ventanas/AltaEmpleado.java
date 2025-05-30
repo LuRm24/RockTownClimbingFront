@@ -57,12 +57,13 @@ public class AltaEmpleado extends javax.swing.JFrame {
         LbContrasena1 = new javax.swing.JLabel();
         nombre = new javax.swing.JTextField();
         CBRol = new javax.swing.JComboBox<>();
+        jSeparator1 = new javax.swing.JSeparator();
         jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jLabel2.setFont(new java.awt.Font("Tahoma", 1, 36)); // NOI18N
+        jLabel2.setFont(new java.awt.Font("Didot", 1, 36)); // NOI18N
         jLabel2.setText("Alta Empleado");
         jLabel2.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         getContentPane().add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 20, -1, -1));
@@ -70,61 +71,90 @@ public class AltaEmpleado extends javax.swing.JFrame {
         jPanel1.setOpaque(false);
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
+        jLabel3.setFont(new java.awt.Font("Myanmar MN", 0, 13)); // NOI18N
         jLabel3.setText("DNI");
-        jPanel1.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 20, -1, -1));
-        jPanel1.add(dni, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 20, 170, -1));
+        jPanel1.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 20, -1, -1));
 
+        dni.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
+        jPanel1.add(dni, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 20, 170, -1));
+
+        jLabel4.setFont(new java.awt.Font("Myanmar MN", 0, 13)); // NOI18N
         jLabel4.setText("Nombre");
-        jPanel1.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 60, -1, -1));
+        jPanel1.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 60, -1, -1));
 
+        LbContrasena.setFont(new java.awt.Font("Myanmar MN", 0, 13)); // NOI18N
         LbContrasena.setText("Contraseña");
-        jPanel1.add(LbContrasena, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 310, -1, -1));
-        jPanel1.add(direccion, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 140, 300, -1));
-        jPanel1.add(apellido, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 100, 270, -1));
+        jPanel1.add(LbContrasena, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 360, -1, -1));
 
+        direccion.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
+        jPanel1.add(direccion, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 180, 300, -1));
+
+        apellido.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
+        jPanel1.add(apellido, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 100, 170, -1));
+
+        jLabel6.setFont(new java.awt.Font("Myanmar MN", 0, 13)); // NOI18N
         jLabel6.setText("Apellido");
-        jPanel1.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 100, -1, -1));
+        jPanel1.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 100, -1, -1));
 
+        jLabel7.setFont(new java.awt.Font("Myanmar MN", 0, 13)); // NOI18N
         jLabel7.setText("Dirección");
-        jPanel1.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 140, -1, -1));
+        jPanel1.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 180, -1, -1));
 
+        jLabel8.setFont(new java.awt.Font("Myanmar MN", 0, 13)); // NOI18N
         jLabel8.setText("Rol");
-        jPanel1.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 180, -1, -1));
+        jPanel1.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 280, -1, -1));
 
+        jLabel9.setFont(new java.awt.Font("Myanmar MN", 0, 13)); // NOI18N
         jLabel9.setText("Nombre usuario");
-        jPanel1.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 220, -1, -1));
+        jPanel1.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 320, -1, -1));
 
+        jButton1.setFont(new java.awt.Font("Kohinoor Bangla", 0, 13)); // NOI18N
         jButton1.setText("Cancelar");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton1ActionPerformed(evt);
             }
         });
-        jPanel1.add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 420, -1, -1));
+        jPanel1.add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 420, -1, -1));
 
+        jButton2.setFont(new java.awt.Font("Kohinoor Bangla", 0, 13)); // NOI18N
         jButton2.setText("Añadir");
         jButton2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton2ActionPerformed(evt);
             }
         });
-        jPanel1.add(jButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 420, -1, -1));
-        jPanel1.add(telefono, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 360, 170, -1));
-        jPanel1.add(email, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 260, 300, -1));
-        jPanel1.add(usuario, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 220, 300, -1));
+        jPanel1.add(jButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 420, -1, -1));
 
+        telefono.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
+        jPanel1.add(telefono, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 140, 170, -1));
+
+        email.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
+        jPanel1.add(email, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 220, 300, -1));
+
+        usuario.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
+        jPanel1.add(usuario, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 320, 190, -1));
+
+        jLabel10.setFont(new java.awt.Font("Myanmar MN", 0, 13)); // NOI18N
         jLabel10.setText("Email");
-        jPanel1.add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 270, -1, -1));
-        jPanel1.add(password, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 310, 190, -1));
+        jPanel1.add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 220, -1, -1));
 
+        password.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
+        jPanel1.add(password, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 360, 190, -1));
+
+        LbContrasena1.setFont(new java.awt.Font("Myanmar MN", 0, 13)); // NOI18N
         LbContrasena1.setText("Teléfono");
-        jPanel1.add(LbContrasena1, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 360, -1, -1));
-        jPanel1.add(nombre, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 60, 170, -1));
+        jPanel1.add(LbContrasena1, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 140, -1, -1));
 
+        nombre.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
+        jPanel1.add(nombre, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 60, 170, -1));
+
+        CBRol.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
         CBRol.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "ADMINISTRADOR", "USUARIO" }));
-        jPanel1.add(CBRol, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 180, 230, -1));
+        jPanel1.add(CBRol, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 280, 190, -1));
+        jPanel1.add(jSeparator1, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 253, 430, 10));
 
-        getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 90, 470, 480));
+        getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 90, 480, 480));
 
         jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/FondoPrincipal.png"))); // NOI18N
         jLabel1.setPreferredSize(new java.awt.Dimension(500, 600));
@@ -333,6 +363,7 @@ public class AltaEmpleado extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JSeparator jSeparator1;
     private javax.swing.JTextField nombre;
     private javax.swing.JPasswordField password;
     private javax.swing.JTextField telefono;
