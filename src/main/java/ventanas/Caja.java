@@ -232,14 +232,12 @@ public class Caja extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         tablaVisor = new javax.swing.JTable();
         jButton20 = new javax.swing.JButton();
-        jPanel1 = new javax.swing.JPanel();
-        jButton13 = new javax.swing.JButton();
+        volver = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setBounds(new java.awt.Rectangle(50, 50, 50, 50));
         setLocation(new java.awt.Point(50, 50));
-        setPreferredSize(new java.awt.Dimension(640, 600));
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         panelNumeros.setOpaque(false);
@@ -662,7 +660,7 @@ public class Caja extends javax.swing.JFrame {
                         .addComponent(precioTotal, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(25, 25, 25)
                         .addComponent(jLabel3)
-                        .addGap(0, 11, Short.MAX_VALUE))))
+                        .addGap(0, 9, Short.MAX_VALUE))))
         );
         panelSimbolosLayout.setVerticalGroup(
             panelSimbolosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -800,31 +798,13 @@ public class Caja extends javax.swing.JFrame {
 
         getContentPane().add(panelVisor, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 60, 590, 230));
 
-        jPanel1.setOpaque(false);
-
-        jButton13.setText("Volver");
-        jButton13.addActionListener(new java.awt.event.ActionListener() {
+        volver.setText("<--");
+        volver.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton13ActionPerformed(evt);
+                volverActionPerformed(evt);
             }
         });
-
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addComponent(jButton13)
-                .addGap(0, 88, Short.MAX_VALUE))
-        );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addComponent(jButton13)
-                .addGap(0, 17, Short.MAX_VALUE))
-        );
-
-        getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 10, 160, 40));
+        getContentPane().add(volver, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 10, 70, -1));
 
         jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/FondoPrincipal.png"))); // NOI18N
         jLabel1.setText("jLabel1");
@@ -1170,6 +1150,13 @@ public class Caja extends javax.swing.JFrame {
         this.dispose();
     }//GEN-LAST:event_jButton13ActionPerformed
 
+    private void volverActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_volverActionPerformed
+        // TODO add your handling code here:
+        Principal princ = new Principal();
+        princ.setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_volverActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -1215,7 +1202,6 @@ public class Caja extends javax.swing.JFrame {
     private javax.swing.JButton jButton10;
     private javax.swing.JButton jButton11;
     private javax.swing.JButton jButton12;
-    private javax.swing.JButton jButton13;
     private javax.swing.JButton jButton14;
     private javax.swing.JButton jButton15;
     private javax.swing.JButton jButton16;
@@ -1236,7 +1222,6 @@ public class Caja extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel9;
-    private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JButton pagoTarjeta;
     private javax.swing.JPanel panelNumeros;
@@ -1248,5 +1233,6 @@ public class Caja extends javax.swing.JFrame {
     private javax.swing.JTable tablaVisor;
     private javax.swing.JComboBox<TipoEntrada> tipoBono;
     private javax.swing.JTextField visorOperacion;
+    private javax.swing.JButton volver;
     // End of variables declaration//GEN-END:variables
 }

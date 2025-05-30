@@ -138,10 +138,11 @@ public class Principal extends javax.swing.JFrame {
 
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
-        caja = new javax.swing.JButton();
-        empleados = new javax.swing.JButton();
-        actividades = new javax.swing.JButton();
-        clientes = new javax.swing.JButton();
+        actividades = new javax.swing.JLabel();
+        empleados = new javax.swing.JLabel();
+        clientes = new javax.swing.JLabel();
+        caja = new javax.swing.JLabel();
+        enviarRecodat = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
         jLabel14 = new javax.swing.JLabel();
@@ -163,39 +164,50 @@ public class Principal extends javax.swing.JFrame {
         jLabel1.setText("Panel de Control");
         jLabel1.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
-        caja.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
-        caja.setText("Caja");
-        caja.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED, java.awt.Color.white, java.awt.Color.white, java.awt.Color.white, java.awt.Color.white));
-        caja.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cajaActionPerformed(evt);
-            }
-        });
-
-        empleados.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
-        empleados.setText("Empleados");
-        empleados.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED, java.awt.Color.white, java.awt.Color.white, java.awt.Color.white, java.awt.Color.white));
-        empleados.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                empleadosActionPerformed(evt);
-            }
-        });
-
         actividades.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
+        actividades.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         actividades.setText("Actividades");
-        actividades.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED, java.awt.Color.white, java.awt.Color.white, java.awt.Color.white, java.awt.Color.white));
-        actividades.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                actividadesActionPerformed(evt);
+        actividades.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        actividades.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                actividadesMouseClicked(evt);
             }
         });
 
-        clientes.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
+        empleados.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        empleados.setText("Empleados");
+        empleados.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        empleados.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                empleadosMouseClicked(evt);
+            }
+        });
+
+        clientes.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         clientes.setText("Clientes");
-        clientes.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED, java.awt.Color.white, java.awt.Color.white, java.awt.Color.white, java.awt.Color.white));
-        clientes.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                clientesActionPerformed(evt);
+        clientes.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        clientes.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                clientesMouseClicked(evt);
+            }
+        });
+
+        caja.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
+        caja.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        caja.setText("Caja");
+        caja.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        caja.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                cajaMouseClicked(evt);
+            }
+        });
+
+        enviarRecodat.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        enviarRecodat.setText("Enviar Recordatorio");
+        enviarRecodat.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        enviarRecodat.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                enviarRecodatMouseClicked(evt);
             }
         });
 
@@ -210,11 +222,13 @@ public class Principal extends javax.swing.JFrame {
                         .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 157, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(31, 31, 31)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(caja, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(empleados, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(actividades, javax.swing.GroupLayout.DEFAULT_SIZE, 110, Short.MAX_VALUE)
-                            .addComponent(clientes, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(enviarRecodat, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addComponent(actividades, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(empleados, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(clientes, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(caja, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))))
                 .addContainerGap(19, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
@@ -223,17 +237,19 @@ public class Principal extends javax.swing.JFrame {
                 .addGap(16, 16, 16)
                 .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(caja, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(actividades, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(empleados, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(clientes, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(25, Short.MAX_VALUE))
+                .addComponent(caja, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(18, 18, 18)
+                .addComponent(actividades, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(18, 18, 18)
+                .addComponent(empleados, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(clientes, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(enviarRecodat, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(30, 30, 30))
         );
 
-        getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 130, 190, 260));
+        getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 130, 190, 270));
 
         jLabel2.setFont(new java.awt.Font("Tahoma", 1, 36)); // NOI18N
         jLabel2.setText("¡Bienvenido a RockTown Climbing!");
@@ -358,14 +374,14 @@ public class Principal extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_jButtonGuardarActionPerformed
 
-    private void cajaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cajaActionPerformed
+    private void cajaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_cajaActionPerformed
         // TODO add your handling code here:
         Caja caja = new Caja();
         caja.setVisible(true);
         this.dispose();
     }//GEN-LAST:event_cajaActionPerformed
 
-    private void empleadosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_empleadosActionPerformed
+    private void empleadosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_empleadosActionPerformed
         // TODO add your handling code here:
         if (empleados.isEnabled()) {
             Empleados empleadosVentana = new Empleados();
@@ -374,20 +390,26 @@ public class Principal extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_empleadosActionPerformed
 
-    private void actividadesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_actividadesActionPerformed
+    private void actividadesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_actividadesActionPerformed
         // TODO add your handling code here:
         VerActividades vact = new VerActividades();
         vact.setVisible(true);
         this.dispose();
     }//GEN-LAST:event_actividadesActionPerformed
 
-    private void clientesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clientesActionPerformed
+    private void clientesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_clientesActionPerformed
         // TODO add your handling code here:
         Clientes c = new Clientes();
         c.setVisible(true);
         this.dispose();
         
     }//GEN-LAST:event_clientesActionPerformed
+
+    private void enviarRecodatMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_enviarRecodatMouseClicked
+        AltaRecordatorio alta = new AltaRecordatorio();
+        alta.setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_enviarRecodatMouseClicked
 
     /**
      * @param args the command line arguments
@@ -426,10 +448,11 @@ public class Principal extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton actividades;
-    private javax.swing.JButton caja;
-    private javax.swing.JButton clientes;
-    private javax.swing.JButton empleados;
+    private javax.swing.JLabel actividades;
+    private javax.swing.JLabel caja;
+    private javax.swing.JLabel clientes;
+    private javax.swing.JLabel empleados;
+    private javax.swing.JLabel enviarRecodat;
     private javax.swing.JButton jButtonBorrar;
     private javax.swing.JButton jButtonGuardar;
     private javax.swing.JLabel jLabel1;

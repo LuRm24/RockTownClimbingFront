@@ -48,7 +48,7 @@ public class AltaEmpleado extends javax.swing.JFrame {
         jLabel8 = new javax.swing.JLabel();
         jLabel9 = new javax.swing.JLabel();
         jButton1 = new javax.swing.JButton();
-        agregar = new javax.swing.JButton();
+        jButton2 = new javax.swing.JButton();
         telefono = new javax.swing.JTextField();
         email = new javax.swing.JTextField();
         usuario = new javax.swing.JTextField();
@@ -102,13 +102,13 @@ public class AltaEmpleado extends javax.swing.JFrame {
         });
         jPanel1.add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 420, -1, -1));
 
-        agregar.setText("Añadir");
-        agregar.addActionListener(new java.awt.event.ActionListener() {
+        jButton2.setText("Añadir");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                agregarActionPerformed(evt);
+                jButton2ActionPerformed(evt);
             }
         });
-        jPanel1.add(agregar, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 420, -1, -1));
+        jPanel1.add(jButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 420, -1, -1));
         jPanel1.add(telefono, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 360, 170, -1));
         jPanel1.add(email, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 260, 300, -1));
         jPanel1.add(usuario, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 220, 300, -1));
@@ -140,7 +140,7 @@ public class AltaEmpleado extends javax.swing.JFrame {
         this.dispose();
     }//GEN-LAST:event_jButton1ActionPerformed
 
-    private void agregarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_agregarActionPerformed
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         
         try {
             
@@ -273,7 +273,7 @@ public class AltaEmpleado extends javax.swing.JFrame {
             e.printStackTrace();
             JOptionPane.showMessageDialog(this, "Error de conexión: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
-    }//GEN-LAST:event_agregarActionPerformed
+    }//GEN-LAST:event_jButton2ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -317,12 +317,12 @@ public class AltaEmpleado extends javax.swing.JFrame {
     private javax.swing.JComboBox<String> CBRol;
     private javax.swing.JLabel LbContrasena;
     private javax.swing.JLabel LbContrasena1;
-    private javax.swing.JButton agregar;
     private javax.swing.JTextField apellido;
     private javax.swing.JTextField direccion;
     private javax.swing.JTextField dni;
     private javax.swing.JTextField email;
     private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel2;

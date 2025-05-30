@@ -32,6 +32,9 @@ import utils.Utils;
 
 public class GestionActividades extends javax.swing.JFrame {
     Actividad actividad;
+    boolean cambios = false;
+    String nombreActividad;
+    String descripcionActividad;
     /**
      * Creates new form Actividades
      */
@@ -61,6 +64,7 @@ public class GestionActividades extends javax.swing.JFrame {
             
             //Cuando modificas cargamos la actividad
             rellenarDatosActividad();
+            cambios = false;
             
             //Cargar horarios Actividad
             cargarHorariosTabla();
@@ -92,6 +96,9 @@ public class GestionActividades extends javax.swing.JFrame {
         nombre.setText(actividad.getNombre());
         descripcion.setText(actividad.getDescripcion());
         monitor.setSelectedItem((Empleado)actividad.getEmpleado());
+        
+        nombreActividad = actividad.getNombre();
+        descripcionActividad = actividad.getDescripcion();
     }
 
     private void cargarHorariosCombo(JComboBox hora, LocalTime inicio, LocalTime fin){
@@ -192,6 +199,9 @@ public class GestionActividades extends javax.swing.JFrame {
         jLabel9 = new javax.swing.JLabel();
         diaSemana = new javax.swing.JComboBox<>();
         comboHoraInicio = new javax.swing.JComboBox<>();
+        insertarHorario1 = new javax.swing.JButton();
+        jButtonRecargar = new javax.swing.JButton();
+        volver = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -216,6 +226,11 @@ public class GestionActividades extends javax.swing.JFrame {
         jLabel6.setText("Horarios disponibles");
         jPanel1.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 350, -1, -1));
 
+        monitor.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                monitorActionPerformed(evt);
+            }
+        });
         jPanel1.add(monitor, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 240, 390, -1));
 
         jLabel5.setText("Descripción");
@@ -292,6 +307,30 @@ public class GestionActividades extends javax.swing.JFrame {
 
         jPanel1.add(comboHoraInicio, new org.netbeans.lib.awtextra.AbsoluteConstraints(420, 290, 140, -1));
 
+        insertarHorario1.setText("+");
+        insertarHorario1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                insertarHorario1ActionPerformed(evt);
+            }
+        });
+        jPanel1.add(insertarHorario1, new org.netbeans.lib.awtextra.AbsoluteConstraints(580, 310, 50, -1));
+
+        jButtonRecargar.setText("<--");
+        jButtonRecargar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonRecargarActionPerformed(evt);
+            }
+        });
+        jPanel1.add(jButtonRecargar, new org.netbeans.lib.awtextra.AbsoluteConstraints(660, 100, 70, -1));
+
+        volver.setText("<--");
+        volver.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                volverActionPerformed(evt);
+            }
+        });
+        jPanel1.add(volver, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 560, 70, -1));
+
         getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 660, 620));
 
         jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/FondoPrincipal.png"))); // NOI18N
@@ -354,6 +393,8 @@ public class GestionActividades extends javax.swing.JFrame {
             // Serializar a JSON
             String json;
             
+            //Si la actividad cargada es null => estamos insertando actividad
+            //Al json le paso la actividad nueva
             if (actividad == null){
                 Actividad nuevaActividad = new Actividad();
                 nuevaActividad.setNombre(nombre.getText());
@@ -362,6 +403,8 @@ public class GestionActividades extends javax.swing.JFrame {
                 json = gson.toJson(nuevaActividad);
             }
             else {
+               //Si la actividad ya esta cargada => estamos modificando la actividad
+               //Al json le pasamos al actividad actual
                actividad.setNombre(nombre.getText());
                actividad.setDescripcion(descripcion.getText());
                actividad.setEmpleado((Empleado) monitor.getSelectedItem());
@@ -383,7 +426,13 @@ public class GestionActividades extends javax.swing.JFrame {
 
             int responseCode = con.getResponseCode();
             if (responseCode == HttpURLConnection.HTTP_OK) {
-                JOptionPane.showMessageDialog(this, "Actividad insertada correctamente");
+                if (actividad == null) {
+                    JOptionPane.showMessageDialog(this, "Actividad insertada correctamente");
+                }
+                else if (cambios == true || !nombreActividad.equals(nombre.getText())
+                        || !descripcionActividad.equals(descripcion.getText())){
+                    JOptionPane.showMessageDialog(this, "Actividad modificada correctamente");
+                }
                 VerActividades vact = new VerActividades();
                 vact.setVisible(true);
                 this.dispose();
@@ -399,6 +448,8 @@ public class GestionActividades extends javax.swing.JFrame {
 
     private void insertarHorarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_insertarHorarioActionPerformed
         try {
+            cambios = true;
+            
             //Pasamos a String el dia de la semana
             String diaCombo = String.valueOf(diaSemana.getSelectedItem());
             //convertimos el String a la clase DayOfWeek
@@ -486,6 +537,26 @@ public class GestionActividades extends javax.swing.JFrame {
         cargarHoras(String.valueOf(diaSemana.getSelectedItem()), comboHoraFin);  
     }//GEN-LAST:event_diaSemanaActionPerformed
 
+    private void monitorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_monitorActionPerformed
+        cambios = true;
+    }//GEN-LAST:event_monitorActionPerformed
+
+    private void insertarHorario1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_insertarHorario1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_insertarHorario1ActionPerformed
+
+    private void jButtonRecargarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonRecargarActionPerformed
+        // TODO add your handling code here:
+        
+    }//GEN-LAST:event_jButtonRecargarActionPerformed
+
+    private void volverActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_volverActionPerformed
+        // TODO add your handling code here:
+        VerActividades ver = new VerActividades();
+        ver.setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_volverActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JComboBox<String> comboHoraFin;
@@ -496,6 +567,8 @@ public class GestionActividades extends javax.swing.JFrame {
     private javax.swing.JButton guardar;
     private javax.swing.JLabel horaInicio;
     private javax.swing.JButton insertarHorario;
+    private javax.swing.JButton insertarHorario1;
+    private javax.swing.JButton jButtonRecargar;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -511,5 +584,6 @@ public class GestionActividades extends javax.swing.JFrame {
     private javax.swing.JComboBox<Empleado> monitor;
     private javax.swing.JTextField nombre;
     private javax.swing.JTable tablaHorarios;
+    private javax.swing.JButton volver;
     // End of variables declaration//GEN-END:variables
 }

@@ -196,7 +196,7 @@ public class VerActividades extends javax.swing.JFrame {
         int fila = tablaActividades.getSelectedRow();
 
         if (fila == -1) {
-            JOptionPane.showMessageDialog(this, "Selecciona un cliente para modificar");
+            JOptionPane.showMessageDialog(this, "Selecciona una actividad para modificar");
             return;
         }
 
@@ -235,7 +235,7 @@ public class VerActividades extends javax.swing.JFrame {
 
                 }
             } else {
-                JOptionPane.showMessageDialog(this, "Error al obtener datos del empleado. Código: " + responseCode);
+                JOptionPane.showMessageDialog(this, "Error al obtener datos de la actividad. Código: " + responseCode);
             }
 
         } catch (Exception ex) {
@@ -269,7 +269,7 @@ public class VerActividades extends javax.swing.JFrame {
         if (confirmacion != JOptionPane.YES_OPTION) return;
 
         try {
-            Long id = Long.valueOf((String) tablaActividades.getValueAt(fila, 3));
+            Long id = Long.parseLong((String) tablaActividades.getValueAt(fila, 3));
             URL url = new URL("http://localhost:8080/actividad/" + id);
             HttpURLConnection con = (HttpURLConnection) url.openConnection();
             con.setRequestMethod("DELETE");
