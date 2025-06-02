@@ -18,18 +18,33 @@ import models.TipoEntrada;
 import utils.LocalDateAdapter;
 import utils.Utils;
 
+/**
+ * Ventana de modificación de datos de un cliente existente.
+ *
+ * Esta clase permite al usuario modificar la información personal de un cliente
+ * ya registrado, incluyendo nombre, apellidos, DNI, teléfono, edad, tipo de
+ * bono, fecha del bono y si utiliza pies de gato. La información actual se
+ * carga en la interfaz al iniciar la ventana y, tras editarla, se envía al
+ * backend mediante una petición HTTP PUT.
+ *
+ * @author Lucía Rodríguez Martín
+ * @version 1.0
+ */
 public class ModificarCliente extends javax.swing.JFrame {
 
     private Cliente cliente;
-    
+
     public ModificarCliente(Cliente cliente) {
         initComponents();
-        this.cliente= cliente;
+        this.cliente = cliente;
         this.setLocationRelativeTo(null);
         Utils.cargarTiposEntrada(tipoBono);
         rellenarDatosCliente();
     }
-    
+
+    /**
+     * Rellena los campos del formulario con los datos actuales del cliente.
+     */
     private void rellenarDatosCliente() {
         nombre.setText(cliente.getNombre());
         telefono.setText(cliente.getTelefono());
@@ -40,6 +55,7 @@ public class ModificarCliente extends javax.swing.JFrame {
         tipoBono.setSelectedItem(cliente.getTipo_entrada());
         edad.setText(String.valueOf(cliente.getEdad()));
     }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -159,110 +175,88 @@ public class ModificarCliente extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
+    /**
+     * Acción asociada al botón "Cancelar". Cierra la ventana actual y vuelve a
+     * la vista principal de clientes.
+     *
+     * @param evt Evento de acción
+     */
     private void cancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelarActionPerformed
         // TODO add your handling code here:
         Clientes c = new Clientes();
         c.setVisible(true);
         this.dispose();
     }//GEN-LAST:event_cancelarActionPerformed
-
+    /**
+     * Acción asociada al botón "Guardar cambios". Recoge los nuevos datos del
+     * cliente del formulario y los envía al backend mediante una petición HTTP
+     * PUT en formato JSON. Si la operación es exitosa, se muestra un mensaje de
+     * confirmación y se vuelve a la vista de clientes.
+     *
+     * @param evt Evento de acción
+     */
     private void modificarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_modificarActionPerformed
-      
-         try {
-                // Actualizamos los datos del cliente
-                cliente.setNombre(nombre.getText());
-                cliente.setApellidos(apellido.getText());
-                cliente.setDni(dni.getText());
-                cliente.setTelefono(telefono.getText());
 
-                // Fecha bono (usando JDateChooser)
-                if (fecha.getDate() != null) {
-                    LocalDate fechaBono = fecha.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-                    cliente.setFechaBono(fechaBono);
-                }
+        try {
+            // Actualizamos los datos del cliente
+            cliente.setNombre(nombre.getText());
+            cliente.setApellidos(apellido.getText());
+            cliente.setDni(dni.getText());
+            cliente.setTelefono(telefono.getText());
 
-                // Edad
-                cliente.setEdad(Integer.parseInt(edad.getText()));
-
-                // Pie de gato
-                cliente.setPieGato(pieGato.isSelected());
-                
-                //Tipo de bono
-                cliente.setTipo_entrada((TipoEntrada) tipoBono.getSelectedItem());
-
-                // Crear Gson con soporte para LocalDate
-                Gson gson = new GsonBuilder()
-                .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
-                .create();
-                
-                // Serializar a JSON
-                String json = gson.toJson(cliente);
-
-                // Enviar al backend
-                URL url = new URL("http://localhost:8080/cliente/update");
-                HttpURLConnection con = (HttpURLConnection) url.openConnection();
-                con.setRequestMethod("PUT");
-                con.setRequestProperty("Content-Type", "application/json");
-                con.setDoOutput(true);
-
-                try (OutputStream os = con.getOutputStream()) {
-                    byte[] input = json.getBytes("utf-8");
-                    os.write(input, 0, input.length);
-                }
-
-                int responseCode = con.getResponseCode();
-                if (responseCode == HttpURLConnection.HTTP_OK) {
-                    JOptionPane.showMessageDialog(this, "Cliente modificado correctamente");
-                    Clientes vistaClientes = new Clientes();
-                    vistaClientes.setVisible(true);
-                    this.dispose();
-                } else {
-                    JOptionPane.showMessageDialog(this, "Error al modificar el cliente. Código: " + responseCode);
-                }
-
-            } catch (Exception e) {
-                e.printStackTrace();
-                JOptionPane.showMessageDialog(this, "Error en la operación: " + e.getMessage());
+            // Fecha bono (usando JDateChooser)
+            if (fecha.getDate() != null) {
+                LocalDate fechaBono = fecha.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+                cliente.setFechaBono(fechaBono);
             }
-                               
+
+            // Edad
+            cliente.setEdad(Integer.parseInt(edad.getText()));
+
+            // Pie de gato
+            cliente.setPieGato(pieGato.isSelected());
+
+            //Tipo de bono
+            cliente.setTipo_entrada((TipoEntrada) tipoBono.getSelectedItem());
+
+            // Crear Gson con soporte para LocalDate
+            Gson gson = new GsonBuilder()
+                    .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
+                    .create();
+
+            // Serializar a JSON
+            String json = gson.toJson(cliente);
+
+            // Enviar al backend
+            URL url = new URL("http://localhost:8080/cliente/update");
+            HttpURLConnection con = (HttpURLConnection) url.openConnection();
+            con.setRequestMethod("PUT");
+            con.setRequestProperty("Content-Type", "application/json");
+            con.setDoOutput(true);
+
+            try (OutputStream os = con.getOutputStream()) {
+                byte[] input = json.getBytes("utf-8");
+                os.write(input, 0, input.length);
+            }
+
+            int responseCode = con.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                JOptionPane.showMessageDialog(this, "Cliente modificado correctamente");
+                Clientes vistaClientes = new Clientes();
+                vistaClientes.setVisible(true);
+                this.dispose();
+            } else {
+                JOptionPane.showMessageDialog(this, "Error al modificar el cliente. Código: " + responseCode);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error en la operación: " + e.getMessage());
+        }
+
 
     }//GEN-LAST:event_modificarActionPerformed
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(AltaCliente.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(AltaCliente.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(AltaCliente.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(AltaCliente.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new AltaCliente().setVisible(true);
-            }
-        });
-    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextField apellido;

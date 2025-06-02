@@ -1,9 +1,19 @@
 package models;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 
+/**
+ * Representa un cliente del rocódromo Rocktown Climbing.
+ * <p>
+ * Contiene información personal como nombre, apellidos, teléfono, DNI, edad y
+ * datos adicionales como la fecha de inicio del bono, el número de sesiones
+ * gastadas, si alquila pies de gato, y el tipo de entrada que ha adquirido.
+ *
+ * Esta clase se utiliza para gestionar los clientes registrados en el sistema.
+ *
+ * @author Lucia Rodriguez Martin
+ * @version 1.0
+ */
 public class Cliente {
 
     private Long id;
@@ -17,10 +27,7 @@ public class Cliente {
     private int edad;
     private TipoEntrada tipo_entrada;
 
-    //private List<Reserva> reservas = new ArrayList<>();
-    //private List<Entrada> entradas = new ArrayList<>();
-    
-    public Cliente(){
+    public Cliente() {
     }
 
     public Long getId() {
@@ -101,6 +108,5 @@ public class Cliente {
 
     public void setTipo_entrada(TipoEntrada tipo_entrada) {
         this.tipo_entrada = tipo_entrada;
-    } 
+    }
 }
-

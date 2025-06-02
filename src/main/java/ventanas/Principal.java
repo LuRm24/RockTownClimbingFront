@@ -17,8 +17,19 @@ import javax.swing.JOptionPane;
 import models.Empleado;
 
 /**
+ * Ventana principal de la aplicación RockTown Climbing.
  *
- * @author luciarodriguezmartin
+ * Esta clase representa el panel de control al que accede un empleado tras
+ * iniciar sesión. Permite navegar a diferentes secciones de la aplicación
+ * (clientes, empleados, caja, actividades) y gestionar recordatorios personales
+ * del usuario autenticado.
+ *
+ * Los botones y funcionalidades disponibles dependen del rol del empleado
+ * (administrador o usuario). Se cargan los datos del empleado autenticado y sus
+ * recordatorios desde el backend.
+ *
+ * @author Lucía Rodríguez Martín
+ * @version 1.0
  */
 public class Principal extends javax.swing.JFrame {
 
@@ -39,6 +50,10 @@ public class Principal extends javax.swing.JFrame {
 
     }
 
+    /**
+     * Habilita o deshabilita el acceso a la sección de empleados dependiendo
+     * del rol del usuario.
+     */
     private void habilitarPermisos() {
 
         if (emp != null) {
@@ -50,6 +65,10 @@ public class Principal extends javax.swing.JFrame {
         }
     }
 
+    /**
+     * Carga los datos del empleado actualmente logueado y habilita o
+     * deshabilita ciertas funcionalidades en función de su rol.
+     */
     private void cargarUsuarioLogueado() {
 
         try {
@@ -83,6 +102,10 @@ public class Principal extends javax.swing.JFrame {
         }
     }
 
+    /**
+     * Carga desde el backend los recordatorios asociados al empleado
+     * autenticado y los muestra en el área de texto.
+     */
     private void cargarRecordatorios() {
         try {
             // Suponiendo que tienes acceso al ID del empleado conectado
@@ -119,14 +142,6 @@ public class Principal extends javax.swing.JFrame {
         }
     }
 
-    private void cargarRecordatoriosLista(BufferedReader entrada) {
-        try {
-            System.out.println(entrada.readLine());
-        } catch (IOException io) {
-            io.printStackTrace();
-        }
-    }
-
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -148,6 +163,8 @@ public class Principal extends javax.swing.JFrame {
         caja = new javax.swing.JLabel();
         enviarRecodat = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
+        jPanel2 = new javax.swing.JPanel();
+        btonCerrar = new javax.swing.JButton();
         jPanel3 = new javax.swing.JPanel();
         jLabel14 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -155,11 +172,6 @@ public class Principal extends javax.swing.JFrame {
         jButtonGuardar = new javax.swing.JButton();
         jButtonBorrar = new javax.swing.JButton();
         jLabel1Fondo = new javax.swing.JLabel();
-        jMenuBar1 = new javax.swing.JMenuBar();
-        jMenu1 = new javax.swing.JMenu();
-        jMenuItem2 = new javax.swing.JMenuItem();
-        jMenu2 = new javax.swing.JMenu();
-        jMenuItem1 = new javax.swing.JMenuItem();
 
         jRadioButton1.setText("jRadioButton1");
 
@@ -268,7 +280,38 @@ public class Principal extends javax.swing.JFrame {
         jLabel2.setFont(new java.awt.Font("Didot", 1, 36)); // NOI18N
         jLabel2.setText("¡Bienvenido a RockTown Climbing!");
         jLabel2.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-        getContentPane().add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 40, -1, -1));
+        getContentPane().add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 40, -1, -1));
+
+        jPanel2.setOpaque(false);
+
+        btonCerrar.setText("X");
+        btonCerrar.setBorderPainted(false);
+        btonCerrar.setContentAreaFilled(false);
+        btonCerrar.setFocusPainted(false);
+        btonCerrar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btonCerrarActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(btonCerrar, javax.swing.GroupLayout.DEFAULT_SIZE, 58, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(btonCerrar, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(32, Short.MAX_VALUE))
+        );
+
+        getContentPane().add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(630, 10, 70, 70));
 
         jPanel3.setOpaque(false);
         jPanel3.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -306,38 +349,15 @@ public class Principal extends javax.swing.JFrame {
         getContentPane().add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 110, 370, 260));
 
         jLabel1Fondo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/FondoPrincipal.png"))); // NOI18N
-        getContentPane().add(jLabel1Fondo, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, -2, 730, 420));
-
-        jMenu1.setText("Archivo");
-
-        jMenuItem2.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_X, java.awt.event.InputEvent.CTRL_DOWN_MASK));
-        jMenuItem2.setText("Cerrar aplicación");
-        jMenuItem2.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem2ActionPerformed(evt);
-            }
-        });
-        jMenu1.add(jMenuItem2);
-
-        jMenuBar1.add(jMenu1);
-
-        jMenu2.setText("Ayuda");
-
-        jMenuItem1.setText("Acerca de");
-        jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem1ActionPerformed(evt);
-            }
-        });
-        jMenu2.add(jMenuItem1);
-
-        jMenuBar1.add(jMenu2);
-
-        setJMenuBar(jMenuBar1);
+        getContentPane().add(jLabel1Fondo, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, -2, 710, 420));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
+/**
+     * Acción que elimina todos los recordatorios del empleado autenticado.
+     *
+     * @param evt Evento de clic sobre el botón "Borrar Todos"
+     */
     private void jButtonBorrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonBorrarActionPerformed
         // TODO add your handling code here:
         try {
@@ -367,7 +387,12 @@ public class Principal extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Error de conexión: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_jButtonBorrarActionPerformed
-
+    /**
+     * Acción que guarda los nuevos recordatorios añadidos por el usuario. Cada
+     * línea nueva se guarda como un objeto independiente.
+     *
+     * @param evt Evento de clic sobre el botón "Guardar"
+     */
     private void jButtonGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonGuardarActionPerformed
         // TODO add your handling code here:    
         lineasFinal = jTextArea1.getLineCount();
@@ -417,7 +442,11 @@ public class Principal extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Error al insertar los recordatorios");
         }
     }//GEN-LAST:event_jButtonGuardarActionPerformed
-
+    /**
+     * Abre la ventana de la caja.
+     *
+     * @param evt Evento de clic sobre el botón "Caja"
+     */
     private void cajaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_cajaActionPerformed
         // TODO add your handling code here:
         Caja caja = new Caja();
@@ -425,6 +454,12 @@ public class Principal extends javax.swing.JFrame {
         this.dispose();
     }//GEN-LAST:event_cajaActionPerformed
 
+    /**
+     * Abre la ventana de gestión de empleados (solo si el usuario tiene
+     * permisos).
+     *
+     * @param evt Evento de clic sobre el botón "Empleados"
+     */
     private void empleadosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_empleadosActionPerformed
         // TODO add your handling code here:
         if (empleados.isEnabled()) {
@@ -433,78 +468,54 @@ public class Principal extends javax.swing.JFrame {
             this.dispose();
         }
     }//GEN-LAST:event_empleadosActionPerformed
-
+    /**
+     * Abre la ventana de gestión de actividades.
+     *
+     * @param evt Evento de clic sobre el botón "Actividades"
+     */
     private void actividadesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_actividadesActionPerformed
         // TODO add your handling code here:
         VerActividades vact = new VerActividades();
         vact.setVisible(true);
         this.dispose();
     }//GEN-LAST:event_actividadesActionPerformed
-
+    /**
+     * Abre la ventana de gestión de clientes.
+     *
+     * @param evt Evento de clic sobre el botón "Clientes"
+     */
     private void clientesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_clientesActionPerformed
         // TODO add your handling code here:
         Clientes c = new Clientes();
         c.setVisible(true);
         this.dispose();
-        
+
     }//GEN-LAST:event_clientesActionPerformed
 
+    /**
+     * Abre la ventana para crear un nuevo recordatorio.
+     *
+     * @param evt Evento de clic sobre el botón "Enviar Recordatorio"
+     */
     private void enviarRecodatMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_enviarRecodatMouseClicked
         AltaRecordatorio alta = new AltaRecordatorio();
         alta.setVisible(true);
         this.dispose();
     }//GEN-LAST:event_enviarRecodatMouseClicked
-
-    private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
-        // TODO add your handling code here:
-        this.dispose();
-    }//GEN-LAST:event_jMenuItem2ActionPerformed
-
-    private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
-        // TODO add your handling code here:
-        JOptionPane.showMessageDialog(this,"RockTown Climbing App\nVersión: 1.0\nCreada por Lucía Rodríguez Martín\nMayo 2025",
-            "Acerca de",
-            JOptionPane.INFORMATION_MESSAGE);
-    }//GEN-LAST:event_jMenuItem1ActionPerformed
-
     /**
-     * @param args the command line arguments
+     * Acción para cerrar la aplicación desde el botón "X".
+     *
+     * @param evt Evento de clic sobre el botón
      */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(Principal.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(Principal.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(Principal.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(Principal.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-        //</editor-fold>
+    private void btonCerrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btonCerrarActionPerformed
 
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new Principal().setVisible(true);
-            }
-        });
-    }
+        System.exit(0);
+    }//GEN-LAST:event_btonCerrarActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel actividades;
+    private javax.swing.JButton btonCerrar;
     private javax.swing.JLabel caja;
     private javax.swing.JLabel clientes;
     private javax.swing.JLabel empleados;
@@ -515,13 +526,9 @@ public class Principal extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel1Fondo;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JMenu jMenu1;
-    private javax.swing.JMenu jMenu2;
     private javax.swing.JMenu jMenu3;
-    private javax.swing.JMenuBar jMenuBar1;
-    private javax.swing.JMenuItem jMenuItem1;
-    private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPopupMenu jPopupMenu1;
     private javax.swing.JPopupMenu jPopupMenu2;

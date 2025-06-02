@@ -7,7 +7,6 @@ package ventanas;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import java.io.BufferedReader;
@@ -30,13 +29,31 @@ import utils.LocalDateAdapter;
 import utils.LocalTimeAdapter;
 import utils.Utils;
 
+/**
+ * Clase que gestiona la interfaz de administración de actividades en el
+ * sistema. Permite crear, modificar y visualizar actividades, así como asignar
+ * horarios disponibles y monitores responsables. La comunicación con el backend
+ * se realiza mediante peticiones HTTP.
+ *
+ * @author Lucia Rodriguez Martin
+ * @version 1.0
+ */
 public class GestionActividades extends javax.swing.JFrame {
+
     Actividad actividad;
     boolean cambios = false;
     String nombreActividad;
     String descripcionActividad;
+
     /**
-     * Creates new form Actividades
+     * Constructor de la ventana de gestión de actividades. Inicializa los
+     * componentes y carga los datos necesarios según si se crea o edita una
+     * actividad.
+     *
+     * @param insertActividad true si se está creando una nueva actividad, false
+     * si se está editando una existente
+     * @param actividad Objeto Actividad que se desea gestionar (puede ser null
+     * si es nuevo)
      */
     public GestionActividades(boolean insertActividad, Actividad actividad) {
         initComponents();
@@ -44,67 +61,82 @@ public class GestionActividades extends javax.swing.JFrame {
         cargarHoras("Lunes", comboHoraInicio);
         cargarHoras("Lunes", comboHoraFin);
         this.actividad = actividad;
-        
+
         if (insertActividad) {
-            insertarHorario.setEnabled(false);
+            insertarHorario1.setEnabled(false);
             tablaHorarios.setEnabled(false);
             eliminarHorario.setEnabled(false);
             comboHoraInicio.setEnabled(false);
             comboHoraFin.setEnabled(false);
             diaSemana.setEnabled(false);
-            
-        }
-        else {
-            insertarHorario.setEnabled(true);
+
+        } else {
+            insertarHorario1.setEnabled(true);
             tablaHorarios.setEnabled(true);
             eliminarHorario.setEnabled(true);
             comboHoraInicio.setEnabled(true);
             comboHoraFin.setEnabled(true);
             diaSemana.setEnabled(true);
-            
+
             //Cuando modificas cargamos la actividad
             rellenarDatosActividad();
             cambios = false;
-            
+
             //Cargar horarios Actividad
             cargarHorariosTabla();
         }
     }
-    
+
+    /**
+     * Carga los horarios asociados a la actividad actual en la tabla de la
+     * interfaz gráfica.
+     */
     private void cargarHorariosTabla() {
         //Definir las columnas de la tabla
         String[] columnas = {"Dia semana", "Hora inicio", "Hora Fin", "Id"};
         DefaultTableModel model = new DefaultTableModel(columnas, 0);
-        
+
         //Recorrer la lista de horarios de la actividad
-        for (HorarioDisponible horario: actividad.getHorarios()) {
+        for (HorarioDisponible horario : actividad.getHorarios()) {
             String[] datos = {
-                       HorarioDisponible.diaSemanaStr(horario.getDiaSemana()),
-                       horario.getHoraInicio().format(DateTimeFormatter.ofPattern("HH:mm")),
-                       horario.getHoraFin().format(DateTimeFormatter.ofPattern("HH:mm")),
-                       String.valueOf(horario.getId())
-                       };
-                       //Al modelo le añadimos los datos como una fila
-                       model.addRow(datos); 
+                HorarioDisponible.diaSemanaStr(horario.getDiaSemana()),
+                horario.getHoraInicio().format(DateTimeFormatter.ofPattern("HH:mm")),
+                horario.getHoraFin().format(DateTimeFormatter.ofPattern("HH:mm")),
+                String.valueOf(horario.getId())
+            };
+            //Al modelo le añadimos los datos como una fila
+            model.addRow(datos);
         }
-        
+
         //A la tabla se le asigna el modelo
         tablaHorarios.setModel(model);
     }
-    
+
+    /**
+     * Rellena los campos de nombre, descripción y monitor con los datos de la
+     * actividad seleccionada.
+     */
     private void rellenarDatosActividad() {
         nombre.setText(actividad.getNombre());
         descripcion.setText(actividad.getDescripcion());
-        monitor.setSelectedItem((Empleado)actividad.getEmpleado());
-        
+        monitor.setSelectedItem((Empleado) actividad.getEmpleado());
+
         nombreActividad = actividad.getNombre();
         descripcionActividad = actividad.getDescripcion();
     }
 
-    private void cargarHorariosCombo(JComboBox hora, LocalTime inicio, LocalTime fin){
+    /**
+     * Carga una serie de horarios incrementales (de 1 hora) en un JComboBox,
+     * desde una hora inicial hasta una final.
+     *
+     * @param hora JComboBox donde se cargarán las horas
+     * @param inicio Hora inicial
+     * @param fin Hora final
+     */
+    private void cargarHorariosCombo(JComboBox hora, LocalTime inicio, LocalTime fin) {
         //Antes de cargar, eliminar si hay horarios en el combo
         hora.removeAllItems();
-        
+
         //Si la hora de inicio es menor o igual que la hora de fin => añadimos horario
         while (inicio.isBefore(fin) || inicio.equals(fin)) {
             hora.addItem(inicio);
@@ -112,26 +144,34 @@ public class GestionActividades extends javax.swing.JFrame {
             inicio = inicio.plusHours(1L);
         }
     }
-    
-    private void cargarHoras(String diaSelecc, JComboBox hora) { 
+
+    /**
+     * Carga las horas disponibles en función del día de la semana seleccionado.
+     *
+     * @param diaSelecc Día de la semana en formato texto
+     * @param hora JComboBox que se llenará con las horas correspondientes
+     */
+    private void cargarHoras(String diaSelecc, JComboBox hora) {
         //Si el dia es de lunes a jueves
         if (diaSelecc.equals("Lunes") || diaSelecc.equals("Martes") || diaSelecc.equals("Miercoles")
                 || diaSelecc.equals("Jueves")) {
             //Cargar las horas desde las 12 hasta las 22h
             cargarHorariosCombo(hora, LocalTime.of(12, 0), LocalTime.of(22, 0));
-        }
-        //Si es viernes
-        else if (diaSelecc.equals("Viernes")){
+        } //Si es viernes
+        else if (diaSelecc.equals("Viernes")) {
             //Cargar las horas desde las 12 hasta las 20h
             cargarHorariosCombo(hora, LocalTime.of(12, 0), LocalTime.of(20, 0));
-        }
-        //Si es sabado o domingo
+        } //Si es sabado o domingo
         else {
             //Cargar las horas desde las 12 hasta las 20h
             cargarHorariosCombo(hora, LocalTime.of(10, 0), LocalTime.of(20, 0));
         }
     }
-    
+
+    /**
+     * Realiza una petición GET al backend para obtener la lista de empleados
+     * disponibles. Carga los datos en el comboBox de monitores.
+     */
     private void cargarEmpleados() {
         try {
             URL url = new URL("http://localhost:8080/empleado/select-all");
@@ -147,8 +187,14 @@ public class GestionActividades extends javax.swing.JFrame {
             io.printStackTrace();
         }
     }
-     
-    //Funcion para modificar la actividad una vez insertada
+
+    /**
+     * Asocia un horario ya creado a una actividad existente en el
+     * backend.Modifica la actividad una vez insertada
+     *
+     * @param horarioId ID del horario a asociar
+     * @param actividadId ID de la actividad destino
+     */
     private void modificarActividadHorario(Long horarioId, Long actividadId) {
         try {
             URL url = new URL("http://localhost:8080/horarios/" + horarioId + "/actividad/" + actividadId);
@@ -156,17 +202,15 @@ public class GestionActividades extends javax.swing.JFrame {
             con.setRequestMethod("PUT");
             con.setDoOutput(true);
             con.setRequestProperty("Content-Type", "application/json");
-            
+
             int responseCode = con.getResponseCode();
             if (responseCode != HttpURLConnection.HTTP_OK) {
                 JOptionPane.showMessageDialog(this, "Error al actualizar la actividad del horario");
             }
-        }
-        catch (IOException io) {
+        } catch (IOException io) {
             io.printStackTrace();
         }
     }
-     
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -191,7 +235,7 @@ public class GestionActividades extends javax.swing.JFrame {
         tablaHorarios = new javax.swing.JTable();
         eliminarHorario = new javax.swing.JButton();
         menuPrincipal = new javax.swing.JButton();
-        insertarHorario = new javax.swing.JButton();
+        insertarHorario1 = new javax.swing.JButton();
         guardar = new javax.swing.JButton();
         horaInicio = new javax.swing.JLabel();
         comboHoraFin = new javax.swing.JComboBox<>();
@@ -199,8 +243,6 @@ public class GestionActividades extends javax.swing.JFrame {
         jLabel9 = new javax.swing.JLabel();
         diaSemana = new javax.swing.JComboBox<>();
         comboHoraInicio = new javax.swing.JComboBox<>();
-        insertarHorario1 = new javax.swing.JButton();
-        jButtonRecargar = new javax.swing.JButton();
         volver = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
 
@@ -281,14 +323,14 @@ public class GestionActividades extends javax.swing.JFrame {
         });
         jPanel1.add(menuPrincipal, new org.netbeans.lib.awtextra.AbsoluteConstraints(390, 560, -1, -1));
 
-        insertarHorario.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
-        insertarHorario.setText("+");
-        insertarHorario.addActionListener(new java.awt.event.ActionListener() {
+        insertarHorario1.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
+        insertarHorario1.setText("+");
+        insertarHorario1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                insertarHorarioActionPerformed(evt);
+                insertarHorario1ActionPerformed(evt);
             }
         });
-        jPanel1.add(insertarHorario, new org.netbeans.lib.awtextra.AbsoluteConstraints(580, 310, 50, -1));
+        jPanel1.add(insertarHorario1, new org.netbeans.lib.awtextra.AbsoluteConstraints(580, 310, 50, -1));
 
         guardar.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
         guardar.setText("Guardar todo");
@@ -326,22 +368,6 @@ public class GestionActividades extends javax.swing.JFrame {
         comboHoraInicio.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
         jPanel1.add(comboHoraInicio, new org.netbeans.lib.awtextra.AbsoluteConstraints(420, 290, 140, -1));
 
-        insertarHorario1.setText("+");
-        insertarHorario1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                insertarHorario1ActionPerformed(evt);
-            }
-        });
-        jPanel1.add(insertarHorario1, new org.netbeans.lib.awtextra.AbsoluteConstraints(580, 310, 50, -1));
-
-        jButtonRecargar.setText("<--");
-        jButtonRecargar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonRecargarActionPerformed(evt);
-            }
-        });
-        jPanel1.add(jButtonRecargar, new org.netbeans.lib.awtextra.AbsoluteConstraints(660, 100, 70, -1));
-
         volver.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
         volver.setText("<--");
         volver.addActionListener(new java.awt.event.ActionListener() {
@@ -358,17 +384,24 @@ public class GestionActividades extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
+/**
+     * Elimina el horario seleccionado de la actividad actual, tanto visualmente
+     * como en el backend.
+     *
+     * @param evt Evento del botón "Eliminar horario"
+     */
     private void eliminarHorarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_eliminarHorarioActionPerformed
         int fila = tablaHorarios.getSelectedRow();
 
-         if (fila == -1) {
-             JOptionPane.showMessageDialog(this, "Seleccionar horario a eliminar");
-             return;
-         }
+        if (fila == -1) {
+            JOptionPane.showMessageDialog(this, "Seleccionar horario a eliminar");
+            return;
+        }
 
         int confirmacion = JOptionPane.showConfirmDialog(this, "¿Deseas borrar el horario?", "Confirmar borrado", JOptionPane.YES_NO_OPTION);
-        if (confirmacion != JOptionPane.YES_OPTION) return;
+        if (confirmacion != JOptionPane.YES_OPTION) {
+            return;
+        }
 
         try {
             Long id = Long.parseLong((String) tablaHorarios.getValueAt(fila, 3));
@@ -393,42 +426,50 @@ public class GestionActividades extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Error en la operación: " + ex.getMessage());
         }
     }//GEN-LAST:event_eliminarHorarioActionPerformed
-
+    /**
+     * Abre la ventana del menú principal y cierra la actual.
+     *
+     * @param evt Evento del botón "Menú principal"
+     */
     private void menuPrincipalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuPrincipalActionPerformed
         // TODO add your handling code here:
         Principal p = new Principal();
         p.setVisible(true);
         this.dispose();
     }//GEN-LAST:event_menuPrincipalActionPerformed
-
+    /**
+     * Guarda o actualiza una actividad en el backend. Si es nueva, la inserta;
+     * si ya existe, la modifica.
+     *
+     * @param evt Evento del botón "Guardar todo"
+     */
     private void guardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_guardarActionPerformed
         // TODO add your handling code here:
         try {
-             // Crear Gson con soporte para LocalDate
+            // Crear Gson con soporte para LocalDate
             Gson gson = new GsonBuilder()
-            .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
-            .registerTypeAdapter(LocalTime.class, new LocalTimeAdapter())
-            .create();
-   
+                    .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
+                    .registerTypeAdapter(LocalTime.class, new LocalTimeAdapter())
+                    .create();
+
             // Serializar a JSON
             String json;
-            
+
             //Si la actividad cargada es null => estamos insertando actividad
             //Al json le paso la actividad nueva
-            if (actividad == null){
+            if (actividad == null) {
                 Actividad nuevaActividad = new Actividad();
                 nuevaActividad.setNombre(nombre.getText());
                 nuevaActividad.setDescripcion(descripcion.getText());
                 nuevaActividad.setEmpleado((Empleado) monitor.getSelectedItem());
                 json = gson.toJson(nuevaActividad);
-            }
-            else {
-               //Si la actividad ya esta cargada => estamos modificando la actividad
-               //Al json le pasamos al actividad actual
-               actividad.setNombre(nombre.getText());
-               actividad.setDescripcion(descripcion.getText());
-               actividad.setEmpleado((Empleado) monitor.getSelectedItem());
-               json = gson.toJson(actividad);
+            } else {
+                //Si la actividad ya esta cargada => estamos modificando la actividad
+                //Al json le pasamos al actividad actual
+                actividad.setNombre(nombre.getText());
+                actividad.setDescripcion(descripcion.getText());
+                actividad.setEmpleado((Empleado) monitor.getSelectedItem());
+                json = gson.toJson(actividad);
             }
 
             // Crear conexión HTTP
@@ -448,9 +489,8 @@ public class GestionActividades extends javax.swing.JFrame {
             if (responseCode == HttpURLConnection.HTTP_OK) {
                 if (actividad == null) {
                     JOptionPane.showMessageDialog(this, "Actividad insertada correctamente");
-                }
-                else if (cambios == true || !nombreActividad.equals(nombre.getText())
-                        || !descripcionActividad.equals(descripcion.getText())){
+                } else if (cambios == true || !nombreActividad.equals(nombre.getText())
+                        || !descripcionActividad.equals(descripcion.getText())) {
                     JOptionPane.showMessageDialog(this, "Actividad modificada correctamente");
                 }
                 VerActividades vact = new VerActividades();
@@ -459,17 +499,55 @@ public class GestionActividades extends javax.swing.JFrame {
             } else {
                 JOptionPane.showMessageDialog(this, "Error al insertar la actividad");
             }
-            
+
         } catch (Exception e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(this, "Error de conexión: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-        }  
+        }
     }//GEN-LAST:event_guardarActionPerformed
 
-    private void insertarHorarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_insertarHorarioActionPerformed
+    /**
+     * Recarga las horas disponibles cuando se cambia el día de la semana
+     * seleccionado.
+     *
+     * @param evt Evento del comboBox "Día de la semana"
+     */
+    private void diaSemanaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_diaSemanaActionPerformed
+        // TODO add your handling code here:
+        cargarHoras(String.valueOf(diaSemana.getSelectedItem()), comboHoraInicio);
+        cargarHoras(String.valueOf(diaSemana.getSelectedItem()), comboHoraFin);
+    }//GEN-LAST:event_diaSemanaActionPerformed
+    /**
+     * Marca que se ha modificado el monitor seleccionado.
+     *
+     * @param evt Evento al cambiar el combo de monitor
+     */
+    private void monitorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_monitorActionPerformed
+        cambios = true;
+    }//GEN-LAST:event_monitorActionPerformed
+
+    /**
+     * Vuelve a la ventana de visualización de actividades y cierra la actual.
+     *
+     * @param evt Evento del botón "<--"
+     */
+    private void volverActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_volverActionPerformed
+        // TODO add your handling code here:
+        VerActividades ver = new VerActividades();
+        ver.setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_volverActionPerformed
+    /**
+     * Acción asociada al botón extra "+", actualmente sin funcionalidad
+     * implementada.
+     *
+     * @param evt Evento del botón "+"
+     */
+    private void insertarHorario1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_insertarHorario1ActionPerformed
+        // TODO add your handling code here:
         try {
             cambios = true;
-            
+
             //Pasamos a String el dia de la semana
             String diaCombo = String.valueOf(diaSemana.getSelectedItem());
             //convertimos el String a la clase DayOfWeek
@@ -484,24 +562,24 @@ public class GestionActividades extends javax.swing.JFrame {
             LocalTime horaFin = LocalTime.parse(horaFinCombo, DateTimeFormatter.ofPattern("HH:mm"));
 
             //Si el horario de fin es menor que el inicio
-            if (horaFin.isBefore(horaInicio) || horaFin.equals(horaInicio)){
+            if (horaFin.isBefore(horaInicio) || horaFin.equals(horaInicio)) {
                 JOptionPane.showMessageDialog(this, "El horario de fin es menor que el horario de inicio", "Error horario", JOptionPane.ERROR_MESSAGE);
                 return;
             }
-            
+
             // Construir objeto Horario
             HorarioDisponible horario = new HorarioDisponible();
             horario.setDiaSemana(dia);
             horario.setHoraInicio(horaInicio);
             horario.setHoraFin(horaFin);
-        
+
             // Serializar a JSON
-           // Crear Gson con soporte para LocalDate
+            // Crear Gson con soporte para LocalDate
             Gson gson = new GsonBuilder()
-            .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
-            .registerTypeAdapter(LocalTime.class, new LocalTimeAdapter())        
-            .create();
-            
+                    .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
+                    .registerTypeAdapter(LocalTime.class, new LocalTimeAdapter())
+                    .create();
+
             String json = gson.toJson(horario);
 
             // Crear conexión HTTP
@@ -519,21 +597,21 @@ public class GestionActividades extends javax.swing.JFrame {
 
             int responseCode = con.getResponseCode();
             if (responseCode == HttpURLConnection.HTTP_OK) {
-                
+
                 //Recuperar la respuesta del servidor una vez insertado para guardar el id nuevo
                 //que acaba de insertar
                 try (BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream(), "utf-8"))) {
-                    
+
                     String respuesta = "";
-                    JsonObject obj = null; 
+                    JsonObject obj = null;
                     //Leemos la respuesta y la guardamos en un String
                     respuesta = br.readLine();
                     //Convertimos el String a JSON
                     obj = JsonParser.parseString(respuesta).getAsJsonObject();
                     //Del JSON guardamos el id en el horario
                     horario.setId(obj.get("id").getAsLong());
-                } 
-                
+                }
+
                 //Modificar la actividad en la bbdd una vez insertado el horario
                 modificarActividadHorario(horario.getId(), actividad.getId());
 
@@ -548,34 +626,8 @@ public class GestionActividades extends javax.swing.JFrame {
         } catch (Exception e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(this, "Error de conexión: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-        }  
-    }//GEN-LAST:event_insertarHorarioActionPerformed
-
-    private void diaSemanaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_diaSemanaActionPerformed
-        // TODO add your handling code here:
-        cargarHoras(String.valueOf(diaSemana.getSelectedItem()), comboHoraInicio);
-        cargarHoras(String.valueOf(diaSemana.getSelectedItem()), comboHoraFin);  
-    }//GEN-LAST:event_diaSemanaActionPerformed
-
-    private void monitorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_monitorActionPerformed
-        cambios = true;
-    }//GEN-LAST:event_monitorActionPerformed
-
-    private void insertarHorario1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_insertarHorario1ActionPerformed
-        // TODO add your handling code here:
+        }
     }//GEN-LAST:event_insertarHorario1ActionPerformed
-
-    private void jButtonRecargarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonRecargarActionPerformed
-        // TODO add your handling code here:
-        
-    }//GEN-LAST:event_jButtonRecargarActionPerformed
-
-    private void volverActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_volverActionPerformed
-        // TODO add your handling code here:
-        VerActividades ver = new VerActividades();
-        ver.setVisible(true);
-        this.dispose();
-    }//GEN-LAST:event_volverActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -586,9 +638,7 @@ public class GestionActividades extends javax.swing.JFrame {
     private javax.swing.JButton eliminarHorario;
     private javax.swing.JButton guardar;
     private javax.swing.JLabel horaInicio;
-    private javax.swing.JButton insertarHorario;
     private javax.swing.JButton insertarHorario1;
-    private javax.swing.JButton jButtonRecargar;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;

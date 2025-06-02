@@ -14,83 +14,93 @@ import java.net.URL;
 import javax.swing.JOptionPane;
 
 /**
+ * Ventana de inicio de sesión de la aplicación. Permite al usuario autenticarse
+ * introduciendo su nombre de usuario y contraseña, validando las credenciales a
+ * través de una petición HTTP al backend.
  *
- * @author luciarodriguezmartin
+ * Al iniciar sesión correctamente, se redirige al menú principal y se almacena
+ * el ID del empleado.
+ *
+ * @author Lucia Rodriguez Martin
+ * @version 1.0
  */
 public class Interfaz extends javax.swing.JFrame {
 
-    public static Long ID_EMP = -1L;
- 
-    /**
-     * Creates new form Interfaz
-     */
+    public static Long ID_EMP = -1L;//ningún usuario a iniciado sesión todavía,cuando lo haga este nº se actualizará
+
     public Interfaz() {
         initComponents();
         this.setLocationRelativeTo(null);
     }
-    
-    private void login(){
-                                         
-       String usuario = user.getText();
-       String pass = new String(password.getPassword());
-    
-       try {
-        // Crear objeto Empleado con datos del login
-        Empleado loginRequest = new Empleado();
-        loginRequest.setNombreUsuario(usuario);
-        loginRequest.setContrasenaHash(pass); 
 
-        // Convertir a JSON
-        String json = new Gson().toJson(loginRequest);
+    /**
+     * Método que gestiona el proceso de autenticación del usuario. Envía una
+     * petición HTTP POST con las credenciales introducidas, y en caso de éxito,
+     * guarda el ID del empleado autenticado y redirige al menú principal.
+     *
+     * Muestra mensajes de error si la conexión falla o si las credenciales no
+     * son válidas.
+     */
+    private void login() {
 
-        // Conexión HTTP POST
-        URL url = new URL("http://localhost:8080/empleado/login");
-        HttpURLConnection con = (HttpURLConnection) url.openConnection();
-        con.setRequestMethod("POST");
-        con.setRequestProperty("Content-Type", "application/json");
-        con.setDoOutput(true);
+        String usuario = user.getText();
+        String pass = new String(password.getPassword());
 
-        try (OutputStream os = con.getOutputStream()) {
-            byte[] input = json.getBytes("utf-8");//convierte el json en un array de bytes. Usa UTF-8 por si hay caracteres especiales tipo acentos
-            os.write(input, 0, input.length);//lo envia al backend desde el indice 0 hasta el final
-        }
+        try {
+            // Crear objeto Empleado con datos del login
+            Empleado loginRequest = new Empleado();
+            loginRequest.setNombreUsuario(usuario);
+            loginRequest.setContrasenaHash(pass);
 
-        int responseCode = con.getResponseCode();
-        if (responseCode == HttpURLConnection.HTTP_OK) {
-            // Leer el empleado devuelto
-            try (BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream(), "utf-8"))) {
-                StringBuilder response = new StringBuilder();
-                String line;
-                while ((line = br.readLine()) != null) {
-                    response.append(line);
-                }
+            // Convertir a JSON
+            String json = new Gson().toJson(loginRequest);
 
-                Empleado empleado = new Gson().fromJson(response.toString(), Empleado.class);
+            // Conexión HTTP POST
+            URL url = new URL("http://localhost:8080/empleado/login");
+            HttpURLConnection con = (HttpURLConnection) url.openConnection();
+            con.setRequestMethod("POST");
+            con.setRequestProperty("Content-Type", "application/json");
+            con.setDoOutput(true);
 
-                // Guardar el ID del empleado
-                Interfaz.ID_EMP = empleado.getId();
-                
-                // Mostrar mensaje de login correcto
-                JOptionPane.showMessageDialog(this, "Inicio de sesión correcto. ¡Bienvenide " + empleado.getNombre() + "!");
-
-
-                // Ir al panel principal
-                Principal p = new Principal();
-                p.setVisible(true);
-                this.dispose();
+            try (OutputStream os = con.getOutputStream()) {
+                byte[] input = json.getBytes("utf-8");//convierte el json en un array de bytes. Usa UTF-8 por si hay caracteres especiales tipo acentos
+                os.write(input, 0, input.length);//lo envia al backend desde el indice 0 hasta el final
             }
-        } else {
-            JOptionPane.showMessageDialog(this, "Usuario o contraseña incorrectos");
+
+            int responseCode = con.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                // Leer el empleado devuelto
+                try (BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream(), "utf-8"))) {
+                    StringBuilder response = new StringBuilder();
+                    String line;
+                    while ((line = br.readLine()) != null) {
+                        response.append(line);
+                    }
+
+                    Empleado empleado = new Gson().fromJson(response.toString(), Empleado.class);
+
+                    // Guardar el ID del empleado
+                    Interfaz.ID_EMP = empleado.getId();
+
+                    // Mostrar mensaje de login correcto
+                    JOptionPane.showMessageDialog(this, "Inicio de sesión correcto. ¡Bienvenide " + empleado.getNombre() + "!");
+
+                    // Ir al panel principal
+                    Principal p = new Principal();
+                    p.setVisible(true);
+                    this.dispose();
+                }
+            } else {
+                JOptionPane.showMessageDialog(this, "Usuario o contraseña incorrectos");
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error de conexión: " + e.getMessage());
         }
 
-    } catch (Exception e) {
-        e.printStackTrace();
-        JOptionPane.showMessageDialog(this, "Error de conexión: " + e.getMessage());
     }
-    
-    }                                        
 
-  
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -149,53 +159,26 @@ public class Interfaz extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
+    /**
+     * Acción ejecutada al pulsar el botón "Entrar". Llama al método
+     * {@code login()} para autenticar al usuario.
+     *
+     * @param evt Evento de acción generado por el botón
+     */
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         login();
     }//GEN-LAST:event_jButton1ActionPerformed
-
+    /**
+     * Acción ejecutada al pulsar Enter en el campo de contraseña. Permite
+     * iniciar sesión sin necesidad de hacer clic en el botón "Entrar".
+     *
+     * @param evt Evento de acción generado por el campo de contraseña
+     */
     private void passwordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_passwordActionPerformed
         // TODO add your handling code here:
         login();
     }//GEN-LAST:event_passwordActionPerformed
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(Interfaz.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(Interfaz.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(Interfaz.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(Interfaz.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new Interfaz().setVisible(true);
-                
-
-            }
-        });
-    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel fondo;

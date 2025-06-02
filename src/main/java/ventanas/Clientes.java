@@ -19,13 +19,16 @@ import java.net.URLEncoder;
 import java.time.LocalDate;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
 import models.Cliente;
-import models.TipoEntrada;
 import utils.LocalDateAdapter;
 
 /**
- *
- * @author luciarodriguezmartin
+ * Clase Clientes que representa la interfaz gráfica para la gestión de clientes
+ * del sistema. Permite visualizar, buscar, modificar, eliminar y registrar
+ * clientes, accediendo a los datos desde un backend a través de peticiones
+ * HTTP.
  */
 public class Clientes extends javax.swing.JFrame {
 
@@ -36,23 +39,28 @@ public class Clientes extends javax.swing.JFrame {
         initComponents();
         cargarClientes();
     }
-    
-    
+
+    /**
+     * Carga los datos de clientes desde un BufferedReader y los inserta en la
+     * tabla de la interfaz.
+     *
+     * @param entrada BufferedReader con el contenido JSON de los clientes.
+     */
     private void cargarDatosTabla(BufferedReader entrada) {
         try {
             //Definir las columnas de la tabla
-            String[] columnas = {"Nombre", "Apellidos", "Telefono", "DNI", "Fecha Bono", "Sesiones Gastadas", "Pies de Gato", "Edad", "Tipo entrada", "Id"};
+            String[] columnas = {"Nombre", "Apellidos", "Telefono", "DNI", "Fecha Bono", "Pies de Gato", "Edad", "Tipo entrada", "Id"};
             DefaultTableModel model = new DefaultTableModel(columnas, 0);
-            
+
             // Leer todo el contenido del BufferedReader
             String datosLeidos = "";
             String linea;
             while ((linea = entrada.readLine()) != null) {
-                    datosLeidos += linea;
+                datosLeidos += linea;
             }
             //Si la entrada tiene datos
-            if (datosLeidos.equals("Datos vacios") == false){
-            
+            if (datosLeidos.equals("Datos vacios") == false) {
+
                 if (datosLeidos.startsWith("[")) {
                     // Parsear como JsonArray
                     JsonArray jsonArray = JsonParser.parseString(datosLeidos).getAsJsonArray();
@@ -60,54 +68,57 @@ public class Clientes extends javax.swing.JFrame {
                     //Recorrer el json e ir añadiendo las filas
                     for (int i = 0; i < jsonArray.size(); i++) {
                         JsonObject obj = jsonArray.get(i).getAsJsonObject();
-                   
+
                         //Añadimos los datos de la fila en un array
-                       String[] datos = {
-                        obj.get("nombre").getAsString(),
-                        obj.get("apellidos").getAsString(),
-                        obj.get("telefono").getAsString(),
-                        obj.get("dni").getAsString(),
-                        obj.get("fechaBono").getAsString(),
-                        obj.get("sesionesGastadas").getAsString(),
-                        obj.get("pieGato").getAsString(),
-                        obj.get("edad").getAsString(),
-                        obj.getAsJsonObject("tipo_entrada").get("descripcion").getAsString(),
-                        obj.get("id").getAsString()
+                        String[] datos = {
+                            obj.get("nombre").getAsString(),
+                            obj.get("apellidos").getAsString(),
+                            obj.get("telefono").getAsString(),
+                            obj.get("dni").getAsString(),
+                            obj.get("fechaBono").getAsString(),
+                            obj.get("pieGato").getAsBoolean() ? "Si" : "No",
+                            obj.get("edad").getAsString(),
+                            obj.getAsJsonObject("tipo_entrada").get("descripcion").getAsString(),
+                            obj.get("id").getAsString()
                         };
                         //Al modelo le añadimos los datos como una fila
-                        model.addRow(datos); 
+                        model.addRow(datos);
                     }
-                }
-                else {
+                } else {
                     JsonObject obj = JsonParser.parseString(datosLeidos).getAsJsonObject();
 
-                        //Añadimos los datos de la fila en un array
-                      String[] datos = {
+                    //Añadimos los datos de la fila en un array
+                    String[] datos = {
                         obj.get("nombre").getAsString(),
                         obj.get("apellidos").getAsString(),
                         obj.get("telefono").getAsString(),
                         obj.get("dni").getAsString(),
                         obj.get("fechaBono").getAsString(),
-                        obj.get("sesionesGastadas").getAsString(),
-                        obj.get("pieGato").getAsString(),
+                        obj.get("pieGato").getAsBoolean() ? "Si" : "No",
                         obj.get("edad").getAsString(),
                         obj.getAsJsonObject("tipo_entrada").get("descripcion").getAsString(),
                         obj.get("id").getAsString()
-                        };
-                    model.addRow(datos); 
+                    };
+                    model.addRow(datos);
                 }
             }
-            
+
             //A la tabla se le asigna el modelo
             tablaClientes.setModel(model);
-      
-
-        }
-        catch (IOException io){
+            TableColumnModel columnModel = tablaClientes.getColumnModel();
+            if (columnModel.getColumnCount() > 8) {
+                TableColumn columnaId = columnModel.getColumn(8);
+                columnModel.removeColumn(columnaId);
+            }
+        } catch (IOException io) {
             io.printStackTrace();
         }
     }
 
+    /**
+     * Realiza una petición HTTP GET para obtener todos los clientes del backend
+     * y cargarlos en la tabla.
+     */
     private void cargarClientes() {
         try {
             URL url = new URL("http://localhost:8080/cliente/select-all");
@@ -123,19 +134,16 @@ public class Clientes extends javax.swing.JFrame {
             io.printStackTrace();
         }
     }
- 
-    private void limpiarBusqueda() {
-       tdni.setText("");
-       apellido.setText("");
-       Ttelefono.setText("");
-    }
-    
 
     /**
-     * This method is called from within the constructor to initialize the form.
-     * WARNING: Do NOT modify this code. The content of this method is always
-     * regenerated by the Form Editor.
+     * Limpia los campos de búsqueda de la interfaz.
      */
+    private void limpiarBusqueda() {
+        tdni.setText("");
+        apellido.setText("");
+        Ttelefono.setText("");
+    }
+
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -293,19 +301,22 @@ public class Clientes extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
+    /**
+     * Acción al pulsar el botón "Ver Cliente". Obtiene el cliente seleccionado
+     * y abre la ventana VerCliente.
+     */
     private void jButtonVerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonVerActionPerformed
         //Comprobar si el usuario ha seleccionado algun cliente
         int fila = tablaClientes.getSelectedRow();
-        
-        if (fila == -1){
+
+        if (fila == -1) {
             JOptionPane.showMessageDialog(this, "Seleccione un cliente para visualizar", "Selección", JOptionPane.WARNING_MESSAGE);
             return;
         }
-        
+
         try {
             // Suponiendo que la columna 8 es el ID
-            Long id = Long.parseLong(tablaClientes.getValueAt(fila, 9).toString());
+            Long id = Long.parseLong(tablaClientes.getModel().getValueAt(fila, 8).toString());
 
             // Petición GET al backend para obtener los datos del empleado
             URL url = new URL("http://localhost:8080/cliente/find?id=" + id);
@@ -324,9 +335,9 @@ public class Clientes extends javax.swing.JFrame {
 
                     // Crear Gson con soporte para LocalDate
                     Gson gson = new GsonBuilder()
-                    .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
-                    .create();
-            
+                            .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
+                            .create();
+
                     // Convertir JSON a objeto Empleado
                     Cliente cliente = gson.fromJson(response.toString(), Cliente.class);
 
@@ -341,104 +352,119 @@ public class Clientes extends javax.swing.JFrame {
             }
 
         } catch (Exception ex) {
-           ex.printStackTrace();
-           JOptionPane.showMessageDialog(this, "Error en la operación: " + ex.getMessage());
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error en la operación: " + ex.getMessage());
         }
 
     }//GEN-LAST:event_jButtonVerActionPerformed
-
+    /**
+     * Acción al pulsar el botón "Buscar". Construye una URL con los parámetros
+     * de búsqueda y actualiza la tabla.
+     */
     private void buscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buscarActionPerformed
         // TODO add your handling code here:
-              try {
-                String dni = tdni.getText().trim();
-                String apellidos = apellido.getText().trim();
-                String usuario = Ttelefono.getText().trim();
+        try {
+            String dni = tdni.getText().trim();
+            String apellidos = apellido.getText().trim();
+            String usuario = Ttelefono.getText().trim();
 
-                StringBuilder queryBuilder = new StringBuilder("http://localhost:8080/cliente/find-client?");
-                boolean hasParams = false;
+            StringBuilder queryBuilder = new StringBuilder("http://localhost:8080/cliente/find-client?");
+            boolean hasParams = false;
 
-                if (!dni.isEmpty()) {
-                    queryBuilder.append("dni=").append(URLEncoder.encode(dni, "UTF-8"));
-                    hasParams = true;
-                }
-
-                if (!apellidos.isEmpty()) {
-                    if (hasParams) queryBuilder.append("&");
-                    queryBuilder.append("apellidos=").append(URLEncoder.encode(apellidos, "UTF-8"));
-                    hasParams = true;
-                }
-
-                if (!usuario.isEmpty()) {
-                    if (hasParams) queryBuilder.append("&");
-                    queryBuilder.append("telefono=").append(URLEncoder.encode(usuario, "UTF-8"));
-                }
-
-                URL url = new URL(queryBuilder.toString());
-                HttpURLConnection con = (HttpURLConnection) url.openConnection();
-                con.setRequestMethod("GET");
-
-                int responseCode = con.getResponseCode();
-                if (responseCode == HttpURLConnection.HTTP_OK) {
-                    try (BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()))) {
-                        String linea;
-                        StringBuilder datosLeidos = new StringBuilder();
-                        while ((linea = in.readLine()) != null) {
-                            datosLeidos.append(linea);
-                        }
-
-                        String json = datosLeidos.toString();
-                        if (json.equals("[]")) {
-                            JOptionPane.showMessageDialog(this, "No se encontraron clientes.");
-                            tablaClientes.setModel(new DefaultTableModel(new String[]{"Nombre","Apellidos","Telefono","DNI","Fecha Bono","Sesiones Gastadas","Pies de Gato","Menor de edad","Id"}, 0));
-                        } else {
-                            cargarDatosTabla(new BufferedReader(new StringReader(json)));
-                        }
-                    }
-                } else {
-                    JOptionPane.showMessageDialog(this, "Error al obtener los datos");
-                }
-
-            } catch (Exception ex) {
-                ex.printStackTrace();
-                JOptionPane.showMessageDialog(this, "Error en la búsqueda: " + ex.getMessage());
+            if (!dni.isEmpty()) {
+                queryBuilder.append("dni=").append(URLEncoder.encode(dni, "UTF-8"));
+                hasParams = true;
             }
-        
-    }//GEN-LAST:event_buscarActionPerformed
 
+            if (!apellidos.isEmpty()) {
+                if (hasParams) {
+                    queryBuilder.append("&");
+                }
+                queryBuilder.append("apellidos=").append(URLEncoder.encode(apellidos, "UTF-8"));
+                hasParams = true;
+            }
+
+            if (!usuario.isEmpty()) {
+                if (hasParams) {
+                    queryBuilder.append("&");
+                }
+                queryBuilder.append("telefono=").append(URLEncoder.encode(usuario, "UTF-8"));
+            }
+
+            URL url = new URL(queryBuilder.toString());
+            HttpURLConnection con = (HttpURLConnection) url.openConnection();
+            con.setRequestMethod("GET");
+
+            int responseCode = con.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                try (BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()))) {
+                    String linea;
+                    StringBuilder datosLeidos = new StringBuilder();
+                    while ((linea = in.readLine()) != null) {
+                        datosLeidos.append(linea);
+                    }
+
+                    String json = datosLeidos.toString();
+                    if (json.equals("[]")) {
+                        JOptionPane.showMessageDialog(this, "No se encontraron clientes.");
+                        tablaClientes.setModel(new DefaultTableModel(new String[]{"Nombre", "Apellidos", "Telefono", "DNI", "Fecha Bono", "Sesiones Gastadas", "Pies de Gato", "Menor de edad", "Id"}, 0));
+                    } else {
+                        cargarDatosTabla(new BufferedReader(new StringReader(json)));
+                    }
+                }
+            } else {
+                JOptionPane.showMessageDialog(this, "Error al obtener los datos");
+            }
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error en la búsqueda: " + ex.getMessage());
+        }
+
+    }//GEN-LAST:event_buscarActionPerformed
+    /**
+     * Acción al pulsar el botón "Baja Cliente". Elimina el cliente seleccionado
+     * en la tabla.
+     */
     private void eliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_eliminarActionPerformed
         // TODO add your handling code here:
-         int fila = tablaClientes.getSelectedRow();
+        int fila = tablaClientes.getSelectedRow();
 
-         if (fila == -1) {
-             JOptionPane.showMessageDialog(this, "Seleccionar cliente a eliminar");
-             return;
-         }
+        if (fila == -1) {
+            JOptionPane.showMessageDialog(this, "Seleccionar cliente a eliminar");
+            return;
+        }
 
-         int confirmacion = JOptionPane.showConfirmDialog(this, "¿Deseas borrar el cliente?", "Confirmar borrado", JOptionPane.YES_NO_OPTION);
-         if (confirmacion != JOptionPane.YES_OPTION) return;
+        int confirmacion = JOptionPane.showConfirmDialog(this, "¿Deseas borrar el cliente?", "Confirmar borrado", JOptionPane.YES_NO_OPTION);
+        if (confirmacion != JOptionPane.YES_OPTION) {
+            return;
+        }
 
-         try {
-               Long id = Long.parseLong((String) tablaClientes.getValueAt(fila, 9));
-                URL url = new URL("http://localhost:8080/cliente/" + id);
-                HttpURLConnection con = (HttpURLConnection) url.openConnection();
-                con.setRequestMethod("DELETE");
-                con.connect();
+        try {
+            Long id = Long.parseLong((String) tablaClientes.getModel().getValueAt(fila, 8));
+            URL url = new URL("http://localhost:8080/cliente/" + id);
+            HttpURLConnection con = (HttpURLConnection) url.openConnection();
+            con.setRequestMethod("DELETE");
+            con.connect();
 
-                int responseCode = con.getResponseCode();
-                if (responseCode == HttpURLConnection.HTTP_OK) {
-                    JOptionPane.showMessageDialog(this, "Empleado eliminado correctamente");
-                    cargarClientes();
-                } else {
-                    JOptionPane.showMessageDialog(this, "Error al eliminar el empleado. Código: " + responseCode);
-                }
+            int responseCode = con.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                JOptionPane.showMessageDialog(this, "Empleado eliminado correctamente");
+                cargarClientes();
+            } else {
+                JOptionPane.showMessageDialog(this, "Error al eliminar el empleado. Código: " + responseCode);
+            }
 
-         } catch (Exception ex) {
-             ex.printStackTrace();
-             JOptionPane.showMessageDialog(this, "Error en la operación: " + ex.getMessage());
-         }
-                                 
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error en la operación: " + ex.getMessage());
+        }
+
     }//GEN-LAST:event_eliminarActionPerformed
-
+    /**
+     * Acción al pulsar el botón "Modificar Cliente". Obtiene los datos del
+     * cliente seleccionado y abre la ventana ModificarCliente.
+     */
     private void modificarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_modificarActionPerformed
         // TODO add your handling code here:
         int fila = tablaClientes.getSelectedRow();
@@ -450,7 +476,7 @@ public class Clientes extends javax.swing.JFrame {
 
         try {
             // Suponiendo que la columna 8 es el ID
-            Long id = Long.parseLong(tablaClientes.getValueAt(fila, 9).toString());
+            Long id = Long.parseLong(tablaClientes.getModel().getValueAt(fila, 8).toString());
 
             // Petición GET al backend para obtener los datos del empleado
             URL url = new URL("http://localhost:8080/cliente/find?id=" + id);
@@ -469,9 +495,9 @@ public class Clientes extends javax.swing.JFrame {
 
                     // Crear Gson con soporte para LocalDate
                     Gson gson = new GsonBuilder()
-                    .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
-                    .create();
-            
+                            .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
+                            .create();
+
                     // Convertir JSON a objeto Empleado
                     Cliente cliente = gson.fromJson(response.toString(), Cliente.class);
 
@@ -485,21 +511,26 @@ public class Clientes extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(this, "Error al obtener datos del empleado. Código: " + responseCode);
             }
 
-            } catch (Exception ex) {
-                ex.printStackTrace();
-                JOptionPane.showMessageDialog(this, "Error en la operación: " + ex.getMessage());
-            }
-                                               
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error en la operación: " + ex.getMessage());
+        }
+
 
     }//GEN-LAST:event_modificarActionPerformed
-
+    /**
+     * Acción al pulsar el botón "Alta Cliente". Abre la ventana AltaCliente.
+     */
     private void jButtonAltaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonAltaActionPerformed
         // TODO add your handling code here:
         AltaCliente ac = new AltaCliente();
         ac.setVisible(true);
         this.dispose();
     }//GEN-LAST:event_jButtonAltaActionPerformed
-
+    /**
+     * Acción al pulsar el botón "Menú principal". Vuelve a la ventana
+     * principal.
+     */
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
         Principal p = new Principal();
@@ -507,11 +538,17 @@ public class Clientes extends javax.swing.JFrame {
         this.dispose();
     }//GEN-LAST:event_jButton1ActionPerformed
 
+    /**
+     * Acción al pulsar el botón "<--". Recarga la lista de clientes.
+     */
     private void jButtonRecargarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonRecargarActionPerformed
         // TODO add your handling code here:
         cargarClientes();
     }//GEN-LAST:event_jButtonRecargarActionPerformed
-
+    /**
+     * Al hacer clic sobre el campo DNI, activa solo ese campo y limpia el
+     * resto.
+     */
     private void tdniMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tdniMouseClicked
         // TODO add your handling code here:
         tdni.setEnabled(true);
@@ -519,7 +556,10 @@ public class Clientes extends javax.swing.JFrame {
         Ttelefono.setEnabled(false);
         limpiarBusqueda();
     }//GEN-LAST:event_tdniMouseClicked
-
+    /**
+     * Al hacer clic sobre el campo Apellido, activa solo ese campo y limpia el
+     * resto.
+     */
     private void apellidoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_apellidoMouseClicked
         // TODO add your handling code here:
         tdni.setEnabled(false);
@@ -527,7 +567,10 @@ public class Clientes extends javax.swing.JFrame {
         Ttelefono.setEnabled(false);
         limpiarBusqueda();
     }//GEN-LAST:event_apellidoMouseClicked
-
+    /**
+     * Al hacer clic sobre el campo Teléfono, activa solo ese campo y limpia el
+     * resto.
+     */
     private void TtelefonoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_TtelefonoMouseClicked
         // TODO add your handling code here:
         tdni.setEnabled(false);
@@ -536,41 +579,6 @@ public class Clientes extends javax.swing.JFrame {
         limpiarBusqueda();
     }//GEN-LAST:event_TtelefonoMouseClicked
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(Clientes.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(Clientes.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(Clientes.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(Clientes.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new Clientes().setVisible(true);
-            }
-        });
-    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextField Ttelefono;

@@ -7,12 +7,27 @@ package models;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Representa una actividad ofrecida en el rocódromo Rocktown Climbing.
+ * <p>
+ * Cada actividad tiene un nombre, una descripción, un empleado responsable y
+ * una lista de horarios disponibles asociados. La actividad también posee un
+ * identificador único.
+ *
+ * Esta clase se utiliza tanto para la gestión administrativa de actividades
+ * como para su visualización y planificación en la aplicación.
+ *
+ * @author Lucia Rodriguez Martin
+ * @version 1.0
+ */
+
 public class Actividad {
+
     private Long id;
     private String nombre;
     private String descripcion;
     private Empleado empleado;
-    
+
     private List<HorarioDisponible> horarios = new ArrayList<>();
 
     public Long getId() {
@@ -46,7 +61,7 @@ public class Actividad {
     public void setEmpleado(Empleado empleado) {
         this.empleado = empleado;
     }
-    
+
     public List<HorarioDisponible> getHorarios() {
         return horarios;
     }
@@ -55,6 +70,13 @@ public class Actividad {
         this.horarios = horarios;
     }
 
+    /**
+     * Compara esta actividad con otra en base a su ID.
+     *
+     * @param obj Objeto a comparar
+     * @return {@code true} si tienen el mismo ID, {@code false} en caso
+     * contrario
+     */
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {

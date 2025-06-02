@@ -3,11 +3,27 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package models;
+
 import java.time.DayOfWeek;
 import java.time.LocalTime;
-import jakarta.persistence.Transient;
+
+/**
+ * Representa un horario disponible para realizar una actividad en el rocódromo
+ * Rocktown Climbing.
+ * <p>
+ * Incluye el día de la semana, la hora de inicio y la hora de fin. Puede
+ * asociarse a una o varias actividades, permitiendo definir cuándo están
+ * disponibles para los clientes.
+ * <p>
+ * También incluye métodos utilitarios para convertir nombres de días en español
+ * a objetos {@link DayOfWeek} y viceversa.
+ *
+ * @author Lucia Rodriguez Martin
+ * @version 1.0
+ */
 
 public class HorarioDisponible {
+
     private Long id;
     private DayOfWeek diaSemana;
     private LocalTime horaInicio;
@@ -45,10 +61,18 @@ public class HorarioDisponible {
         this.horaFin = horaFin;
     }
 
-    public static DayOfWeek diaSemana(String diaStr){
+    /**
+     * Convierte un nombre de día de la semana en español a un objeto
+     * {@link DayOfWeek}.
+     *
+     * @param diaStr Nombre del día (ej. "Lunes", "Martes", etc.)
+     * @return Objeto {@code DayOfWeek} correspondiente, o {@code null} si no se
+     * reconoce
+     */
+    public static DayOfWeek diaSemana(String diaStr) {
         DayOfWeek dia = null;
-        
-        switch (diaStr){
+
+        switch (diaStr) {
             case "Lunes":
                 dia = DayOfWeek.MONDAY;
                 break;
@@ -71,14 +95,20 @@ public class HorarioDisponible {
                 dia = DayOfWeek.SUNDAY;
                 break;
         }
-        
+
         return dia;
     }
-    
-    public static String diaSemanaStr(DayOfWeek dia){
+
+    /**
+     * Convierte un objeto {@link DayOfWeek} a su representación en español.
+     *
+     * @param dia Día de la semana (ej. {@code DayOfWeek.MONDAY})
+     * @return Cadena con el nombre del día en español (ej. "Lunes")
+     */
+    public static String diaSemanaStr(DayOfWeek dia) {
         String diaSemana = null;
-        
-        switch (dia){
+
+        switch (dia) {
             case MONDAY:
                 diaSemana = "Lunes";
                 break;
@@ -101,7 +131,7 @@ public class HorarioDisponible {
                 diaSemana = "Domingo";
                 break;
         }
-        
+
         return diaSemana;
     }
 }

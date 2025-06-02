@@ -20,6 +20,35 @@ import models.Producto;
 import utils.StripService;
 import utils.Utils;
 
+/**
+ * Clase que representa la interfaz de caja de un punto de venta para gestionar
+ * bonos, productos, cálculos de operaciones aritméticas, aplicación de
+ * descuentos y registro de pagos, tanto en efectivo como con tarjeta.
+ *
+ * Esta ventana permite:
+ * <ul>
+ * <li>Visualizar y añadir productos o bonos seleccionados desde
+ * comboboxes.</li>
+ * <li>Calcular precios totales con una calculadora integrada.</li>
+ * <li>Aplicar descuentos estándar o personalizados a los elementos de la
+ * tabla.</li>
+ * <li>Simular pagos con tarjeta usando un servicio Stripe.</li>
+ * <li>Registrar pagos en efectivo, calcular cambio y limpiar la venta.</li>
+ * </ul>
+ *
+ * Requiere:
+ * <ul>
+ * <li>Un backend accesible con endpoints REST para productos, tipos de entrada
+ * y pagos.</li>
+ * <li>La clase {@link utils.Utils} para cargar bonos desde el servidor.</li>
+ * <li>La clase {@link utils.StripService} para simular pagos con tarjeta.</li>
+ * <li>Modelos {@link models.TipoEntrada} y {@link models.Producto}
+ * correctamente implementados.</li>
+ * </ul>
+ *
+ * @author Lucía Rodríguez Martín
+ * @version 1.0
+ */
 public class Caja extends javax.swing.JFrame {
 
     private double total = 0.0;
@@ -29,7 +58,13 @@ public class Caja extends javax.swing.JFrame {
         Utils.cargarTiposEntrada(tipoBono);
         cargarProductos(productos);
     }
-    
+
+    /**
+     * Realiza una petición HTTP para obtener todos los productos y cargarlos en
+     * el JComboBox.
+     *
+     * @param productos JComboBox donde se agregarán los productos obtenidos.
+     */
     public static void cargarProductos(JComboBox productos) {
         try {
             URL url = new URL("http://localhost:8080/producto/select-all");
@@ -44,6 +79,12 @@ public class Caja extends javax.swing.JFrame {
         }
     }
 
+    /**
+     * Carga en el JComboBox los productos parseados desde el BufferedReader.
+     *
+     * @param entrada BufferedReader con los datos JSON.
+     * @param productos JComboBox donde insertar los productos.
+     */
     public static void cargarDatosProductoCombo(BufferedReader entrada, JComboBox productos) {
         try {
             String datosLeidos = "";
@@ -59,9 +100,9 @@ public class Caja extends javax.swing.JFrame {
                     JsonObject obj = jsonArray.get(i).getAsJsonObject();
 
                     Producto p = new Producto(
-                        obj.get("id").getAsLong(),
-                        obj.get("nombre").getAsString(),
-                        obj.get("precio").getAsDouble()
+                            obj.get("id").getAsLong(),
+                            obj.get("nombre").getAsString(),
+                            obj.get("precio").getAsDouble()
                     );
 
                     productos.addItem(p);
@@ -72,17 +113,33 @@ public class Caja extends javax.swing.JFrame {
         }
     }
 
+    /**
+     * Agrega un número al visor de operaciones de la calculadora.
+     *
+     * @param num el número a agregar.
+     */
     private void numeroPulsado(String num) {
         visorOperacion.setText(visorOperacion.getText() + num);
     }
 
+    /**
+     * Agrega un símbolo aritmético al visor de operaciones.
+     *
+     * @param simbolo el operador (+, -, *, /).
+     */
     private void ejecutarSimbolo(String simbolo) {
         visorOperacion.setText(visorOperacion.getText() + " " + simbolo + " ");
     }
 
+    /**
+     * Evalúa la expresión aritmética escrita manualmente y actualiza el total
+     * mostrado.
+     */
     private void resolverOperacionManual() {
         String expresion = visorOperacion.getText();
-        if (expresion.isEmpty()) return;
+        if (expresion.isEmpty()) {
+            return;
+        }
 
         try {
             double resultado = evaluarExpresionSimple(expresion);
@@ -95,6 +152,14 @@ public class Caja extends javax.swing.JFrame {
         }
     }
 
+    /**
+     * Evalúa una expresión con operadores básicos. Solo admite un formato
+     * simple con espacios.
+     *
+     * @param expr expresión como "5 + 3 - 1"
+     * @return el resultado como double
+     * @throws Exception si la expresión es inválida o hay división por cero
+     */
     private double evaluarExpresionSimple(String expr) throws Exception {
         String[] tokens = expr.split(" ");
         double resultado = Double.parseDouble(tokens[0]);
@@ -104,41 +169,57 @@ public class Caja extends javax.swing.JFrame {
             double siguienteNumero = Double.parseDouble(tokens[i + 1]);
 
             switch (operador) {
-                case "+" -> resultado += siguienteNumero;
-                case "-" -> resultado -= siguienteNumero;
-                case "*" -> resultado *= siguienteNumero;
+                case "+" ->
+                    resultado += siguienteNumero;
+                case "-" ->
+                    resultado -= siguienteNumero;
+                case "*" ->
+                    resultado *= siguienteNumero;
                 case "/" -> {
-                    if (siguienteNumero == 0) throw new ArithmeticException("División por cero");
+                    if (siguienteNumero == 0) {
+                        throw new ArithmeticException("División por cero");
+                    }
                     resultado /= siguienteNumero;
                 }
-                default -> throw new IllegalArgumentException("Operador inválido: " + operador);
+                default ->
+                    throw new IllegalArgumentException("Operador inválido: " + operador);
             }
         }
 
         return resultado;
     }
+
+    /**
+     * Aplica un porcentaje de descuento a la fila seleccionada de la tabla.
+     *
+     * @param porcentaje descuento como decimal (0.25 para 25%)
+     */
     private void aplicarDescuento(double porcentaje) {
-    int selectedRow = tablaVisor.getSelectedRow();
-    if (selectedRow != -1) {
-        DefaultTableModel model = (DefaultTableModel) tablaVisor.getModel();
-        Object precioObj = model.getValueAt(selectedRow, 1);
+        int selectedRow = tablaVisor.getSelectedRow();
+        if (selectedRow != -1) {
+            DefaultTableModel model = (DefaultTableModel) tablaVisor.getModel();
+            Object precioObj = model.getValueAt(selectedRow, 1);
 
-        if (precioObj instanceof Number) {
-            double precioOriginal = ((Number) precioObj).doubleValue();
-            double descuento = precioOriginal * porcentaje;
-            double precioConDescuento = precioOriginal - descuento;
+            if (precioObj instanceof Number) {
+                double precioOriginal = ((Number) precioObj).doubleValue();
+                double descuento = precioOriginal * porcentaje;
+                double precioConDescuento = precioOriginal - descuento;
 
-            total -= precioOriginal;
-            total += precioConDescuento;
+                total -= precioOriginal;
+                total += precioConDescuento;
 
-            model.setValueAt(precioConDescuento, selectedRow, 1);
-            model.setValueAt((int)(porcentaje * 100) + "%", selectedRow, 2);
-            precioTotal.setText(String.format("%.2f", total));
+                model.setValueAt(precioConDescuento, selectedRow, 1);
+                model.setValueAt((int) (porcentaje * 100) + "%", selectedRow, 2);
+                precioTotal.setText(String.format("%.2f", total));
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, "Selecciona un producto o bono para aplicar el descuento.");
         }
-    } else {
-        JOptionPane.showMessageDialog(this, "Selecciona un producto o bono para aplicar el descuento.");
     }
-}
+
+    /**
+     * Aplica un descuento personalizado ingresado manualmente en el visor.
+     */
     private void aplicarDescuentoCustomizado() {
         String texto = visorOperacion.getText().trim();
         if (texto.isEmpty()) {
@@ -154,6 +235,10 @@ public class Caja extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "El valor introducido no es un número válido.");
         }
     }
+
+    /**
+     * Limpia todos los datos de la venta actual (tabla, visor, total).
+     */
     private void limpiarVenta() {
         DefaultTableModel model = (DefaultTableModel) tablaVisor.getModel();
         model.setRowCount(0); // Vacía la tabla
@@ -161,6 +246,13 @@ public class Caja extends javax.swing.JFrame {
         precioTotal.setText("0.00");
         visorOperacion.setText("");
     }
+
+    /**
+     * Simula el registro de un pago en efectivo llamando al backend y mostrando
+     * respuesta.
+     *
+     * @param cantidad cantidad total pagada
+     */
     private void registrarPagoEfectivoEnStripe(double cantidad) {
         try {
             URL url = new URL("http://localhost:8080/venta/registrar-pago-efectivo?cantidad=" + cantidad);
@@ -182,13 +274,6 @@ public class Caja extends javax.swing.JFrame {
         }
     }
 
-
-
-    /**
-     * This method is called from within the constructor to initialize the form.
-     * WARNING: Do NOT modify this code. The content of this method is always
-     * regenerated by the Form Editor.
-     */
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -214,13 +299,13 @@ public class Caja extends javax.swing.JFrame {
         visorOperacion = new javax.swing.JTextField();
         precioTotal = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
-        descuentoVeinticinco = new javax.swing.JButton();
+        descuentoDiez = new javax.swing.JButton();
         descuentoCincuenta = new javax.swing.JButton();
         descuentoCustom = new javax.swing.JButton();
         pagoTarjeta = new javax.swing.JButton();
         psagoEfectivo = new javax.swing.JButton();
         jButton19 = new javax.swing.JButton();
-        descuentoVeinticinco1 = new javax.swing.JButton();
+        descuentoVeinticinco = new javax.swing.JButton();
         jLabel2 = new javax.swing.JLabel();
         panelVisor = new javax.swing.JPanel();
         jLabel9 = new javax.swing.JLabel();
@@ -246,11 +331,6 @@ public class Caja extends javax.swing.JFrame {
         jButton7.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
         jButton7.setText("7");
         jButton7.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 1, true));
-        jButton7.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jButton7MouseClicked(evt);
-            }
-        });
         jButton7.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton7ActionPerformed(evt);
@@ -260,11 +340,6 @@ public class Caja extends javax.swing.JFrame {
         jButton8.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
         jButton8.setText("8");
         jButton8.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 1, true));
-        jButton8.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jButton8MouseClicked(evt);
-            }
-        });
         jButton8.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton8ActionPerformed(evt);
@@ -274,11 +349,6 @@ public class Caja extends javax.swing.JFrame {
         jButton9.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
         jButton9.setText("9");
         jButton9.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 1, true));
-        jButton9.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jButton9MouseClicked(evt);
-            }
-        });
         jButton9.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton9ActionPerformed(evt);
@@ -288,11 +358,6 @@ public class Caja extends javax.swing.JFrame {
         jButton6.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
         jButton6.setText("6");
         jButton6.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 1, true));
-        jButton6.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jButton6MouseClicked(evt);
-            }
-        });
         jButton6.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton6ActionPerformed(evt);
@@ -302,11 +367,6 @@ public class Caja extends javax.swing.JFrame {
         jButton5.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
         jButton5.setText("5");
         jButton5.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 1, true));
-        jButton5.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jButton5MouseClicked(evt);
-            }
-        });
         jButton5.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton5ActionPerformed(evt);
@@ -316,11 +376,6 @@ public class Caja extends javax.swing.JFrame {
         jButton4.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
         jButton4.setText("4");
         jButton4.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 1, true));
-        jButton4.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jButton4MouseClicked(evt);
-            }
-        });
         jButton4.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton4ActionPerformed(evt);
@@ -330,11 +385,6 @@ public class Caja extends javax.swing.JFrame {
         jButton1.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
         jButton1.setText("1");
         jButton1.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 1, true));
-        jButton1.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jButton1MouseClicked(evt);
-            }
-        });
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton1ActionPerformed(evt);
@@ -344,11 +394,6 @@ public class Caja extends javax.swing.JFrame {
         jButton2.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
         jButton2.setText("2");
         jButton2.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 1, true));
-        jButton2.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jButton2MouseClicked(evt);
-            }
-        });
         jButton2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton2ActionPerformed(evt);
@@ -358,11 +403,6 @@ public class Caja extends javax.swing.JFrame {
         jButton3.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
         jButton3.setText("3");
         jButton3.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 1, true));
-        jButton3.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jButton3MouseClicked(evt);
-            }
-        });
         jButton3.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton3ActionPerformed(evt);
@@ -372,11 +412,6 @@ public class Caja extends javax.swing.JFrame {
         jButton11.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
         jButton11.setText(".");
         jButton11.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 1, true));
-        jButton11.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jButton11MouseClicked(evt);
-            }
-        });
         jButton11.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton11ActionPerformed(evt);
@@ -386,11 +421,6 @@ public class Caja extends javax.swing.JFrame {
         jButton10.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
         jButton10.setText("0");
         jButton10.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 1, true));
-        jButton10.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jButton10MouseClicked(evt);
-            }
-        });
         jButton10.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton10ActionPerformed(evt);
@@ -466,11 +496,6 @@ public class Caja extends javax.swing.JFrame {
         jButton12.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
         jButton12.setText("x");
         jButton12.setPreferredSize(new java.awt.Dimension(42, 24));
-        jButton12.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jButton12MouseClicked(evt);
-            }
-        });
         jButton12.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton12ActionPerformed(evt);
@@ -480,11 +505,6 @@ public class Caja extends javax.swing.JFrame {
         clear.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
         clear.setText("C");
         clear.setPreferredSize(new java.awt.Dimension(45, 24));
-        clear.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                clearMouseClicked(evt);
-            }
-        });
         clear.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 clearActionPerformed(evt);
@@ -494,11 +514,6 @@ public class Caja extends javax.swing.JFrame {
         jButton14.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
         jButton14.setText("=");
         jButton14.setPreferredSize(new java.awt.Dimension(45, 24));
-        jButton14.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jButton14MouseClicked(evt);
-            }
-        });
         jButton14.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton14ActionPerformed(evt);
@@ -508,11 +523,6 @@ public class Caja extends javax.swing.JFrame {
         jButton15.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
         jButton15.setText("-");
         jButton15.setPreferredSize(new java.awt.Dimension(45, 24));
-        jButton15.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jButton15MouseClicked(evt);
-            }
-        });
         jButton15.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton15ActionPerformed(evt);
@@ -524,11 +534,6 @@ public class Caja extends javax.swing.JFrame {
         jButton16.setMaximumSize(new java.awt.Dimension(45, 67));
         jButton16.setMinimumSize(new java.awt.Dimension(50, 50));
         jButton16.setPreferredSize(new java.awt.Dimension(45, 24));
-        jButton16.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jButton16MouseClicked(evt);
-            }
-        });
         jButton16.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton16ActionPerformed(evt);
@@ -544,28 +549,18 @@ public class Caja extends javax.swing.JFrame {
         jLabel3.setFont(new java.awt.Font("Malayalam MN", 1, 24)); // NOI18N
         jLabel3.setText("€");
 
-        descuentoVeinticinco.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
-        descuentoVeinticinco.setText("10%");
-        descuentoVeinticinco.setPreferredSize(new java.awt.Dimension(42, 24));
-        descuentoVeinticinco.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                descuentoVeinticincoMouseClicked(evt);
-            }
-        });
-        descuentoVeinticinco.addActionListener(new java.awt.event.ActionListener() {
+        descuentoDiez.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
+        descuentoDiez.setText("10%");
+        descuentoDiez.setPreferredSize(new java.awt.Dimension(42, 24));
+        descuentoDiez.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                descuentoVeinticincoActionPerformed(evt);
+                descuentoDiezActionPerformed(evt);
             }
         });
 
         descuentoCincuenta.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
         descuentoCincuenta.setText("50%");
         descuentoCincuenta.setPreferredSize(new java.awt.Dimension(42, 24));
-        descuentoCincuenta.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                descuentoCincuentaMouseClicked(evt);
-            }
-        });
         descuentoCincuenta.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 descuentoCincuentaActionPerformed(evt);
@@ -575,11 +570,6 @@ public class Caja extends javax.swing.JFrame {
         descuentoCustom.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
         descuentoCustom.setText("%");
         descuentoCustom.setPreferredSize(new java.awt.Dimension(42, 24));
-        descuentoCustom.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                descuentoCustomMouseClicked(evt);
-            }
-        });
         descuentoCustom.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 descuentoCustomActionPerformed(evt);
@@ -589,11 +579,6 @@ public class Caja extends javax.swing.JFrame {
         pagoTarjeta.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
         pagoTarjeta.setText("TARJETA");
         pagoTarjeta.setPreferredSize(new java.awt.Dimension(42, 24));
-        pagoTarjeta.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                pagoTarjetaMouseClicked(evt);
-            }
-        });
         pagoTarjeta.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 pagoTarjetaActionPerformed(evt);
@@ -603,11 +588,6 @@ public class Caja extends javax.swing.JFrame {
         psagoEfectivo.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
         psagoEfectivo.setText("EFECTIVO");
         psagoEfectivo.setPreferredSize(new java.awt.Dimension(42, 24));
-        psagoEfectivo.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                psagoEfectivoMouseClicked(evt);
-            }
-        });
         psagoEfectivo.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 psagoEfectivoActionPerformed(evt);
@@ -617,28 +597,18 @@ public class Caja extends javax.swing.JFrame {
         jButton19.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
         jButton19.setText("+");
         jButton19.setPreferredSize(new java.awt.Dimension(45, 24));
-        jButton19.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jButton19MouseClicked(evt);
-            }
-        });
         jButton19.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton19ActionPerformed(evt);
             }
         });
 
-        descuentoVeinticinco1.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
-        descuentoVeinticinco1.setText("25%");
-        descuentoVeinticinco1.setPreferredSize(new java.awt.Dimension(42, 24));
-        descuentoVeinticinco1.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                descuentoVeinticinco1MouseClicked(evt);
-            }
-        });
-        descuentoVeinticinco1.addActionListener(new java.awt.event.ActionListener() {
+        descuentoVeinticinco.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
+        descuentoVeinticinco.setText("25%");
+        descuentoVeinticinco.setPreferredSize(new java.awt.Dimension(42, 24));
+        descuentoVeinticinco.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                descuentoVeinticinco1ActionPerformed(evt);
+                descuentoVeinticincoActionPerformed(evt);
             }
         });
 
@@ -670,9 +640,9 @@ public class Caja extends javax.swing.JFrame {
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelSimbolosLayout.createSequentialGroup()
                                 .addGroup(panelSimbolosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                                     .addGroup(panelSimbolosLayout.createSequentialGroup()
-                                        .addComponent(descuentoVeinticinco, javax.swing.GroupLayout.PREFERRED_SIZE, 103, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(descuentoDiez, javax.swing.GroupLayout.PREFERRED_SIZE, 103, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(descuentoVeinticinco1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                        .addComponent(descuentoVeinticinco, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                                     .addGroup(panelSimbolosLayout.createSequentialGroup()
                                         .addComponent(descuentoCincuenta, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -699,9 +669,9 @@ public class Caja extends javax.swing.JFrame {
                 .addGap(19, 19, 19)
                 .addGroup(panelSimbolosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton12, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(descuentoVeinticinco, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(descuentoDiez, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jButton16, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(descuentoVeinticinco1, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(descuentoVeinticinco, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(panelSimbolosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jButton19, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -735,11 +705,6 @@ public class Caja extends javax.swing.JFrame {
         jLabel9.setText("Tipo de bono");
 
         tipoBono.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
-        tipoBono.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                tipoBonoActionPerformed(evt);
-            }
-        });
 
         jLabel11.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
         jLabel11.setText("Productos");
@@ -860,261 +825,211 @@ public class Caja extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
+    /**
+     * Limpia el campo del visor de operaciones.
+     */
     private void clearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clearActionPerformed
-        // TODO add your handling code here:
+
         visorOperacion.setText("");
     }//GEN-LAST:event_clearActionPerformed
-
+    /**
+     * Inserta el símbolo de resta "-" en la operación.
+     */
     private void jButton15ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton15ActionPerformed
-        // TODO add your handling code here:
+
         ejecutarSimbolo("-");
     }//GEN-LAST:event_jButton15ActionPerformed
-
+    /**
+     * Inserta el símbolo de división "/" en la operación.
+     */
     private void jButton16ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton16ActionPerformed
-        // TODO add your handling code here:
+
         ejecutarSimbolo("/");
     }//GEN-LAST:event_jButton16ActionPerformed
-
+    /**
+     * Añade al ticket el bono seleccionado del combo `tipoBono` y actualiza el
+     * total.
+     */
     private void jButton17ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton17ActionPerformed
-        
+
         TipoEntrada entrada = (TipoEntrada) tipoBono.getSelectedItem();
-    if (entrada != null) {
-        DefaultTableModel model = (DefaultTableModel) tablaVisor.getModel();
-        model.addRow(new Object[]{entrada.getTipo(), entrada.getPrecio()});
-        total += entrada.getPrecio();
-        precioTotal.setText(String.format("%.2f", total));
-    }
-    }//GEN-LAST:event_jButton17ActionPerformed
-
-    private void jButton18ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton18ActionPerformed
-        
-        Producto prod = (Producto) productos.getSelectedItem();
-    if (prod != null) {
-        DefaultTableModel model = (DefaultTableModel) tablaVisor.getModel();
-        model.addRow(new Object[]{prod.getNombre(), prod.getPrecio()});
-        total += prod.getPrecio();
-        precioTotal.setText(String.format("%.2f", total));
-    }
-    }//GEN-LAST:event_jButton18ActionPerformed
-
-    private void jButton20ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton20ActionPerformed
-        
-        int selectedRow = tablaVisor.getSelectedRow();
-    if (selectedRow != -1) {
-        DefaultTableModel model = (DefaultTableModel) tablaVisor.getModel();
-        Object precioObj = model.getValueAt(selectedRow, 1);
-        if (precioObj instanceof Number) {
-            total -= ((Number) precioObj).doubleValue();
+        if (entrada != null) {
+            DefaultTableModel model = (DefaultTableModel) tablaVisor.getModel();
+            model.addRow(new Object[]{entrada.getTipo(), entrada.getPrecio()});
+            total += entrada.getPrecio();
             precioTotal.setText(String.format("%.2f", total));
         }
-        model.removeRow(selectedRow);
-    }
+    }//GEN-LAST:event_jButton17ActionPerformed
+    /**
+     * Añade al ticket el producto seleccionado del combo `productos` y
+     * actualiza el total.
+     */
+    private void jButton18ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton18ActionPerformed
+
+        Producto prod = (Producto) productos.getSelectedItem();
+        if (prod != null) {
+            DefaultTableModel model = (DefaultTableModel) tablaVisor.getModel();
+            model.addRow(new Object[]{prod.getNombre(), prod.getPrecio()});
+            total += prod.getPrecio();
+            precioTotal.setText(String.format("%.2f", total));
+        }
+    }//GEN-LAST:event_jButton18ActionPerformed
+    /**
+     * Elimina la fila seleccionada de la tabla y actualiza el total.
+     */
+    private void jButton20ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton20ActionPerformed
+
+        int selectedRow = tablaVisor.getSelectedRow();
+        if (selectedRow != -1) {
+            DefaultTableModel model = (DefaultTableModel) tablaVisor.getModel();
+            Object precioObj = model.getValueAt(selectedRow, 1);
+            if (precioObj instanceof Number) {
+                total -= ((Number) precioObj).doubleValue();
+                precioTotal.setText(String.format("%.2f", total));
+            }
+            model.removeRow(selectedRow);
+        }
     }//GEN-LAST:event_jButton20ActionPerformed
-
-    private void tipoBonoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tipoBonoActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_tipoBonoActionPerformed
-
+    /**
+     * Inserta el número "1" en la operación.
+     */
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
+
         numeroPulsado("1");
     }//GEN-LAST:event_jButton1ActionPerformed
 
-    private void jButton1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton1MouseClicked
-        // TODO add your handling code here:
-        
-
-    }//GEN-LAST:event_jButton1MouseClicked
-
-    private void clearMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_clearMouseClicked
-        // TODO add your handling code here:
-
-    }//GEN-LAST:event_clearMouseClicked
-
+    /**
+     * Evalúa la operación matemática introducida en el visor.
+     */
     private void jButton14ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton14ActionPerformed
         // TODO add your handling code here:
         resolverOperacionManual();
-     
+
     }//GEN-LAST:event_jButton14ActionPerformed
-
-    private void jButton14MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton14MouseClicked
-        // TODO add your handling code here:
-        
-    }//GEN-LAST:event_jButton14MouseClicked
-
-    private void jButton12MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton12MouseClicked
-        // TODO add your handling code here:
-        
-    }//GEN-LAST:event_jButton12MouseClicked
-
-    private void jButton15MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton15MouseClicked
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton15MouseClicked
-
-    private void jButton16MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton16MouseClicked
-        // TODO add your handling code here:
-        
-    }//GEN-LAST:event_jButton16MouseClicked
-
-    private void jButton2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton2MouseClicked
-        // TODO add your handling code here:
-        
-    }//GEN-LAST:event_jButton2MouseClicked
-
-    private void jButton3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton3MouseClicked
-        // TODO add your handling code here:
-        
-    }//GEN-LAST:event_jButton3MouseClicked
-
-    private void jButton4MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton4MouseClicked
-        // TODO add your handling code here:
-        
-    }//GEN-LAST:event_jButton4MouseClicked
-
-    private void jButton5MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton5MouseClicked
-        // TODO add your handling code here:
-        
-    }//GEN-LAST:event_jButton5MouseClicked
-
-    private void jButton6MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton6MouseClicked
-        // TODO add your handling code here:
-        
-    }//GEN-LAST:event_jButton6MouseClicked
-
-    private void jButton7MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton7MouseClicked
-        // TODO add your handling code here:
-        
-    }//GEN-LAST:event_jButton7MouseClicked
-
-    private void jButton8MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton8MouseClicked
-        // TODO add your handling code here:
-        
-    }//GEN-LAST:event_jButton8MouseClicked
-
-    private void jButton9MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton9MouseClicked
-        // TODO add your handling code here:
-        
-    }//GEN-LAST:event_jButton9MouseClicked
-
-    private void jButton10MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton10MouseClicked
-        // TODO add your handling code here:
-        
-    }//GEN-LAST:event_jButton10MouseClicked
-
-    private void jButton11MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton11MouseClicked
-        // TODO add your handling code here:
-        
-    }//GEN-LAST:event_jButton11MouseClicked
-
+    /**
+     * Inserta el número "2" en la operación.
+     */
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         // TODO add your handling code here:
         numeroPulsado("2");
     }//GEN-LAST:event_jButton2ActionPerformed
-
+    /**
+     * Inserta el punto decimal "." en la operación.
+     */
     private void jButton11ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton11ActionPerformed
         // TODO add your handling code here:
         numeroPulsado(".");
     }//GEN-LAST:event_jButton11ActionPerformed
-
+    /**
+     * Inserta el número "0" en la operación.
+     */
     private void jButton10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton10ActionPerformed
         // TODO add your handling code here:
         numeroPulsado("0");
     }//GEN-LAST:event_jButton10ActionPerformed
-
+    /**
+     * Inserta el número "9" en la operación.
+     */
     private void jButton9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton9ActionPerformed
         // TODO add your handling code here:
         numeroPulsado("9");
     }//GEN-LAST:event_jButton9ActionPerformed
-
+    /**
+     * Inserta el número "8" en la operación.
+     */
     private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
         // TODO add your handling code here:
         numeroPulsado("8");
     }//GEN-LAST:event_jButton8ActionPerformed
-
+    /**
+     * Inserta el número "7" en la operación.
+     */
     private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
         // TODO add your handling code here:
         numeroPulsado("7");
     }//GEN-LAST:event_jButton7ActionPerformed
-
+    /**
+     * Inserta el número "6" en la operación.
+     */
     private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
         // TODO add your handling code here:
         numeroPulsado("6");
     }//GEN-LAST:event_jButton6ActionPerformed
-
+    /**
+     * Inserta el número "5" en la operación.
+     */
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
         // TODO add your handling code here:
         numeroPulsado("5");
     }//GEN-LAST:event_jButton5ActionPerformed
-
+    /**
+     * Inserta el número "3" en la operación.
+     */
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         // TODO add your handling code here:
         numeroPulsado("3");
     }//GEN-LAST:event_jButton3ActionPerformed
-
+    /**
+     * Inserta el número "4" en la operación.
+     */
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
         // TODO add your handling code here:
         numeroPulsado("4");
     }//GEN-LAST:event_jButton4ActionPerformed
-
+    /**
+     * Inserta el símbolo de multiplicación "*" en la operación.
+     */
     private void jButton12ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton12ActionPerformed
         // TODO add your handling code here:
         ejecutarSimbolo("*");
     }//GEN-LAST:event_jButton12ActionPerformed
-
-    private void descuentoVeinticincoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_descuentoVeinticincoMouseClicked
-        // TODO add your handling code here:
-    }//GEN-LAST:event_descuentoVeinticincoMouseClicked
-
-    private void descuentoVeinticincoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_descuentoVeinticincoActionPerformed
+    /**
+     * Aplica un descuento del 10% al total actual.
+     */
+    private void descuentoDiezActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_descuentoDiezActionPerformed
         // TODO add your handling code here:
         aplicarDescuento(0.10); // para 10%
 
-    }//GEN-LAST:event_descuentoVeinticincoActionPerformed
-
-    private void descuentoCincuentaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_descuentoCincuentaMouseClicked
-        // TODO add your handling code here:
-    }//GEN-LAST:event_descuentoCincuentaMouseClicked
-
+    }//GEN-LAST:event_descuentoDiezActionPerformed
+    /**
+     * Aplica un descuento del 50% al total actual.
+     */
     private void descuentoCincuentaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_descuentoCincuentaActionPerformed
         // TODO add your handling code here:
         aplicarDescuento(0.5); // para -50%
 
     }//GEN-LAST:event_descuentoCincuentaActionPerformed
-
-    private void descuentoCustomMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_descuentoCustomMouseClicked
-        // TODO add your handling code here:
-    }//GEN-LAST:event_descuentoCustomMouseClicked
-
+    /**
+     * Aplica un descuento personalizado evaluando una operación matemática.
+     */
     private void descuentoCustomActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_descuentoCustomActionPerformed
         // TODO add your handling code here:
         aplicarDescuentoCustomizado();
     }//GEN-LAST:event_descuentoCustomActionPerformed
-
-    private void pagoTarjetaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_pagoTarjetaMouseClicked
-        // TODO add your handling code here:
-    }//GEN-LAST:event_pagoTarjetaMouseClicked
-
+    /**
+     * Simula un pago con tarjeta utilizando Stripe. Muestra diferentes mensajes
+     * según el resultado del pago simulado.
+     */
     private void pagoTarjetaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pagoTarjetaActionPerformed
         // TODO add your handling code here:
         if (total == 0.0) {
-        JOptionPane.showMessageDialog(this, "No hay productos para cobrar.");
-        return;
-    }
+            JOptionPane.showMessageDialog(this, "No hay productos para cobrar.");
+            return;
+        }
         // Paso 1: Simulación de inserción de tarjeta
         JOptionPane.showMessageDialog(this, "Inserte o acerque la tarjeta al lector...");
-    
+
         // Paso 2: Espera breve para simular lectura
         try {
             Thread.sleep(1500); // 1.5 segundos
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
-        
+
         // Paso 3: Simulación de procesamiento
         JOptionPane.showMessageDialog(this, "Procesando el pago...");
 
-         // Inicializar Stripe
+        // Inicializar Stripe
         StripService.inicializarStripe();
 
         try {
@@ -1133,22 +1048,22 @@ public class Caja extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Error al procesar el pago: " + e.getMessage());
         }
     }//GEN-LAST:event_pagoTarjetaActionPerformed
-
-    private void psagoEfectivoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_psagoEfectivoMouseClicked
-        // TODO add your handling code here:
-    }//GEN-LAST:event_psagoEfectivoMouseClicked
-
+    /**
+     * Solicita al usuario un importe en efectivo, calcula el cambio, simula la
+     * apertura del cajón y registra el pago en Stripe.
+     */
     private void psagoEfectivoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_psagoEfectivoActionPerformed
         // TODO add your handling code here:
         if (total == 0.0) {
-        JOptionPane.showMessageDialog(this, "No hay productos para cobrar.");
-        return;
+            JOptionPane.showMessageDialog(this, "No hay productos para cobrar.");
+            return;
         }
 
         String input = JOptionPane.showInputDialog(this, "Introduce el importe recibido en efectivo (€):");
 
-        if (input == null) return; // Cancelado
-
+        if (input == null) {
+            return; // Cancelado
+        }
         try {
             double recibido = Double.parseDouble(input);
             if (recibido < total) {
@@ -1171,32 +1086,33 @@ public class Caja extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Introduce un número válido.");
         }
     }//GEN-LAST:event_psagoEfectivoActionPerformed
-
-    private void jButton19MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton19MouseClicked
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton19MouseClicked
-
+    /**
+     * Inserta el símbolo de suma "+" en la operación.
+     */
     private void jButton19ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton19ActionPerformed
         // TODO add your handling code here:
         ejecutarSimbolo("+");
     }//GEN-LAST:event_jButton19ActionPerformed
-
-    private void descuentoVeinticinco1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_descuentoVeinticinco1MouseClicked
+    /**
+     * Aplica un descuento del 25% al total actual.
+     */
+    private void descuentoVeinticincoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_descuentoVeinticincoActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_descuentoVeinticinco1MouseClicked
-
-    private void descuentoVeinticinco1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_descuentoVeinticinco1ActionPerformed
-        // TODO add your handling code here:
-         aplicarDescuento(0.25); 
-    }//GEN-LAST:event_descuentoVeinticinco1ActionPerformed
-
+        aplicarDescuento(0.25);
+    }//GEN-LAST:event_descuentoVeinticincoActionPerformed
+    /**
+     * Abre la ventana `VerBono` para mostrar información del bono seleccionado.
+     * Cierra la ventana actual.
+     */
     private void verBonoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_verBonoActionPerformed
         // TODO add your handling code here:
-        Principal p = new Principal();
-        p.setVisible(true);
+        VerBono vb = new VerBono((TipoEntrada) tipoBono.getSelectedItem());
+        vb.setVisible(true);
         this.dispose();
     }//GEN-LAST:event_verBonoActionPerformed
-
+    /**
+     * Vuelve a la ventana principal cerrando la actual.
+     */
     private void volverActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_volverActionPerformed
         // TODO add your handling code here:
         Principal princ = new Principal();
@@ -1204,47 +1120,12 @@ public class Caja extends javax.swing.JFrame {
         this.dispose();
     }//GEN-LAST:event_volverActionPerformed
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(Caja.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(Caja.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(Caja.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(Caja.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new Caja().setVisible(true);
-            }
-        });
-    }
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton clear;
     private javax.swing.JButton descuentoCincuenta;
     private javax.swing.JButton descuentoCustom;
+    private javax.swing.JButton descuentoDiez;
     private javax.swing.JButton descuentoVeinticinco;
-    private javax.swing.JButton descuentoVeinticinco1;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton10;
     private javax.swing.JButton jButton11;

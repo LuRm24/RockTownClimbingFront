@@ -5,27 +5,46 @@
 package ventanas;
 
 import com.google.gson.Gson;
+import java.awt.Color;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import javax.swing.BorderFactory;
 import javax.swing.JOptionPane;
+import javax.swing.border.Border;
 import models.Empleado;
+import utils.Utils;
 
+/**
+ * Ventana de modificación de datos de un empleado existente.
+ *
+ * Esta clase permite al usuario editar los datos personales y de acceso de un
+ * empleado. Incluye validaciones para todos los campos y, si los datos son
+ * correctos, los envía al backend mediante una petición HTTP PUT en formato
+ * JSON.
+ *
+ * Además, permite cancelar la operación y volver a la vista principal de
+ * empleados.
+ *
+ * @author Lucía Rodríguez Martín
+ * @version 1.0
+ */
 public class ModificarEmpleado extends javax.swing.JFrame {
 
-    
     private Empleado empleado;
-    
-    
+
     public ModificarEmpleado(Empleado empleado) {
         this.empleado = empleado;
         initComponents();
         this.setLocationRelativeTo(null);
         rellenarDatosEmpleado();
     }
-    
+
+    /**
+     * Carga los datos actuales del empleado en los campos del formulario.
+     */
     private void rellenarDatosEmpleado() {
-        nombre.setText(empleado.getNombre()); 
+        nombre.setText(empleado.getNombre());
         telefono.setText(empleado.getTelefono());
         dni.setText(empleado.getDni());
         apellido.setText(empleado.getApellidos());
@@ -34,8 +53,7 @@ public class ModificarEmpleado extends javax.swing.JFrame {
         usuario.setText(empleado.getNombreUsuario());
         mail.setText(empleado.getEmail());
         contrasena.setText("");
-        
-        
+
     }
 
     /**
@@ -171,99 +189,153 @@ public class ModificarEmpleado extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
+    /**
+     * Acción que se ejecuta al pulsar el botón "Guardar cambios".
+     *
+     * Valida todos los campos del formulario y, si son correctos, actualiza el
+     * objeto {@link Empleado}, lo serializa a JSON y lo envía al backend
+     * mediante una petición PUT. Muestra mensajes de error o éxito según la
+     * respuesta del servidor.
+     *
+     * @param evt Evento de acción del botón
+     */
     private void modificarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_modificarActionPerformed
         // TODO add your handling code here:
         try {
-        // Actualizamos los datos del empleado
-        empleado.setNombre(nombre.getText());
-        empleado.setApellidos(apellido.getText());
-        empleado.setDni(dni.getText());
-        empleado.setEmail(mail.getText());
-        empleado.setNombreUsuario(usuario.getText());
-        empleado.setTelefono(telefono.getText());
-        empleado.setDireccion(direccion.getText());
-        empleado.setRol(rol.getSelectedItem().toString());
+            int error = 0;
+            Border bordeRojo = BorderFactory.createLineBorder(Color.red, 1);
+            Border bordeNormal = BorderFactory.createLineBorder(Color.gray, 1);
 
-        String nuevaContrasena = contrasena.getText();
-        if (!nuevaContrasena.isEmpty()) {
-            empleado.setContrasenaHash(nuevaContrasena); // Luego el back hasheará esto
+            //Comprobar los datos que sean correctos
+            if (dni.getText().equals("") || !Utils.validarDNI(dni.getText())) {
+                dni.setBorder(bordeRojo);
+                error++;
+            } else {
+                dni.setBorder(bordeNormal);
+            }
+
+            if (nombre.getText().equals("")) {
+                nombre.setBorder(bordeRojo);
+                error++;
+            } else {
+                nombre.setBorder(bordeNormal);
+            }
+
+            if (apellido.getText().equals("")) {
+                apellido.setBorder(bordeRojo);
+                error++;
+            } else {
+                apellido.setBorder(bordeNormal);
+            }
+
+            if (telefono.getText().equals("")) {
+                telefono.setBorder(bordeRojo);
+                error++;
+            } else {
+                telefono.setBorder(bordeNormal);
+            }
+
+            if (direccion.getText().equals("")) {
+                direccion.setBorder(bordeRojo);
+                error++;
+            } else {
+                direccion.setBorder(bordeNormal);
+            }
+
+            if (usuario.getText().equals("")) {
+                usuario.setBorder(bordeRojo);
+                error++;
+            } else {
+                usuario.setBorder(bordeNormal);
+            }
+
+            if (mail.getText().equals("") || !Utils.validarEmail(mail.getText())) {
+                mail.setBorder(bordeRojo);
+                error++;
+            } else {
+                mail.setBorder(bordeNormal);
+            }
+
+            if (String.valueOf(contrasena.getPassword()).equals("")) {
+                contrasena.setBorder(bordeRojo);
+                error++;
+            } else {
+                if (String.valueOf(contrasena.getPassword()).length() >= 6
+                        && String.valueOf(contrasena.getPassword()).length() <= 10
+                        && Utils.validarContrasena(String.valueOf(contrasena.getPassword()))) {
+                    contrasena.setBorder(bordeNormal);
+
+                } else {
+                    JOptionPane.showMessageDialog(this, "La contraseña debe tener entre 6 y 10 carácteres y contener carácteres especiales y mayúsculas");
+                    error++;
+                }
+            }
+
+            //Si no hay errores
+            if (error == 0) {
+
+                // Actualizamos los datos del empleado
+                empleado.setNombre(nombre.getText());
+                empleado.setApellidos(apellido.getText());
+                empleado.setDni(dni.getText());
+                empleado.setEmail(mail.getText());
+                empleado.setNombreUsuario(usuario.getText());
+                empleado.setTelefono(telefono.getText());
+                empleado.setDireccion(direccion.getText());
+                empleado.setRol(rol.getSelectedItem().toString());
+
+                String nuevaContrasena = String.valueOf(contrasena.getPassword());
+                if (!nuevaContrasena.isEmpty()) {
+                    empleado.setContrasenaHash(nuevaContrasena); // Luego el back hasheará esto
+                }
+
+                // Serializar a JSON
+                String json = new Gson().toJson(empleado);
+
+                // Enviar al backend
+                URL url = new URL("http://localhost:8080/empleado/update");
+                HttpURLConnection con = (HttpURLConnection) url.openConnection();
+                con.setRequestMethod("PUT");
+                con.setRequestProperty("Content-Type", "application/json");
+                con.setDoOutput(true);
+
+                try (OutputStream os = con.getOutputStream()) {
+                    byte[] input = json.getBytes("utf-8");
+                    os.write(input, 0, input.length);
+                }
+
+                int responseCode = con.getResponseCode();
+                if (responseCode == HttpURLConnection.HTTP_OK) {
+                    JOptionPane.showMessageDialog(this, "Empleado modificado correctamente");
+                    Empleados vistaEmpleados = new Empleados();
+                    vistaEmpleados.setVisible(true);
+                    this.dispose();
+                } else {
+                    JOptionPane.showMessageDialog(this, "Error al modificar el empleado. Código: " + responseCode);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error en la operación: " + e.getMessage());
         }
-
-        // Serializar a JSON
-        String json = new Gson().toJson(empleado);
-
-        // Enviar al backend
-        URL url = new URL("http://localhost:8080/empleado/update");
-        HttpURLConnection con = (HttpURLConnection) url.openConnection();
-        con.setRequestMethod("PUT");
-        con.setRequestProperty("Content-Type", "application/json");
-        con.setDoOutput(true);
-
-        try (OutputStream os = con.getOutputStream()) {
-            byte[] input = json.getBytes("utf-8");
-            os.write(input, 0, input.length);
-        }
-
-        int responseCode = con.getResponseCode();
-        if (responseCode == HttpURLConnection.HTTP_OK) {
-            JOptionPane.showMessageDialog(this, "Empleado modificado correctamente");
-            Empleados vistaEmpleados = new Empleados();
-            vistaEmpleados.setVisible(true);
-            this.dispose();
-        } else {
-            JOptionPane.showMessageDialog(this, "Error al modificar el empleado. Código: " + responseCode);
-        }
-
-    } catch (Exception e) {
-        e.printStackTrace();
-        JOptionPane.showMessageDialog(this, "Error en la operación: " + e.getMessage());
-    }
     }//GEN-LAST:event_modificarActionPerformed
-
+    /**
+     * Acción que se ejecuta al pulsar el botón "Cancelar".
+     *
+     * Cierra esta ventana y vuelve a la vista de gestión de empleados sin
+     * guardar cambios.
+     *
+     * @param evt Evento de acción del botón
+     */
     private void cancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelarActionPerformed
 
         // Vuelve a la ventana de gestión de empleados
-            Empleados empleados = new Empleados();
-            empleados.setVisible(true);
-            this.dispose();
+        Empleados empleados = new Empleados();
+        empleados.setVisible(true);
+        this.dispose();
 
     }//GEN-LAST:event_cancelarActionPerformed
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(AltaCliente.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(AltaCliente.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(AltaCliente.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(AltaCliente.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new AltaCliente().setVisible(true);
-            }
-        });
-    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel LbContrasena;

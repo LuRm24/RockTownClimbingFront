@@ -1,25 +1,46 @@
 package models;
+
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Representa un tipo de entrada que se puede adquirir en el rocódromo Rocktown
+ * Climbing.
+ * <p>
+ * Define las características de una entrada, como su tipo (ej. bono mensual,
+ * entrada suelta), descripción, público al que va dirigida, frecuencia de uso,
+ * precio y si incluye comida o bebida. También puede contener notas
+ * adicionales.
+ *
+ * Se utiliza para configurar y ofrecer distintos productos dentro del sistema
+ * de venta de entradas.
+ *
+ * @author Lucia Rodriguez Martin
+ * @version 1.0
+ */
 public class TipoEntrada {
+
     private Long id;
     private String tipo;
     private String descripcion;
-    private String publicoDestino;
+    private String publico_destino;
     private String frecuencia;
     private double precio;
+    private boolean bebida_incluida;
+    private boolean comida_incluida;
     private String notas;
 
     private List<Entrada> entradas = new ArrayList<>();
 
-    public TipoEntrada(Long id, String tipo, String descripcion, String publicoDestino, String frecuencia, double precio, String notas) {
+    public TipoEntrada(Long id, String tipo, String descripcion, String publico_destino, String frecuencia, double precio, boolean bebida_incluida, boolean comida_incluida, String notas) {
         this.id = id;
         this.tipo = tipo;
         this.descripcion = descripcion;
-        this.publicoDestino = publicoDestino;
+        this.publico_destino = publico_destino;
         this.frecuencia = frecuencia;
         this.precio = precio;
+        this.bebida_incluida = bebida_incluida;
+        this.comida_incluida = comida_incluida;
         this.notas = notas;
     }
 
@@ -48,11 +69,11 @@ public class TipoEntrada {
     }
 
     public String getPublicoDestino() {
-        return publicoDestino;
+        return publico_destino;
     }
 
     public void setPublicoDestino(String publicoDestino) {
-        this.publicoDestino = publicoDestino;
+        this.publico_destino = publicoDestino;
     }
 
     public String getFrecuencia() {
@@ -79,24 +100,48 @@ public class TipoEntrada {
         this.notas = notas;
     }
 
-    public List<Entrada> getEntradas() {
-        return entradas;
+    public boolean isBebidaIncluida() {
+        return bebida_incluida;
     }
 
-    public void setEntradas(List<Entrada> entradas) {
-        this.entradas = entradas;
+    public void setBebidaIncluida(boolean bebidaIncluida) {
+        this.bebida_incluida = bebidaIncluida;
     }
-    
 
+    public boolean isComidaIncluida() {
+        return comida_incluida;
+    }
+
+    public void setComidaIncluida(boolean comidaIncluida) {
+        this.comida_incluida = comidaIncluida;
+    }
+
+    /**
+     * Devuelve una representación textual del tipo de entrada, útil para
+     * mostrar en listados.
+     *
+     * @return Cadena en formato "descripción - público - tipo"
+     */
     @Override
     public String toString() {
-        return descripcion + "-" + publicoDestino + "-" + tipo;
+        return descripcion + "-" + publico_destino + "-" + tipo;
     }
-    
+
+    /**
+     * Compara este tipo de entrada con otro en base a su identificador.
+     *
+     * @param o Objeto a comparar
+     * @return {@code true} si los IDs son iguales, {@code false} en caso
+     * contrario
+     */
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof TipoEntrada)) return false;
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof TipoEntrada)) {
+            return false;
+        }
         TipoEntrada that = (TipoEntrada) o;
         return this.id.equals(that.id);
     }

@@ -16,7 +16,35 @@ import javax.swing.JOptionPane;
 import javax.swing.border.Border;
 import utils.Utils;
 
-
+/**
+ * Clase que representa la interfaz gráfica para dar de alta un nuevo empleado.
+ *
+ * Permite introducir todos los datos necesarios para registrar un nuevo
+ * empleado, incluyendo validaciones de formato para campos como DNI, email y
+ * contraseña. La contraseña se cifra con BCrypt antes de enviarse al backend.
+ *
+ * Funcionalidades principales:
+ * <ul>
+ * <li>Formulario de entrada de datos con validación.</li>
+ * <li>Cifrado seguro de contraseña con BCrypt.</li>
+ * <li>Envío de los datos al servidor mediante una petición HTTP POST.</li>
+ * <li>Botones para añadir el empleado o cancelar la operación.</li>
+ * </ul>
+ *
+ * Requiere:
+ * <ul>
+ * <li>El modelo {@link models.Empleado} con los métodos de acceso
+ * definidos.</li>
+ * <li>El backend debe exponer el endpoint
+ * <code>http://localhost:8080/empleado/insert</code> para insertar nuevos
+ * empleados.</li>
+ * <li>Las funciones utilitarias {@link utils.Utils} para validación de DNI,
+ * email y contraseña.</li>
+ * </ul>
+ *
+ * @author Lucía Rodríguez Martín
+ * @version 1.0
+ */
 public class AltaEmpleado extends javax.swing.JFrame {
 
     /**
@@ -48,7 +76,7 @@ public class AltaEmpleado extends javax.swing.JFrame {
         jLabel8 = new javax.swing.JLabel();
         jLabel9 = new javax.swing.JLabel();
         jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
+        agregar = new javax.swing.JButton();
         telefono = new javax.swing.JTextField();
         email = new javax.swing.JTextField();
         usuario = new javax.swing.JTextField();
@@ -117,14 +145,14 @@ public class AltaEmpleado extends javax.swing.JFrame {
         });
         jPanel1.add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 420, -1, -1));
 
-        jButton2.setFont(new java.awt.Font("Kohinoor Bangla", 0, 13)); // NOI18N
-        jButton2.setText("Añadir");
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
+        agregar.setFont(new java.awt.Font("Kohinoor Bangla", 0, 13)); // NOI18N
+        agregar.setText("Añadir");
+        agregar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
+                agregarActionPerformed(evt);
             }
         });
-        jPanel1.add(jButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 420, -1, -1));
+        jPanel1.add(agregar, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 420, -1, -1));
 
         telefono.setFont(new java.awt.Font("Malayalam MN", 0, 13)); // NOI18N
         jPanel1.add(telefono, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 140, 170, -1));
@@ -162,98 +190,112 @@ public class AltaEmpleado extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
+    /**
+     * Acción que se ejecuta al pulsar el botón "Cancelar".
+     *
+     * Cierra la ventana actual y abre la ventana principal de empleados.
+     *
+     * @param evt el evento generado al hacer clic en el botón
+     */
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
         Empleados e = new Empleados();
         e.setVisible(true);
         this.dispose();
     }//GEN-LAST:event_jButton1ActionPerformed
+    /**
+     * Acción que se ejecuta al pulsar el botón "Añadir".
+     *
+     * Valida los campos del formulario. Si todos los datos son válidos:
+     * <ul>
+     * <li>Se construye un objeto {@link models.Empleado} con los datos
+     * introducidos.</li>
+     * <li>Se cifra la contraseña utilizando
+     * {@link br.com.thiaguten.umbrella.support.security.BCryptPasswordEncoder}.</li>
+     * <li>Se convierte el objeto a JSON y se envía mediante una petición POST
+     * al backend.</li>
+     * <li>Se informa al usuario del resultado (éxito o error).</li>
+     * </ul>
+     *
+     * Si se detectan errores de validación, se resaltan los campos incorrectos.
+     *
+     * @param evt el evento generado al hacer clic en el botón
+     */
+    private void agregarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_agregarActionPerformed
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        
         try {
-            
+
             int error = 0;
             Border bordeRojo = BorderFactory.createLineBorder(Color.red, 1);
             Border bordeNormal = BorderFactory.createLineBorder(Color.gray, 1);
-            
+
             //Comprobar los datos que sean correctos
             if (dni.getText().equals("") || !Utils.validarDNI(dni.getText())) {
                 dni.setBorder(bordeRojo);
                 error++;
+            } else {
+                dni.setBorder(bordeNormal);
             }
-            else {
-                dni.setBorder(bordeNormal); 
-            }
-            
+
             if (nombre.getText().equals("")) {
                 nombre.setBorder(bordeRojo);
                 error++;
-            }
-            else {
+            } else {
                 nombre.setBorder(bordeNormal);
             }
-            
+
             if (apellido.getText().equals("")) {
                 apellido.setBorder(bordeRojo);
                 error++;
-            }
-            else {
+            } else {
                 apellido.setBorder(bordeNormal);
             }
-            
+
             if (direccion.getText().equals("")) {
                 direccion.setBorder(bordeRojo);
                 error++;
-            }
-            else {
+            } else {
                 direccion.setBorder(bordeNormal);
             }
-            
+
             if (usuario.getText().equals("")) {
                 usuario.setBorder(bordeRojo);
                 error++;
-            }
-            else {
+            } else {
                 usuario.setBorder(bordeNormal);
             }
-             
+
             if (email.getText().equals("") || !Utils.validarEmail(email.getText())) {
                 email.setBorder(bordeRojo);
-               error++;
-            }
-            else {
+                error++;
+            } else {
                 email.setBorder(bordeNormal);
             }
-            
+
             if (String.valueOf(password.getPassword()).equals("")) {
                 password.setBorder(bordeRojo);
                 error++;
-            }
-            else {
-                if (String.valueOf(password.getPassword()).length() >= 6 && 
-                    String.valueOf(password.getPassword()).length() <= 10 &&
-                    Utils.validarContrasena(String.valueOf(password.getPassword()))) {
+            } else {
+                if (String.valueOf(password.getPassword()).length() >= 6
+                        && String.valueOf(password.getPassword()).length() <= 10
+                        && Utils.validarContrasena(String.valueOf(password.getPassword()))) {
                     password.setBorder(bordeNormal);
- 
-                }
-                else {
-                   JOptionPane.showMessageDialog(this, "La contraseña no debe tener entre 6 y 10 carácteres y contener carácteres especiales y mayúsculas"); 
-                   error++;
+
+                } else {
+                    JOptionPane.showMessageDialog(this, "La contraseña debe tener entre 6 y 10 carácteres y contener carácteres especiales y mayúsculas");
+                    error++;
                 }
             }
-             
+
             if (telefono.getText().equals("")) {
-                telefono.setBorder(bordeRojo);  
+                telefono.setBorder(bordeRojo);
                 error++;
-            }
-            else {
+            } else {
                 telefono.setBorder(bordeNormal);
-            } 
-            
+            }
+
             if (error == 0) {
-            
+
                 // Construir objeto Empleado
                 Empleado nuevoEmpleado = new Empleado();
                 nuevoEmpleado.setDni(dni.getText());
@@ -271,7 +313,6 @@ public class AltaEmpleado extends javax.swing.JFrame {
                 String encodedPassword = passwordEncoder.encode(contrasena);
                 // Guardarla en el empleado
                 nuevoEmpleado.setContrasenaHash(encodedPassword);
-
 
                 // Serializar a JSON
                 String json = new Gson().toJson(nuevoEmpleado);
@@ -303,56 +344,19 @@ public class AltaEmpleado extends javax.swing.JFrame {
             e.printStackTrace();
             JOptionPane.showMessageDialog(this, "Error de conexión: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
-    }//GEN-LAST:event_jButton2ActionPerformed
+    }//GEN-LAST:event_agregarActionPerformed
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(AltaEmpleado.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(AltaEmpleado.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(AltaEmpleado.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(AltaEmpleado.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new AltaEmpleado().setVisible(true);
-            }
-        });
-    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JComboBox<String> CBRol;
     private javax.swing.JLabel LbContrasena;
     private javax.swing.JLabel LbContrasena1;
+    private javax.swing.JButton agregar;
     private javax.swing.JTextField apellido;
     private javax.swing.JTextField direccion;
     private javax.swing.JTextField dni;
     private javax.swing.JTextField email;
     private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel2;

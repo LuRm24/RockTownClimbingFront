@@ -19,10 +19,23 @@ import java.time.LocalTime;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import models.Actividad;
-import models.Cliente;
 import utils.LocalDateAdapter;
 import utils.LocalTimeAdapter;
 
+/**
+ * Ventana de visualización y gestión de actividades registradas.
+ *
+ * Esta clase permite al usuario consultar, insertar, modificar o eliminar
+ * actividades asociadas a la base de datos de la aplicación RockTown Climbing.
+ * Las actividades se cargan desde el backend mediante peticiones HTTP y se
+ * muestran en una tabla.
+ *
+ * También permite navegar hacia el formulario principal o abrir formularios de
+ * edición o creación de actividades.
+ *
+ * @author Lucía Rodríguez Martín
+ * @version 1.0
+ */
 public class VerActividades extends javax.swing.JFrame {
 
     /**
@@ -33,6 +46,10 @@ public class VerActividades extends javax.swing.JFrame {
         cargarActividades();
     }
 
+    /**
+     * Carga todas las actividades desde el backend y las muestra en la tabla de
+     * la interfaz.
+     */
     private void cargarActividades() {
         try {
             URL url = new URL("http://localhost:8080/actividad/select-all");
@@ -48,22 +65,28 @@ public class VerActividades extends javax.swing.JFrame {
             io.printStackTrace();
         }
     }
-    
+
+    /**
+     * Procesa la respuesta JSON del backend, construye el modelo de tabla y lo
+     * asigna a la tabla de actividades.
+     *
+     * @param entrada BufferedReader con la respuesta JSON de la API
+     */
     private void cargarDatosTabla(BufferedReader entrada) {
         try {
             //Definir las columnas de la tabla
             String[] columnas = {"Nombre", "Descripción", "Empleado", "Id"};
             DefaultTableModel model = new DefaultTableModel(columnas, 0);
-            
+
             // Leer todo el contenido del BufferedReader
             String datosLeidos = "";
             String linea;
             while ((linea = entrada.readLine()) != null) {
-                    datosLeidos += linea;
+                datosLeidos += linea;
             }
             //Si la entrada tiene datos
-            if (datosLeidos.equals("Datos vacios") == false){
-            
+            if (datosLeidos.equals("Datos vacios") == false) {
+
                 if (datosLeidos.startsWith("[")) {
                     // Parsear como JsonArray
                     JsonArray jsonArray = JsonParser.parseString(datosLeidos).getAsJsonArray();
@@ -71,42 +94,40 @@ public class VerActividades extends javax.swing.JFrame {
                     //Recorrer el json e ir añadiendo las filas
                     for (int i = 0; i < jsonArray.size(); i++) {
                         JsonObject obj = jsonArray.get(i).getAsJsonObject();
-                   
-                        //Añadimos los datos de la fila en un array
-                       String[] datos = {
-                        obj.get("nombre").getAsString(),
-                        obj.get("descripcion").getAsString(),
-                        obj.getAsJsonObject("empleado").get("nombre").getAsString() + " " + 
-                            obj.getAsJsonObject("empleado").get("apellidos").getAsString(),
-                        obj.get("id").getAsString()
-                        };
-                        //Al modelo le añadimos los datos como una fila
-                        model.addRow(datos); 
-                    }
-                }
-                else {
-                    JsonObject obj = JsonParser.parseString(datosLeidos).getAsJsonObject();
 
                         //Añadimos los datos de la fila en un array
-                      String[] datos = {
+                        String[] datos = {
+                            obj.get("nombre").getAsString(),
+                            obj.get("descripcion").getAsString(),
+                            obj.getAsJsonObject("empleado").get("nombre").getAsString() + " "
+                            + obj.getAsJsonObject("empleado").get("apellidos").getAsString(),
+                            obj.get("id").getAsString()
+                        };
+                        //Al modelo le añadimos los datos como una fila
+                        model.addRow(datos);
+                    }
+                } else {
+                    JsonObject obj = JsonParser.parseString(datosLeidos).getAsJsonObject();
+
+                    //Añadimos los datos de la fila en un array
+                    String[] datos = {
                         obj.get("nombre").getAsString(),
                         obj.get("descripcion").getAsString(),
-                        obj.getAsJsonObject("empleado").get("nombre").getAsString() + " " + 
-                            obj.getAsJsonObject("empleado").get("apellidos").getAsString(),
+                        obj.getAsJsonObject("empleado").get("nombre").getAsString() + " "
+                        + obj.getAsJsonObject("empleado").get("apellidos").getAsString(),
                         obj.get("id").getAsString()
-                        };
-                    model.addRow(datos); 
+                    };
+                    model.addRow(datos);
                 }
             }
-            
+
             //A la tabla se le asigna el modelo
             tablaActividades.setModel(model);
-        }
-        catch (IOException io){
+        } catch (IOException io) {
             io.printStackTrace();
         }
     }
-    
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -194,9 +215,14 @@ public class VerActividades extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
+    /**
+     * Acción del botón "Ver actividad". Abre la ventana de modificación con los
+     * datos de la actividad seleccionada.
+     *
+     * @param evt Evento de acción generado por el usuario
+     */
     private void verActividadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_verActividadActionPerformed
-        
+
         // TODO add your handling code here:
         int fila = tablaActividades.getSelectedRow();
 
@@ -226,10 +252,10 @@ public class VerActividades extends javax.swing.JFrame {
 
                     // Crear Gson con soporte para LocalDate
                     Gson gson = new GsonBuilder()
-                    .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
-                    .registerTypeAdapter(LocalTime.class, new LocalTimeAdapter())
-                    .create();
-            
+                            .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
+                            .registerTypeAdapter(LocalTime.class, new LocalTimeAdapter())
+                            .create();
+
                     // Convertir JSON a objeto Empleado
                     Actividad actividad = gson.fromJson(response.toString(), Actividad.class);
 
@@ -249,29 +275,47 @@ public class VerActividades extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_verActividadActionPerformed
 
+    /**
+     * Acción del botón "Menú Principal". Regresa a la ventana principal de la
+     * aplicación.
+     *
+     * @param evt Evento de acción generado por el usuario
+     */
     private void cancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelarActionPerformed
         Principal p = new Principal();
         p.setVisible(true);
         this.dispose();
     }//GEN-LAST:event_cancelarActionPerformed
-
+    /**
+     * Acción del botón "Añadir actividad". Abre la ventana de inserción de una
+     * nueva actividad.
+     *
+     * @param evt Evento de acción generado por el usuario
+     */
     private void insertarActividadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_insertarActividadActionPerformed
         // TODO add your handling code here:
         GestionActividades act = new GestionActividades(true, null);
         act.setVisible(true);
         this.dispose();
     }//GEN-LAST:event_insertarActividadActionPerformed
-
+    /**
+     * Acción del botón "Eliminar actividad". Elimina la actividad seleccionada
+     * tras confirmación del usuario.
+     *
+     * @param evt Evento de acción generado por el usuario
+     */
     private void eliminarActividad1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_eliminarActividad1ActionPerformed
         int fila = tablaActividades.getSelectedRow();
 
-         if (fila == -1) {
-             JOptionPane.showMessageDialog(this, "Seleccionar actividad a eliminar");
-             return;
-         }
+        if (fila == -1) {
+            JOptionPane.showMessageDialog(this, "Seleccionar actividad a eliminar");
+            return;
+        }
 
         int confirmacion = JOptionPane.showConfirmDialog(this, "¿Deseas borrar la actividad?", "Confirmar borrado", JOptionPane.YES_NO_OPTION);
-        if (confirmacion != JOptionPane.YES_OPTION) return;
+        if (confirmacion != JOptionPane.YES_OPTION) {
+            return;
+        }
 
         try {
             Long id = Long.parseLong((String) tablaActividades.getValueAt(fila, 3));
