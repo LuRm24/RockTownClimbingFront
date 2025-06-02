@@ -211,6 +211,34 @@ public class GestionActividades extends javax.swing.JFrame {
             io.printStackTrace();
         }
     }
+    
+    /**
+     * Comprueba si un horario dado se solapa con alguno de los horarios ya presentes
+     * en la tabla de horarios.
+     * El método recorre todos los horarios registrados en la tabla y compara día y horas.
+     * Se considera que dos horarios se solapan si:
+     * Son del mismo día de la semana
+     *   El inicio del nuevo horario es anterior al fin de uno existente, y
+     *   El fin del nuevo horario es posterior al inicio de uno existente
+     * 
+     * @param horario Objeto horario a comprobar
+     * @return true si el horario se solapa con alguno existente o false en caso contrario
+     */
+    private boolean comprobarHorarioSolapado(HorarioDisponible horario){
+        boolean solapado = false;
+        
+        //Recorrer tabla de horarios
+        for (int i = 0; i < tablaHorarios.getModel().getRowCount() && !solapado; i++) {
+            DayOfWeek dia = HorarioDisponible.diaSemana(String.valueOf(tablaHorarios.getValueAt(i, 0)));
+            if (horario.getDiaSemana().equals(dia) 
+                    && (horario.getHoraFin().isAfter(LocalTime.parse(String.valueOf(tablaHorarios.getValueAt(i, 1))))
+                        && horario.getHoraInicio().isBefore(LocalTime.parse(String.valueOf(tablaHorarios.getValueAt(i, 2)))))){
+                solapado = true;
+            }
+        }
+        
+        return solapado;
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -566,12 +594,17 @@ public class GestionActividades extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(this, "El horario de fin es menor que el horario de inicio", "Error horario", JOptionPane.ERROR_MESSAGE);
                 return;
             }
-
+            
             // Construir objeto Horario
             HorarioDisponible horario = new HorarioDisponible();
             horario.setDiaSemana(dia);
             horario.setHoraInicio(horaInicio);
             horario.setHoraFin(horaFin);
+            
+            if (comprobarHorarioSolapado(horario)){
+                JOptionPane.showMessageDialog(this, "El horario se solapa con otro horario en el mismo día", "Error horario", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
 
             // Serializar a JSON
             // Crear Gson con soporte para LocalDate
